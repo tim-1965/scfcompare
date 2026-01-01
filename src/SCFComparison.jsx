@@ -661,7 +661,7 @@ export default function SCFComparison() {
                 <div className="space-y-6">
                   {/* Tier 1: Existing SCF */}
                   <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF suppliers</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF suppliers (or eligible for traditional SCF)</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
