@@ -429,7 +429,7 @@ export default function SCFComparison() {
     isPercent = false,
     disabled = false,
     sliderWidth = 'w-full',
-    { formatDisplay, parseInput, tooltip } = {}
+    { formatDisplay, parseInput, tooltip, labelClassName = '' } = {}
   ) => {
     const formattedValue = formatDisplay ? formatDisplay(value) : value;
 
@@ -449,16 +449,20 @@ export default function SCFComparison() {
     const suffix = isPercent ? '%' : unit;
 
     return (
-      <div className="space-y-2">
-        <div className="flex items-baseline gap-3">
+      <div className="space-y-2 w-full">
+        <div className="flex items-baseline gap-3 w-full justify-between">
           {tooltip ? (
             <Tooltip text={tooltip}>
-              <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
+              <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
+                {label}
+              </label>
             </Tooltip>
           ) : (
-            <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
+            <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
+              {label}
+            </label>
           )}
-          <div className="flex items-baseline gap-1 min-w-[120px] justify-end">
+          <div className="flex items-baseline gap-1 min-w-[130px] justify-end text-right">
             <input
               type={formatDisplay ? 'text' : 'number'}
               inputMode="decimal"
@@ -466,7 +470,7 @@ export default function SCFComparison() {
               onChange={(e) => handleChange(e.target.value)}
               onBlur={(e) => handleBlur(e.target.value)}
               disabled={disabled}
-              className={`w-24 text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
+              className={`w-28 text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
               step={step}
               min={min}
               max={max}
@@ -563,7 +567,60 @@ export default function SCFComparison() {
           {/* Panel 1: Inputs */}
           {activeView === 'inputs' && (
             <div data-panel="inputs" className="space-y-4 sm:space-y-6">
-               <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
+               
+            {/* Company Profile */}
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <DollarSign className="w-6 h-6 text-[#F08070]" />
+                    Company profile
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Currency</label>
+                    <select
+                      value={currencySymbol}
+                      onChange={(e) => setCurrencySymbol(e.target.value)}
+                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    >
+                      <option value="$">$ USD</option>
+                      <option value="€">€ EUR</option>
+                      <option value="£">£ GBP</option>
+                      <option value="¥">¥ JPY</option>
+                    </select>
+                  </div>
+                  </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                  <div>
+                    {renderInput('Total procurement spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
+                      formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
+                      parseInput: (input) => {
+                        const numeric = input.replace(/[^0-9.]/g, '');
+                        return parseFloat(numeric);
+                      },
+                      tooltip: 'All procurement expenditure of all kinds, goods and services, domestic and international.',
+                      labelClassName: 'text-[13px]'
+                    })}
+                  </div>
+                  <div>
+                    {renderInput('Number of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
+                      tooltip: 'All suppliers across goods + services.'
+                    })}
+                  </div>
+                  <div>
+                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true, false, 'w-full', {
+                      tooltip: 'How much of the spend is cross-border with longer shipping times',
+                      labelClassName: 'text-[13px]'
+                    })}
+                  </div>
+                  <div>
+                    {renderInput('SCF funding rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true, false, 'w-full', {
+                      tooltip: 'Approximate annual financing rate charged by SCF funders'
+                    })}
+                  </div>
+                </div>
+              </div>
+
+ <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-5 sm:p-6">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -597,56 +654,6 @@ export default function SCFComparison() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Company Profile */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <DollarSign className="w-6 h-6 text-[#F08070]" />
-                    Company profile
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Currency</label>
-                    <select
-                      value={currencySymbol}
-                      onChange={(e) => setCurrencySymbol(e.target.value)}
-                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
-                    >
-                      <option value="$">$ USD</option>
-                      <option value="€">€ EUR</option>
-                      <option value="£">£ GBP</option>
-                      <option value="¥">¥ JPY</option>
-                    </select>
-                  </div>
-                  </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div>
-                   {renderInput('Total procurement spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
-                      formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
-                      parseInput: (input) => {
-                        const numeric = input.replace(/[^0-9.]/g, '');
-                        return parseFloat(numeric);
-                      },
-                      tooltip: 'All procurement expenditure of all kinds'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('Number of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
-                      tooltip: 'All suppliers across goods + services.'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true, false, 'w-full', {
-                      tooltip: 'How much of the spend is cross-border with longer shipping times'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('SCF funding rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true, false, 'w-full', {
-                      tooltip: 'Approximate annual financing rate charged by SCF funders'
-                    })}
                   </div>
                 </div>
               </div>
