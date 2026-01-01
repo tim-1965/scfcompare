@@ -624,6 +624,7 @@ export default function SCFComparison() {
                 </div>
               </div>
 
+ <div className="max-w-5xl mx-auto">
  <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-5 sm:p-6">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -660,6 +661,7 @@ export default function SCFComparison() {
                     ))}
                   </div>
                 </div>
+              </div>
               </div>
 
               {/* Supplier Tiers */}
@@ -1018,6 +1020,7 @@ export default function SCFComparison() {
               </div>
 
               {/* Economics (annualised) */}
+              <div className="max-w-5xl mx-auto">
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Economics (annualised)</h2>
                 <div className="overflow-x-auto">
@@ -1176,8 +1179,10 @@ export default function SCFComparison() {
                   </table>
                 </div>
               </div>
+              </div>
 
              {/* Baseline AP Cost & Timing */}
+              <div className="max-w-5xl mx-auto">
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Baseline AP Cost & Timing</h2>
                 <div className="overflow-x-auto">
@@ -1217,8 +1222,10 @@ export default function SCFComparison() {
                   </table>
                 </div>
               </div>
+              </div>
 
               {/* Programme Scope & Volume */}
+              <div className="max-w-5xl mx-auto">
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Programme Scope & Volume</h2>
                 <div className="overflow-x-auto">
@@ -1308,6 +1315,7 @@ export default function SCFComparison() {
                     </tbody>
                   </table>
                 </div>
+              </div>
               </div>
               {/* Print Button */}
               <div className="mt-8 flex justify-center print:hidden">
