@@ -316,7 +316,7 @@ export default function SCFComparison() {
           step={step}
           value={value}
           onChange={(e) => setValue(parseFloat(e.target.value))}
-           className={`slider ${sliderWidth}`}
+          className={`slider ${sliderWidth}`}
           style={{
             background: `linear-gradient(to right, #F08070 0%, #F08070 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
           }}
@@ -425,7 +425,7 @@ export default function SCFComparison() {
                     {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
                   </div>
                   <div>
-                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                    {renderInput('International share%', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div>
                     {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
@@ -447,8 +447,12 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
-                        {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '', false, false, 'w-full max-w-[260px]')}
-                        {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full max-w-[260px]')}
+                         <div className="w-full max-w-[260px]">
+                          {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '', false, false, 'w-full')}
+                        </div>
+                        <div className="w-full max-w-[260px]">
+                          {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full')}
+                        </div>
                       </div>
                       
                       {/* Three Columns */}
@@ -483,8 +487,12 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
-                        {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full max-w-[260px]')}
-                        {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full max-w-[260px]')}
+                         <div className="w-full max-w-[260px]">
+                          {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full')}
+                        </div>
+                        <div className="w-full max-w-[260px]">
+                          {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full')}
+                        </div>
                       </div>
                       
                        {/* Three Columns */}
@@ -521,13 +529,13 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
-                        <div className="space-y-2">
+                           <div className="w-full max-w-[260px] space-y-2">
                           <div className="flex justify-between items-baseline">
                             <label className="text-sm font-medium text-gray-700">Number of Suppliers (auto-calc)</label>
                             <span className="text-sm font-semibold text-gray-900">{formatNumber(tier3Suppliers)}</span>
                           </div>
                         </div>
-                        <div className="space-y-2">
+                         <div className="w-full max-w-[260px] space-y-2">
                           <div className="flex justify-between items-baseline">
                             <label className="text-sm font-medium text-gray-700">Share of Total Spend (auto-calc)</label>
                             <span className={`text-sm font-semibold ${tier3SpendPct >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
@@ -566,7 +574,7 @@ export default function SCFComparison() {
                       
                       {/* Card Programme */}
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card Programme (Traditional SCF only)</h4>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card Programme (potentially replaced with PrimaTrade SCF)</h4>
                         <div className="grid md:grid-cols-4 gap-4">
                           {renderInput('Card Usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true)}
                           {renderInput('Supplier Cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true)}
