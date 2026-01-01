@@ -428,7 +428,7 @@ export default function SCFComparison() {
                     {renderInput('International share%', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div>
-                    {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
+                    {renderInput('SCF Funding Rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
                   </div>
                 </div>
               </div>
@@ -448,7 +448,7 @@ export default function SCFComparison() {
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
                          <div className="w-full max-w-[260px]">
-                          {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '', false, false, 'w-full')}
+                          {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full')}
                         </div>
                         <div className="w-full max-w-[260px]">
                           {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full')}
