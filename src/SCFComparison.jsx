@@ -455,17 +455,14 @@ export default function SCFComparison() {
     return (
       <div className="space-y-2 w-full">
          <div className="grid grid-cols-[1fr,auto] items-baseline gap-3 w-full">
-          {tooltip ? (
-            <Tooltip text={tooltip}>
-              <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
-                {label}
-              </label>
-            </Tooltip>
-          ) : (
-            <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
-              {label}
-            </label>
-          )}
+          <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
+            {label}
+            {tooltip && (
+              <Tooltip text={tooltip}>
+                <></>
+              </Tooltip>
+            )}
+          </label>
           <div className="flex items-baseline gap-1 justify-end text-right w-[110px] shrink-0 ml-auto">
             <input
               type={formatDisplay ? 'text' : 'number'}
