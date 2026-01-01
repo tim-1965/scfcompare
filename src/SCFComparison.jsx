@@ -154,6 +154,9 @@ export default function SCFComparison() {
   const tradBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   const tradBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   
+  // Outstanding balance (Traditional)
+  const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
+
   // Benefit of SCF funding (Traditional) - NEW in v5.0
   const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
   
@@ -169,9 +172,6 @@ export default function SCFComparison() {
   const tradActiveTier2 = 0;
   const tradActiveTier3 = 0;
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
-  
-  // Outstanding balance (Traditional)
-  const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
   
   // PRIMATRADE CALCULATIONS
   const ptEligibleSpend = spendTier1 + spendTier2 + spendTier3;
@@ -219,6 +219,9 @@ export default function SCFComparison() {
   const ptBuyerCardRebate = 0;
   const ptBuyerCardFreeFunding = 0;
   
+  // Outstanding balance (PrimaTrade)
+  const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
+
   // Benefit of SCF funding (PrimaTrade) - NEW in v5.0
   const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
   
@@ -236,9 +239,6 @@ export default function SCFComparison() {
   
   // Suppliers switching from cards
   const ptSuppliersFromCards = ptActiveTier3;
-  
-  // Outstanding balance (PrimaTrade)
-  const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
   
   // DELTAS
   const deltaEligibleSpend = ptEligibleSpend - tradEligibleSpend;
