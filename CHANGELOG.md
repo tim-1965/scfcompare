@@ -1,166 +1,170 @@
 # SCF Comparison Calculator - Update Summary
 
-## Updates Made (January 1, 2026)
+## Version 3.0 (January 1, 2026)
 
-### Key Changes from Previous Version
+### Major Simplification & Card Benefits Enhancement
 
-#### 1. **Three-Tier Supplier Segmentation** (vs. previous two-tier)
-The new model segments suppliers into three tiers to better reflect SCF programme reality:
+This version represents a significant simplification of the model while introducing accurate card benefit calculations.
 
-- **Existing SCF 50** (default: 50 suppliers, 65% of spend)
-  - Current suppliers already in SCF programme
-  - Typically larger strategic suppliers
-  
-- **50-1000 Tier** (default: 950 suppliers, 30% of spend)
-  - Next layer that would ideally be in SCF
-  - Medium-sized regular suppliers
-  - Traditional SCF: 0% eligible
-  - PrimaTrade: 70% participation
-  
-- **Long Tail** (default: 7,000 suppliers, 5% of spend)
-  - Remaining small suppliers
-  - Traditional SCF: 0% eligible
-  - PrimaTrade: 60% participation
+#### Key Changes
 
-#### 2. **Tier-Specific Early Payment Discounts**
-Different discount rates by supplier tier (PrimaTrade only):
-- Existing SCF 50: 0% (default)
-- 50-1000 tier: 2.5% (default)
-- Long tail: 3.5% (default)
+**1. Removed Spend Breakdown Section**
+- ❌ Removed: "Goods / Services / Long Tail" spend percentage breakdown
+- ✅ Simplified: Model now focuses purely on supplier tiers and their spend concentration
+- Rationale: Unnecessary complexity that didn't materially impact the comparison
 
-Traditional SCF: All tiers = 0% (doesn't support discounts)
+**2. Accurate Card Benefit Calculations (NEW!)**
 
-#### 3. **Tier-Specific Supplier Savings Rates**
-Different cost of capital by supplier size:
+Added 4 new inputs for card programme economics:
 
-**Traditional SCF:**
-- Existing 50: 8% savings rate
-- 50-1000: 12% savings rate
-- Long tail: 15% savings rate
+**For Suppliers:**
+- **Card Cost Rate** (default: 3.5%): All-in cost to suppliers for card payments
+- Calculated in Traditional SCF only (suppliers on cards pay this fee)
 
-**PrimaTrade:**
-- Existing 50: 10% savings rate
-- 50-1000: 15% savings rate
-- Long tail: 20% savings rate
+**For Buyers:**
+- **Card Rebate** (default: 1.0%): Rebate the buyer receives from card issuer
+- **Free Funding Period** (default: 20 days): Credit period buyer enjoys with cards
 
-Reflects that smaller suppliers have higher cost of capital and benefit more from early payment.
+These create two new buyer benefits in Traditional SCF:
+1. **Card Rebate**: `Card Rebate % × Long Tail Spend on Cards`
+2. **Free Funding Benefit**: `(Free Funding Days / 365) × SCF Rate × Long Tail Spend on Cards`
 
-#### 4. **Simplified Calculation Logic**
-- **Actual Discount** = MAX(financing cost, agreed discount %)
-- This ensures suppliers pay at least the financing cost or their agreed discount, whichever is higher
-- Cleaner than previous formula
+**3. Updated Calculations**
 
-#### 5. **Dashboard-Focused Results**
-The comparison results now match the Excel Dashboard sheet with 6 headline KPIs:
-1. Eligible Spend (all spend eligible via automation)
-2. Participating Spend (higher participation from smaller suppliers)
-3. Outstanding Balance (funding requirement increase)
-4. Eligible Suppliers (more suppliers involved)
-5. Active Suppliers (more actively using SCF)
-6. Days Faster Payment (via PO Match & automation)
-
-#### 6. **Updated Configuration Files**
-- **vite.config.js**: Simplified version optimized for Netlify
-- **tailwind.config.js**: Streamlined configuration
-- **.gitignore**: Updated for better version control
-
-### New Default Values
-
-The calculator now uses these defaults (from the updated Excel model):
-
-**Supplier Tiers:**
-- Total suppliers: 8,000
-- Existing SCF suppliers: 50 (65% of spend)
-- Ideal SCF suppliers: 1,000 (next 30% of spend)
-- Long tail: 7,000 (remaining 5% of spend)
-
-**Participation Rates:**
-- Traditional SCF: 40% of existing 50 only
-- PrimaTrade: 40% existing + 70% of 50-1000 tier + 60% long tail
-
-**Early Payment Discounts (PrimaTrade):**
-- Existing 50: 0%
-- 50-1000: 2.5%
-- Long tail: 3.5%
-
-**Supplier Savings Rates:**
-- Existing 50: 8% (trad) / 10% (PT)
-- 50-1000: 12% (trad) / 15% (PT)
-- Long tail: 15% (trad) / 20% (PT)
-
-## What Stayed the Same
-
-✓ Two-panel interface (Inputs / Comparison Results)
-✓ Interactive sliders with number inputs
-✓ Auto-save to localStorage
-✓ Print-to-PDF functionality
-✓ Prima Trade branding and colors
-✓ Mobile responsive design
-✓ All calculation precision and accuracy
-
-## Benefits of the Update
-
-1. **More Realistic Model**: Three tiers better reflect actual supplier base dynamics
-2. **Better Demonstrates Long Tail Value**: Shows clear benefit of including smaller suppliers
-3. **Tier-Specific Economics**: Recognizes that smaller suppliers have higher capital costs
-4. **Clearer Dashboard**: Focused on 6 key metrics that matter most
-5. **Netlify-Optimized**: Simplified configs for smoother deployment
-
-## Excel Model Alignment
-
-The React app now perfectly matches the calculations in:
-- **Dashboard** sheet (headline KPIs)
-- **Enterprise inputs** sheet (company profile, supplier tiers)
-- **Program inputs** sheet (participation rates, discounts, timing, economics)
-
-All formulas have been translated 1:1 from Excel to JavaScript.
-
-## File Changes
-
-**Modified:**
-- `src/SCFComparison.jsx` (complete rewrite with three-tier logic)
-- `vite.config.js` (simplified)
-- `tailwind.config.js` (simplified)
-- `.gitignore` (updated)
-
-**Unchanged:**
-- `src/App.jsx`
-- `src/main.jsx`
-- `src/App.css`
-- `index.html`
-- `package.json`
-- `netlify.toml`
-- `postcss.config.js`
-- `public/240417_PTS_red_logo.png`
-
-## Testing Checklist
-
-Before deploying, verify:
-- [ ] All three supplier tiers display correctly
-- [ ] Participation rates work for each tier
-- [ ] Early payment discounts calculate properly
-- [ ] Supplier savings rates apply correctly
-- [ ] Dashboard shows all 6 KPIs
-- [ ] Outstanding balance calculation is accurate
-- [ ] Values persist in localStorage
-- [ ] Print/PDF works correctly
-- [ ] Mobile responsive layout functions
-- [ ] No console errors
-
-## Deployment
-
-Same as before:
-```bash
-cd scf-comparison
-npm install
-npm run dev     # Test locally
-npm run build   # Build for production
+**Traditional SCF Buyer Benefit now includes:**
+```
+Buyer Net Benefit = 
+  Discounts - Financing Costs 
+  + Card Rebate 
+  + Free Funding Period Benefit
 ```
 
-Deploy via Netlify Drop, CLI, or Git connection.
+**Supplier Long Tail Benefit uses MIN function:**
+```javascript
+// Caps the benefit at total long tail spend
+MIN(Participating + On Cards, Total Long Tail) × Days × Rate / 365
+```
+
+**Average Approval Time Calculation:**
+```javascript
+// Weighted by domestic vs cross-border share
+(Domestic Share × (Domestic Delay + Processing)) + 
+(Cross-Border Share × (Cross-Border Delay + Processing))
+```
+
+**4. UI Updates**
+- Removed "Spend Breakdown" card from Company Profile section
+- Added 4 new card benefit inputs in "Financing Assumptions" section
+- Added card benefits detail display in Economics table (Traditional SCF only)
+- Updated label: "Cross-Border Share (excl. services)" to clarify scope
+
+**5. Updated Key Benefits Text**
+Changed the 4th benefit description to:
+> "Eliminates card costs (up to 3.5%) for suppliers while buyer loses card rebates but gains early payment discounts."
+
+This accurately reflects the trade-off: Traditional SCF gets card benefits, PrimaTrade gets early payment discounts.
+
+#### What This Means
+
+**Traditional SCF:**
+- Buyer benefits from card rebates and free funding period
+- Suppliers on cards pay card fees (cost)
+- Limited to top 50 suppliers only
+
+**PrimaTrade:**
+- Buyer loses card benefits but gains early payment discounts
+- Suppliers avoid card fees entirely
+- All suppliers can participate
+
+**Net Result:**
+PrimaTrade typically creates more total value by:
+1. Including more suppliers (better participation)
+2. Enabling flexible discount rates that exceed financing costs
+3. Eliminating card costs for suppliers
+4. Faster payment timing (PO Match)
 
 ---
 
-**Version**: 2.0 (Updated January 1, 2026)
-**Excel Model**: 260101_SCF_compared_to_PrimaTrade.xlsx
+## Version 2.1 (January 1, 2026)
+
+### Auto-Calculated Long Tail & Validation
+
+- Long Tail spend share auto-calculated as `100% - Existing % - Ideal %`
+- Added validation error when total > 100%
+- Changed "Tail / Incidental" → "Long Tail" label
+- Improved UX with color-coded validation
+
+---
+
+## Version 2.0 (January 1, 2026)
+
+### Three-Tier Supplier Segmentation
+
+- Introduced three supplier tiers (Existing SCF / 50-1000 / Long Tail)
+- Tier-specific early payment discounts
+- Tier-specific supplier savings rates
+- Dashboard-focused results with 6 headline KPIs
+- Simplified calculation logic
+
+---
+
+## Excel Model Alignment
+
+**Current Version**: 260101_SCF_compared_to_PrimaTrade_1.xlsx
+
+The React app perfectly matches:
+- **Dashboard** sheet: All 6 headline KPIs
+- **Enterprise inputs** sheet: Company profile, supplier tiers, AP timing, card economics
+- **Program inputs** sheet: Participation rates, discounts, timing, all calculations
+
+All formulas translated 1:1 from Excel to JavaScript.
+
+## File Changes (v3.0)
+
+**Modified:**
+- `src/SCFComparison.jsx`: 
+  - Removed spend breakdown inputs (goods/services/tail)
+  - Added 4 card benefit inputs
+  - Updated all calculation formulas
+  - Added card benefits detail display
+  - Updated labels and descriptions
+
+**Unchanged:**
+- All other files remain the same
+- Configuration files (vite, tailwind, netlify)
+- Assets and styling
+
+## Deployment
+
+```bash
+cd scf-comparison
+npm install
+npm run dev     # Test locally at http://localhost:5173
+npm run build   # Build for production
+```
+
+Deploy via:
+- **Netlify Drop**: Build locally, drag `dist/` folder
+- **Netlify CLI**: `npm run deploy`
+- **Git**: Push to repo, connect to Netlify
+
+## Testing Checklist
+
+- [x] Card benefit inputs display correctly
+- [x] Card rebate calculates properly
+- [x] Free funding period benefit calculates correctly
+- [x] Traditional SCF shows card benefits in detail section
+- [x] PrimaTrade shows zero card benefits
+- [x] Spend breakdown section removed
+- [x] Long Tail auto-calculation works
+- [x] All three supplier tiers calculate correctly
+- [x] Dashboard shows all 6 KPIs accurately
+- [x] Print/PDF functionality works
+- [x] Mobile responsive layout
+- [x] LocalStorage persistence works
+
+---
+
+**Version**: 3.0 (January 1, 2026)  
+**Excel Model**: 260101_SCF_compared_to_PrimaTrade_1.xlsx  
 **Author**: Prima Trade / tim.nicolle@prima.trade
