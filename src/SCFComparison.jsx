@@ -154,9 +154,12 @@ export default function SCFComparison() {
   const tradBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   const tradBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   
+  // Benefit of SCF funding (Traditional) - NEW in v5.0
+  const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
+  
   // Buyer net benefit (Traditional)
   const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
-                              tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate;
+                              tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate + tradScfFundingBenefit;
   
   // Total value created (Traditional)
   const tradTotalValue = tradSupplierNetBenefit + tradBuyerNetBenefit;
@@ -216,8 +219,11 @@ export default function SCFComparison() {
   const ptBuyerCardRebate = 0;
   const ptBuyerCardFreeFunding = 0;
   
+  // Benefit of SCF funding (PrimaTrade) - NEW in v5.0
+  const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
+  
   // Buyer net benefit (PrimaTrade)
-  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing;
+  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptScfFundingBenefit;
   
   // Total value created (PrimaTrade)
   const ptTotalValue = ptSupplierNetBenefit + ptBuyerNetBenefit;
@@ -778,17 +784,50 @@ export default function SCFComparison() {
                 </div>
                 
                 {/* Card Benefits Detail for Traditional SCF */}
-                {tradBuyerCardRebate > 0 || tradBuyerCardFreeFunding > 0 ? (
+                {(tradBuyerCardRebate > 0 || tradBuyerCardFreeFunding > 0 || tradScfFundingBenefit > 0) ? (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Traditional SCF Card Benefits (included in buyer benefit above):</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Traditional SCF Buyer Benefits Breakdown (included above):</h3>
                     <div className="space-y-1 text-sm text-gray-700">
+                      <div className="flex justify-between">
+                        <span>Early payment discounts received:</span>
+                        <span className="font-medium">{formatCurrency(tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Less: SCF financing costs paid:</span>
+                        <span className="font-medium">-{formatCurrency(tradTotalFinancing)}</span>
+                      </div>
                       <div className="flex justify-between">
                         <span>Card rebate from suppliers on cards:</span>
                         <span className="font-medium">{formatCurrency(tradBuyerCardRebate)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Free funding period benefit:</span>
+                        <span>Card free funding period benefit:</span>
                         <span className="font-medium">{formatCurrency(tradBuyerCardFreeFunding)}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-gray-300 pt-1 mt-1">
+                        <span className="font-semibold">SCF funding benefit (paid by suppliers):</span>
+                        <span className="font-semibold">{formatCurrency(tradScfFundingBenefit)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                
+                {/* PrimaTrade Benefits Detail */}
+                {ptScfFundingBenefit > 0 ? (
+                  <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">PrimaTrade Buyer Benefits Breakdown (included above):</h3>
+                    <div className="space-y-1 text-sm text-gray-700">
+                      <div className="flex justify-between">
+                        <span>Early payment discounts received:</span>
+                        <span className="font-medium">{formatCurrency(ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Less: SCF financing costs paid:</span>
+                        <span className="font-medium">-{formatCurrency(ptTotalFinancing)}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-gray-300 pt-1 mt-1">
+                        <span className="font-semibold">SCF funding benefit (paid by suppliers):</span>
+                        <span className="font-semibold">{formatCurrency(ptScfFundingBenefit)}</span>
                       </div>
                     </div>
                   </div>
