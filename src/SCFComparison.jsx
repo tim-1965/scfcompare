@@ -596,13 +596,13 @@ export default function SCFComparison() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Delivery Timing</h3>
-                    {renderInput('Handover to Delivery (Domestic)', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
-                    {renderInput('Handover to Delivery (Cross-Border)', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
+                    {renderInput('Handover to accepted delivery (Domestic/services)', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
+                    {renderInput('Handover to accepted delivery (Cross-Border)', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Term and Approval Timing</h3>
-                    {renderInput('Delivery to Approval', processingTime, setProcessingTime, 0, 30, 1, 'days')}
-                    {renderInput('Standard Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
+                    {renderInput('Delivery to Invoice Approval', processingTime, setProcessingTime, 0, 30, 1, 'days')}
+                    {renderInput('Standard Invoice Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">SCF Payment Timing</h3>
