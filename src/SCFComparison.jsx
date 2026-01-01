@@ -1,33 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, DollarSign, BarChart3, Calculator, Users, Clock, Printer, CheckCircle, Info } from 'lucide-react';
-
-// Tooltip Component
-const Tooltip = ({ text, children }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  return (
-    <div className="relative inline-flex items-center">
-      {children}
-      <button
-        type="button"
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        onFocus={() => setIsVisible(true)}
-        onBlur={() => setIsVisible(false)}
-        className="ml-1.5 text-gray-400 hover:text-gray-600 transition-colors print:hidden"
-        aria-label="More information"
-      >
-        <Info className="w-3.5 h-3.5" />
-      </button>
-      {isVisible && (
-        <div className="absolute left-0 top-full mt-1 z-50 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg">
-          {text}
-          <div className="absolute bottom-full left-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-        </div>
-      )}
-    </div>
-  );
-};
+import { TrendingUp, DollarSign, BarChart3, Calculator, Users, Clock, Printer, CheckCircle } from 'lucide-react';
 
 export default function SCFComparison() {
   const [activeView, setActiveView] = useState('inputs');
@@ -58,6 +30,7 @@ export default function SCFComparison() {
   const [tier1SpendPct, setTier1SpendPct] = useState(() => loadSavedValue('tier1SpendPct', 65));
   const [tier1TradPartPct, setTier1TradPartPct] = useState(() => loadSavedValue('tier1TradPartPct', 40));
   const [tier1PtPartPct, setTier1PtPartPct] = useState(() => loadSavedValue('tier1PtPartPct', 40));
+  const [tier1TradDiscountPct, setTier1TradDiscountPct] = useState(() => loadSavedValue('tier1TradDiscountPct', 0));
   const [tier1PtDiscountPct, setTier1PtDiscountPct] = useState(() => loadSavedValue('tier1PtDiscountPct', 0));
   const [tier1TradSavingsPct, setTier1TradSavingsPct] = useState(() => loadSavedValue('tier1TradSavingsPct', 8));
   const [tier1PtSavingsPct, setTier1PtSavingsPct] = useState(() => loadSavedValue('tier1PtSavingsPct', 10));
@@ -65,13 +38,17 @@ export default function SCFComparison() {
   // Tier 2: Next Level (50-1000)
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
   const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 30));
+  const [tier2TradPartPct, setTier2TradPartPct] = useState(() => loadSavedValue('tier2TradPartPct', 0));
   const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
+  const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
   const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.5));
   const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 12));
   const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 15));
   
   // Tier 3: Long Tail (auto-calculated)
+  const [tier3TradPartPct, setTier3TradPartPct] = useState(() => loadSavedValue('tier3TradPartPct', 0));
   const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 60));
+  const [tier3TradDiscountPct, setTier3TradDiscountPct] = useState(() => loadSavedValue('tier3TradDiscountPct', 0));
   const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.5));
   const [tier3TradSavingsPct, setTier3TradSavingsPct] = useState(() => loadSavedValue('tier3TradSavingsPct', 15));
   const [tier3PtSavingsPct, setTier3PtSavingsPct] = useState(() => loadSavedValue('tier3PtSavingsPct', 20));
@@ -97,9 +74,9 @@ export default function SCFComparison() {
     if (typeof window !== 'undefined') {
       const allValues = {
         currencySymbol, totalProcurementSpend, totalSuppliers,
-        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-        tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-        tier3PtPartPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
+        tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays
       };
@@ -110,11 +87,17 @@ export default function SCFComparison() {
       return () => clearTimeout(timer);
     }
   }, [currencySymbol, totalProcurementSpend, totalSuppliers,
-      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-      tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-      tier3PtPartPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
+      tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays]);
+
+      useEffect(() => {
+    if (tier1Suppliers === 0 && tier1SpendPct !== 0) {
+      setTier1SpendPct(0);
+    }
+    }, [tier1Suppliers, tier1SpendPct]);
 
   const handlePrint = () => {
     window.print();
@@ -139,21 +122,23 @@ export default function SCFComparison() {
                           (crossBorderSharePct / 100) * (delayCrossBorder + processingTime);
   
   // TRADITIONAL SCF CALCULATIONS
-  const tradEligibleSpend = spendTier1;
-  const tradParticipatingSpend = spendTier1 * (tier1TradPartPct / 100);
+  const tradEligibleSpend = spendTier1 + spendTier2 + spendTier3;
+  const tradParticipatingTier1 = spendTier1 * (tier1TradPartPct / 100);
+  const tradParticipatingTier2 = spendTier2 * (tier2TradPartPct / 100);
+  const tradParticipatingTier3 = spendTier3 * (tier3TradPartPct / 100);
+  const tradParticipatingSpend = tradParticipatingTier1 + tradParticipatingTier2 + tradParticipatingTier3;
   const tradSupplierCashReceipt = avgApprovalTime + tradDaysAfterApproval;
   const tradDaysAdvanced = Math.max(0, paymentTerms - tradSupplierCashReceipt);
   
   // Financing costs by tier (Traditional)
-  const tradFinancingTier1 = tradParticipatingSpend * (scfRatePct / 100) * (tradDaysAdvanced / 365);
-  const tradFinancingTier2 = 0;
-  const tradFinancingTier3 = 0;
-  const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
+  const tradFinancingTier1 = tradParticipatingTier1 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingTier2 = tradParticipatingTier2 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingTier3 = tradParticipatingTier3 * (scfRatePct / 100) * (tradDaysAdvanced / 365);const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
   
-  // Discounts by tier (Traditional - all zero)
-  const tradDiscountTier1 = 0;
-  const tradDiscountTier2 = 0;
-  const tradDiscountTier3 = 0;
+  // Discounts by tier (Traditional)
+  const tradDiscountTier1 = tradParticipatingTier1 * (tier1TradDiscountPct / 100);
+  const tradDiscountTier2 = tradParticipatingTier2 * (tier2TradDiscountPct / 100);
+  const tradDiscountTier3 = tradParticipatingTier3 * (tier3TradDiscountPct / 100);
   
   // Actual discount (MAX of financing cost and agreed discount)
   const tradActualDiscountTier1 = Math.max(tradFinancingTier1, tradDiscountTier1);
@@ -167,10 +152,10 @@ export default function SCFComparison() {
   const tradTotalSupplierCosts = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 + tradCardCosts;
   
   // Supplier time value benefits (Traditional)
-  const tradSupplierBenefitTier1 = tradParticipatingSpend * (tier1TradSavingsPct / 100) * (tradDaysAdvanced / 365);
-  const tradSupplierBenefitTier2 = 0;
+  const tradSupplierBenefitTier1 = tradParticipatingTier1 * (tier1TradSavingsPct / 100) * (tradDaysAdvanced / 365);
+  const tradSupplierBenefitTier2 = tradParticipatingTier2 * (tier2TradSavingsPct / 100) * (tradDaysAdvanced / 365);
   // Tier 3 benefit uses MIN function
-  const tradTier3Participating = spendTier3 * (0 / 100);
+  const tradTier3Participating = tradParticipatingTier3;
   const tradTier3OnCards = spendTier3 * (tier3CardUsagePct / 100);
   const tradSupplierBenefitTier3 = Math.min(tradTier3Participating + tradTier3OnCards, spendTier3) * (tradDaysAdvanced / 365) * (tier3TradSavingsPct / 100);
   const tradTotalSupplierTimeValue = tradSupplierBenefitTier1 + tradSupplierBenefitTier2 + tradSupplierBenefitTier3;
@@ -182,9 +167,9 @@ export default function SCFComparison() {
   const tradBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   const tradBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   
-    // Outstanding balance (Traditional)
+  // Outstanding balance (Traditional)
   const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
-  
+
   // Benefit of SCF funding (Traditional) - NEW in v5.0
   const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
   
@@ -197,8 +182,8 @@ export default function SCFComparison() {
   
   // Active suppliers (Traditional)
   const tradActiveTier1 = tier1Suppliers * (tier1TradPartPct / 100);
-  const tradActiveTier2 = 0;
-  const tradActiveTier3 = 0;
+  const tradActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2TradPartPct / 100);
+  const tradActiveTier3 = tier3Suppliers * (tier3TradPartPct / 100);
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
   
   // PRIMATRADE CALCULATIONS
@@ -249,7 +234,7 @@ export default function SCFComparison() {
   
   // Outstanding balance (PrimaTrade)
   const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
-  
+
   // Benefit of SCF funding (PrimaTrade) - NEW in v5.0
   const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
   
@@ -268,11 +253,13 @@ export default function SCFComparison() {
   // Suppliers switching from cards
   const ptSuppliersFromCards = ptActiveTier3;
   
+  const tradEligibleSuppliers = tier1Suppliers + (tier2Suppliers - tier1Suppliers) + tier3Suppliers;
+
   // DELTAS
   const deltaEligibleSpend = ptEligibleSpend - tradEligibleSpend;
   const deltaParticipatingSpend = ptParticipatingSpend - tradParticipatingSpend;
   const deltaOutstandingBalance = ptOutstandingBalance - tradOutstandingBalance;
-  const deltaEligibleSuppliers = totalSuppliers - tier1Suppliers;
+  const deltaEligibleSuppliers = totalSuppliers - tradEligibleSuppliers;
   const deltaActiveSuppliers = ptTotalActive - tradTotalActive;
   const deltaSuppliersFromCards = ptSuppliersFromCards;
   const deltaCashReceipt = ptSupplierCashReceipt - tradSupplierCashReceipt;
@@ -303,52 +290,73 @@ export default function SCFComparison() {
     return `${value.toFixed(1)}%`;
   };
 
-  const renderInput = (label, value, setValue, min, max, step, unit = '', isPercent = false, disabled = false, tooltip = null) => (
-    <div className="space-y-2">
-      <div className="flex justify-between items-baseline">
-        {tooltip ? (
-          <Tooltip text={tooltip}>
-            <label className={`text-sm font-medium ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
-          </Tooltip>
-        ) : (
-          <label className={`text-sm font-medium ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
-        )}
-        <div className="flex items-baseline gap-1">
+  const renderInput = (
+    label,
+    value,
+    setValue,
+    min,
+    max,
+    step,
+    unit = '',
+    isPercent = false,
+    disabled = false,
+    sliderWidth = 'w-full',
+    { formatDisplay, parseInput } = {}
+  ) => {
+    const formattedValue = formatDisplay ? formatDisplay(value) : value;
+
+    const handleChange = (rawValue) => {
+      if (disabled) return;
+      const parsed = parseInput ? parseInput(rawValue) : parseFloat(rawValue);
+      setValue(Number.isFinite(parsed) ? parsed : 0);
+    };
+
+    const handleBlur = (rawValue) => {
+      if (disabled) return;
+      const parsed = parseInput ? parseInput(rawValue) : parseFloat(rawValue);
+      const clamped = Math.min(Math.max(Number.isFinite(parsed) ? parsed : 0, min), max);
+      setValue(clamped);
+    };
+
+    const suffix = isPercent ? '%' : unit;
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-baseline gap-3">
+          <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
+          <div className="flex items-baseline gap-1 min-w-[120px] justify-end">
+            <input
+              type={formatDisplay ? 'text' : 'number'}
+              inputMode="decimal"
+              value={formattedValue}
+              onChange={(e) => handleChange(e.target.value)}
+              onBlur={(e) => handleBlur(e.target.value)}
+              disabled={disabled}
+              className={`w-24 text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
+              step={step}
+              min={min}
+              max={max}
+            />
+            <span className={`text-sm ${disabled ? 'text-gray-400' : 'text-gray-600'} text-right w-8`}>{suffix}</span>
+          </div>
+        </div>
+        {!disabled && (
           <input
-            type="number"
-            value={value}
-            onChange={(e) => !disabled && setValue(parseFloat(e.target.value) || 0)}
-            onBlur={(e) => {
-              if (!disabled) {
-                const val = parseFloat(e.target.value) || 0;
-                setValue(Math.min(Math.max(val, min), max));
-              }
-            }}
-            disabled={disabled}
-            className={`w-20 text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
-            step={step}
+           type="range"
             min={min}
             max={max}
+            step={step}
+            value={value}
+            onChange={(e) => setValue(parseFloat(e.target.value))}
+            className={`slider ${sliderWidth}`}
+            style={{
+              background: `linear-gradient(to right, #F08070 0%, #F08070 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
+            }}
           />
-          <span className={`text-sm ${disabled ? 'text-gray-400' : 'text-gray-600'} w-8`}>{isPercent ? '%' : unit}</span>
-        </div>
+        )}
       </div>
-      {!disabled && (
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onChange={(e) => setValue(parseFloat(e.target.value))}
-          className="slider w-full"
-          style={{
-            background: `linear-gradient(to right, #F08070 0%, #F08070 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
-          }}
-        />
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -364,7 +372,7 @@ export default function SCFComparison() {
               />
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  SCF Comparison Calculator
+                  SCF comparison calculator
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-600">
                   Traditional SCF vs PrimaTrade
@@ -395,7 +403,7 @@ export default function SCFComparison() {
             >
               <div className="flex items-center gap-2">
                 <Calculator className="w-4 h-4" />
-                Input Parameters
+                Input parameters
               </div>
             </button>
             <button
@@ -408,7 +416,7 @@ export default function SCFComparison() {
             >
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
-                Comparison Results
+                Comparison results
               </div>
             </button>
           </div>
@@ -423,17 +431,17 @@ export default function SCFComparison() {
             <div data-panel="inputs" className="space-y-4 sm:space-y-6">
               {/* Company Profile */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <DollarSign className="w-6 h-6 text-[#F08070]" />
-                  Company Profile
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2">
+               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <DollarSign className="w-6 h-6 text-[#F08070]" />
+                    Company profile
+                  </h2>
+                  <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">Currency</label>
                     <select
                       value={currencySymbol}
                       onChange={(e) => setCurrencySymbol(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
                     >
                       <option value="$">$ USD</option>
                       <option value="€">€ EUR</option>
@@ -441,14 +449,25 @@ export default function SCFComparison() {
                       <option value="¥">¥ JPY</option>
                     </select>
                   </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div>
-                    {renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'All procurement expenditure of all kinds')}
+                   {renderInput('Total procurement spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
+                      formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
+                      parseInput: (input) => {
+                        const numeric = input.replace(/[^0-9.]/g, '');
+                        return parseFloat(numeric);
+                      }
+                    })}
                   </div>
                   <div>
-                    {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'All suppliers across goods + services.')}
+                    {renderInput('Number of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
                   </div>
                   <div>
-                    {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true, false, 'Approximate annual financing rate charged by SCF funders')}
+                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                  </div>
+                  <div>
+                    {renderInput('SCF funding rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
                   </div>
                 </div>
               </div>
@@ -457,49 +476,45 @@ export default function SCFComparison() {
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Users className="w-6 h-6 text-[#F08070]" />
-                  Supplier Tiers Configuration
+                  Supplier tiers configuration
                 </h2>
                 
                 <div className="space-y-6">
                   {/* Tier 1: Existing SCF */}
                   <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF suppliers (or suppliers eligible for a traditional SCF program)</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF suppliers</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
-                        {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '', false, false, 'Current number of suppliers in SCF (typically larger)')}
-                        {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'Approximate spend concentration for the suppliers in SCF')}
+                          <div className="w-full">
+                          {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full')}
+                        </div>
+                        <div className="w-full">
+                          {renderInput('Share of total spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full')}
+                        </div>
                       </div>
                       
                       {/* Three Columns */}
                       <div className="grid md:grid-cols-3 gap-6">
                         {/* Column 1: Participation Rate */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation Rate</h4>
-                          {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true, false, 'Participation rate among suppliers currently in SCF')}
-                          {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true, false, 'Participation rate among suppliers currently in SCF')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
+                          {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true)}
+                          {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true)}
                         </div>
                         
                         {/* Column 2: Early Payment Discount */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <Tooltip text="Discount as % of invoice value">
-                                <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              </Tooltip>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">No discounts in traditional SCF</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 10, 0.1, '', true, false, 'Discount as % of invoice value')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early payment discount</h4>
+                          {renderInput('Traditional SCF', tier1TradDiscountPct, setTier1TradDiscountPct, 0, 5, 0.1, '', true)}
+                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 5, 0.1, '', true)}
                         </div>
                         
                         {/* Column 3: Supplier Savings Rate */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier Savings Rate</h4>
-                          {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
-                          {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier savings rate</h4>
+                          {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true)}
+                          {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true)}
                         </div>
                       </div>
                     </div>
@@ -507,71 +522,61 @@ export default function SCFComparison() {
 
                   {/* Tier 2: Next Level */}
                   <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level ({tier1Suppliers}-{tier2Suppliers}) Suppliers</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level ({tier1Suppliers}-{tier2Suppliers}) suppliers</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
-                        {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'The number of regular suppliers that would benefit from SCF')}
-                        {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'Additional share of spend that should be in SCF')}
+                            <div className="w-full">
+                          {renderInput('Ideal further suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full')}
+                        </div>
+                           <div className="w-full">
+                          {renderInput('Share of total spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full')}
+                        </div>
                       </div>
                       
-                      {/* Three Columns */}
-                      <div className="grid md:grid-cols-3 gap-6">
-                        {/* Column 1: Participation Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation Rate</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <Tooltip text="Participation rate for the next layer of suppliers if offered SCF">
-                                <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              </Tooltip>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                       {/* Three Columns */}
+                        <div className="grid md:grid-cols-3 gap-6">
+                          {/* Column 1: Participation rate */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
+                            <div className="space-y-2">
+                              {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true)}
+                              {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
                             </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
                           </div>
-                          {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true, false, 'Participation rate for the next layer of suppliers if offered SCF')}
-                        </div>
-                        
-                        {/* Column 2: Early Payment Discount */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <Tooltip text="Discount as % of invoice value">
-                                <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              </Tooltip>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
+
+                          {/* Column 2: Early payment discount */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early payment discount</h4>
+                            {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true)}
+                            {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true)}
                           </div>
-                          {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 10, 0.1, '', true, false, 'Discount as % of invoice value')}
-                        </div>
-                        
-                        {/* Column 3: Supplier Savings Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier Savings Rate</h4>
-                          {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
-                          {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
+
+                          {/* Column 3: Supplier Savings Rate */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier savings rate</h4>
+                            {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true)}
+                            {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true)}
+                          </div>
                         </div>
                       </div>
-                    </div>
                   </div>
 
                   {/* Tier 3: Long Tail */}
                   <div className="border-2 border-orange-200 rounded-lg p-4 bg-orange-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 3: Long Tail Suppliers</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 3: Long tail suppliers</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
-                        <div className="space-y-2">
+                            <div className="w-full space-y-2">
                           <div className="flex justify-between items-baseline">
-                            <label className="text-sm font-medium text-gray-700">Number of Suppliers (auto-calc)</label>
+                            <label className="text-sm font-medium text-gray-700">Number of suppliers (auto-calc)</label>
                             <span className="text-sm font-semibold text-gray-900">{formatNumber(tier3Suppliers)}</span>
                           </div>
                         </div>
-                        <div className="space-y-2">
+                          <div className="w-full space-y-2">
                           <div className="flex justify-between items-baseline">
-                            <label className="text-sm font-medium text-gray-700">Share of Total Spend (auto-calc)</label>
+                            <label className="text-sm font-medium text-gray-700">Share of total spend (auto-calc)</label>
                             <span className={`text-sm font-semibold ${tier3SpendPct >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
                               {tier3SpendPct.toFixed(1)}%
                             </span>
@@ -584,52 +589,36 @@ export default function SCFComparison() {
                       
                       {/* Three Columns */}
                       <div className="grid md:grid-cols-3 gap-6 pb-4 border-b border-orange-200">
-                        {/* Column 1: Participation Rate */}
+                        {/* Column 1: Participation rate */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation Rate</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <Tooltip text="Participation rate among the long tail / SMEs">
-                                <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              </Tooltip>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true, false, 'Participation rate among the long tail / SMEs')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation rate</h4>
+                          {renderInput('Traditional SCF', tier3TradPartPct, setTier3TradPartPct, 0, 100, 5, '', true)}
+                          {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true)}
                         </div>
                         
-                        {/* Column 2: Early Payment Discount */}
+                        {/* Column 2: Early payment discount */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <Tooltip text="Discount as % of invoice value">
-                                <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              </Tooltip>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 10, 0.1, '', true, false, 'Discount as % of invoice value')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early payment discount</h4>
+                          {renderInput('Traditional SCF', tier3TradDiscountPct, setTier3TradDiscountPct, 0, 5, 0.1, '', true)}
+                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 5, 0.1, '', true)}
                         </div>
                         
-                        {/* Column 3: Supplier Savings Rate */}
+                        {/* Column 3: Supplier savings rate */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier Savings Rate</h4>
-                          {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
-                          {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true, false, 'Rate used to value supplier benefit of being paid earlier')}
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier savings rate</h4>
+                          {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true)}
+                          {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true)}
                         </div>
                       </div>
                       
-                      {/* Card Programme */}
+                      {/* Card programme */}
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card Programme (Traditional SCF only)</h4>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card programme (potentially replaced with PrimaTrade SCF)</h4>
                         <div className="grid md:grid-cols-4 gap-4">
-                          {renderInput('Card Usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true, false, 'Share of long-tail spend currently paid via cards (typical)')}
-                          {renderInput('Supplier Cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true, false, 'All-in cost to supplier (set as needed)')}
-                          {renderInput('Buyer Rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true, false, 'Buyer rebate that the card issuer provides')}
-                          {renderInput('Free Funding Period (buyer)', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days', false, false, 'Credit period that the buyer enjoys with the card program')}
+                          {renderInput('Card usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true)}
+                          {renderInput('Supplier cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true)}
+                          {renderInput('Buyer rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true)}
+                          {renderInput('Buyer free period', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
                         </div>
                       </div>
                     </div>
@@ -637,28 +626,27 @@ export default function SCFComparison() {
                 </div>
               </div>
 
-              {/* AP Process & Payment Timing */}
+              {/* AP process & payment timing */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Clock className="w-6 h-6 text-[#F08070]" />
-                  AP Process & Payment Timing
+                  AP process & payment timing
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Invoice Processing</h3>
-                    {renderInput('Handover to Delivery (Domestic)', delayDomestic, setDelayDomestic, 0, 30, 1, 'days', false, false, 'Days between despatch and confirmed delivery (so that approval can start)')}
-                    {renderInput('Handover to Delivery (Cross-Border)', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days', false, false, 'More days when goods have to travel further (eg: from Asia)')}
-                    {renderInput('Delivery to Approval', processingTime, setProcessingTime, 0, 30, 1, 'days', false, false, 'How long it takes for invoices to be approved once delivery has happened')}
+                    <h3 className="text-sm font-semibold text-gray-700">Days between handover and accepted delivery</h3>
+                    {renderInput('Domestic / services', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
+                    {renderInput('Cross-border', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Payment Terms</h3>
-                    {renderInput('Standard Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days', false, false, 'Contractual supplier payment terms.')}
-                    {renderInput('Cross-Border Share (excl. services)', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true, false, 'How much of the spend is cross-border with longer shipping times')}
+                    <h3 className="text-sm font-semibold text-gray-700">Term and approval timing</h3>
+                    {renderInput('Delivery to invoice approval', processingTime, setProcessingTime, 0, 30, 1, 'days')}
+                    {renderInput('Standard invoice payment terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">SCF Payment Timing</h3>
-                    {renderInput('Traditional: Days After Approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days', false, false, 'Traditional SCF and cards: supplier receives funds after approval')}
-                    {renderInput('PrimaTrade: Days After Handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days', false, false, 'PrimaTrade: supplier receives funds after handover')}
+                    <h3 className="text-sm font-semibold text-gray-700">SCF payment timing</h3>
+                    {renderInput('Traditional SCF: days after approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days')}
+                    {renderInput('PrimaTrade: days after handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days')}
                   </div>
                 </div>
               </div>
