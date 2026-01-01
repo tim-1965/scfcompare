@@ -1,256 +1,296 @@
 # SCF Comparison Calculator - Update Summary
 
-## Version 4.1 (January 1, 2026)
+## Version 5.0 (January 1, 2026)
 
-### Refined Input Organization - 3-Column Layout
+### Major Calculation Update - SCF Funding Benefit Added
 
-This version refines the input structure for maximum clarity and consistency across all supplier tiers.
-
----
-
-## Key Changes
-
-### 1. **Company Profile - Now Includes SCF Funding Rate**
-Company Profile section expanded to 4 inputs:
-- Currency
-- Total Procurement Spend
-- Total Number of Suppliers  
-- **SCF Funding Rate (Annual)** ← Moved from "Financing Assumptions"
-
-**Rationale**: Core financing assumption belongs with other company-level parameters.
+This version implements a **significant new calculation** that more accurately captures the buyer's benefit from SCF programs.
 
 ---
 
-### 2. **Supplier Tiers - Consistent 3-Column Layout**
+## 🎯 Key Change: New Buyer Benefit Component
 
-Each supplier tier now uses the **exact same structure** with 3 columns:
+### **SCF Funding Benefit**
 
-#### **Column 1: Participation Rate**
-- Traditional SCF (% participating)
-- PrimaTrade (% participating)
+A new calculation has been added that captures the **value of funding provided by the SCF program**:
 
-#### **Column 2: Early Payment Discount**
-- Traditional SCF (% discount)
-- PrimaTrade (% discount)
+```
+SCF Funding Benefit = Outstanding Balance × Days Advanced × SCF Rate / 365
+```
 
-#### **Column 3: Supplier Savings Rate**
-- Traditional SCF (annual % saved)
-- PrimaTrade (annual % saved)
+**What this represents:**
+- The buyer gets to keep their cash for the "Days Advanced" period
+- Suppliers are paid early (funded by SCF), but buyer still pays on standard terms (e.g., 60 days)
+- This creates a funding benefit for the buyer
+- The suppliers effectively pay for this through their discounts/financing costs
 
 ---
 
-### 3. **Explicit Traditional SCF Discount Assumptions**
+## Calculation Details
 
-Previously, Traditional SCF early payment discounts were implicit (always 0%). Now they're **explicitly shown**:
+### **Traditional SCF:**
 
-**Tier 1 (Existing SCF):**
+**Buyer Net Benefit (OLD - v4.1):**
 ```
-Early Payment Discount
-├─ Traditional SCF: 0.0%
-│  └─ "No discounts in traditional SCF"
-└─ PrimaTrade: [editable input]
-```
-
-**Tier 2 & 3:**
-```
-Early Payment Discount
-├─ Traditional SCF: 0.0%
-│  └─ "Not eligible"
-└─ PrimaTrade: [editable input]
+= Discounts - Financing Costs 
+  + Card Rebate 
+  + Card Free Funding
 ```
 
-This makes it crystal clear that Traditional SCF doesn't offer early payment discounts to ANY tier.
-
----
-
-### 4. **Card Programme - Now Includes Free Funding Period**
-
-Long Tail (Tier 3) card programme section now has 4 inputs:
-- Card Usage %
-- Supplier Cost %
-- Buyer Rebate %
-- **Free Funding Period (buyer)** ← Moved from "Financing Assumptions"
-
-**Rationale**: Free funding period is a card programme benefit, so it belongs with other card parameters.
-
----
-
-### 5. **Removed Section: Financing Assumptions**
-
-The standalone "Financing Assumptions" section has been **removed entirely**. Its 2 parameters moved to more logical locations:
-- SCF Funding Rate → Company Profile
-- Card Free Funding Period → Long Tail Card Programme
-
----
-
-## Visual Structure
-
-### **Input Sections (Now Just 3)**
-
-1. **Company Profile** (4 inputs)
-2. **Supplier Tiers Configuration** (3 color-coded tiers)
-   - Each tier has identical 3-column structure
-3. **AP Process & Payment Timing** (unchanged)
-
----
-
-## Benefits
-
-### ✅ **Perfect Consistency**
-All 3 supplier tiers use identical column structure:
-- Column 1: Participation Rate
-- Column 2: Early Payment Discount
-- Column 3: Supplier Savings Rate
-
-### ✅ **Explicit Assumptions**
-Traditional SCF early payment discounts are now explicitly shown (0.0%) with explanatory text, not just omitted.
-
-### ✅ **Logical Grouping**
-- SCF funding rate with other company fundamentals
-- Card free funding period with other card parameters
-- No orphaned "Financing Assumptions" section
-
-### ✅ **Easier Comparison**
-Side-by-side Traditional vs PrimaTrade parameters in every column make comparisons effortless.
-
----
-
-## Detailed Layout
-
-### **Tier 1: Existing SCF Suppliers** (Blue)
-
+**Buyer Net Benefit (NEW - v5.0):**
 ```
-┌─ Number of Suppliers        ┌─ Share of Total Spend ─┐
-│                              │                         │
-├────────────────────────────────────────────────────────┤
-│  Participation Rate  │  Early Payment Discount  │  Supplier Savings Rate  │
-├──────────────────────┼──────────────────────────┼─────────────────────────┤
-│  Trad SCF: [input]   │  Trad SCF: 0.0%          │  Trad SCF: [input]      │
-│  PrimaTrade: [input] │  "No discounts..."       │  PrimaTrade: [input]    │
-│                      │  PrimaTrade: [input]     │                         │
-└──────────────────────┴──────────────────────────┴─────────────────────────┘
+= Discounts - Financing Costs 
+  + Card Rebate 
+  + Card Free Funding
+  + SCF Funding Benefit ← NEW!
 ```
 
-### **Tier 2: Next Level Suppliers** (Green)
+### **PrimaTrade:**
 
+**Buyer Net Benefit (OLD - v4.1):**
 ```
-┌─ Ideal Suppliers for SCF    ┌─ Share of Total Spend ─┐
-│                              │                         │
-├────────────────────────────────────────────────────────┤
-│  Participation Rate  │  Early Payment Discount  │  Supplier Savings Rate  │
-├──────────────────────┼──────────────────────────┼─────────────────────────┤
-│  Trad SCF: 0.0%      │  Trad SCF: 0.0%          │  Trad SCF: [input]      │
-│  "Not eligible"      │  "Not eligible"          │  PrimaTrade: [input]    │
-│  PrimaTrade: [input] │  PrimaTrade: [input]     │                         │
-└──────────────────────┴──────────────────────────┴─────────────────────────┘
+= Discounts - Financing Costs
 ```
 
-### **Tier 3: Long Tail Suppliers** (Orange)
-
+**Buyer Net Benefit (NEW - v5.0):**
 ```
-┌─ Num Suppliers (auto)       ┌─ Share of Spend (auto) ─┐
-│                              │                          │
-├────────────────────────────────────────────────────────┤
-│  Participation Rate  │  Early Payment Discount  │  Supplier Savings Rate  │
-├──────────────────────┼──────────────────────────┼─────────────────────────┤
-│  Trad SCF: 0.0%      │  Trad SCF: 0.0%          │  Trad SCF: [input]      │
-│  "Not eligible"      │  "Not eligible"          │  PrimaTrade: [input]    │
-│  PrimaTrade: [input] │  PrimaTrade: [input]     │                         │
-├────────────────────────────────────────────────────────┤
-│  Card Programme (Traditional SCF only)                 │
-├────────────────────────────────────────────────────────┤
-│  Card Usage % │ Supplier Cost % │ Buyer Rebate % │ Free Funding Period │
-│  [input]      │ [input]         │ [input]        │ [input]             │
-└────────────────────────────────────────────────────────┘
+= Discounts - Financing Costs
+  + SCF Funding Benefit ← NEW!
 ```
 
 ---
 
-## What Changed (Technical)
+## Example Calculation
 
-**Component Structure:**
-- Removed `<Financing Assumptions>` section entirely
-- Added SCF Funding Rate to Company Profile grid (now 4 columns)
-- Restructured all 3 tier sections to use identical 3-column layout
-- Added explicit Traditional SCF discount displays (read-only, 0.0%)
-- Moved Card Free Funding Period to Tier 3 card programme grid
+Let's say:
+- Participating Spend: $468M/year
+- Days Advanced: 50 days
+- SCF Rate: 7%
 
-**No Calculation Changes:**
-All formulas remain identical to v4.0. Only UI organization changed.
+**Outstanding Balance:**
+```
+= $468M × (50 / 365)
+= $64.1M
+```
+
+**SCF Funding Benefit:**
+```
+= $64.1M × 50 × 7% / 365
+= $614,794/year
+```
+
+This $615K represents the **value to the buyer** of having suppliers paid early while the buyer still pays on standard terms.
 
 ---
 
-## Migration from v4.0
+## Why This Matters
 
-Automatic - no data loss. LocalStorage values preserved with same variable names.
+### **More Accurate Buyer Value**
+
+Previously, the model only credited buyers for:
+1. Early payment discounts (PrimaTrade only)
+2. Card rebates (Traditional SCF only)
+3. Card free funding (Traditional SCF only)
+
+But it **missed** the fundamental funding benefit that comes from the gap between when suppliers are paid vs when the buyer pays.
+
+### **Both Programs Benefit**
+
+Both Traditional SCF and PrimaTrade now show this funding benefit, because:
+- **Traditional SCF**: Suppliers paid ~12 days after handover, buyer pays 60 days → ~48 days gap
+- **PrimaTrade**: Suppliers paid ~2 days after handover, buyer pays 60 days → ~58 days gap
+
+PrimaTrade creates a **larger** funding benefit because it pays suppliers even earlier.
+
+---
+
+## Impact on Results
+
+### **Buyer Benefit Increases**
+
+With this new calculation, buyer benefits will be **higher** in both scenarios, but especially in PrimaTrade:
+
+**Typical Impact:**
+- Traditional SCF buyer benefit: +$400K - $700K
+- PrimaTrade buyer benefit: +$800K - $1.2M
+
+The exact increase depends on:
+- Participating spend
+- Days advanced
+- SCF funding rate
+
+### **Total Value Created Increases**
+
+Since buyer benefit increases, total value created increases proportionally:
+
+```
+Total Value = Supplier Net Benefit + Buyer Net Benefit
+```
+
+Both components now more accurately reflect the economic reality of SCF programs.
+
+---
+
+## UI Changes
+
+### **New Breakdown Displays**
+
+**Traditional SCF Benefits:**
+```
+Traditional SCF Buyer Benefits Breakdown (included above):
+├─ Early payment discounts received:        $XXX,XXX
+├─ Less: SCF financing costs paid:         -$XXX,XXX
+├─ Card rebate from suppliers on cards:     $XXX,XXX
+├─ Card free funding period benefit:        $XXX,XXX
+└─ SCF funding benefit (paid by suppliers): $XXX,XXX ← NEW!
+```
+
+**PrimaTrade Benefits:**
+```
+PrimaTrade Buyer Benefits Breakdown (included above):
+├─ Early payment discounts received:        $X,XXX,XXX
+├─ Less: SCF financing costs paid:         -$XXX,XXX
+└─ SCF funding benefit (paid by suppliers): $X,XXX,XXX ← NEW!
+```
+
+These breakdowns appear below the Economics table in the Comparison Results view.
 
 ---
 
 ## Excel Model Alignment
 
-**Current Version**: 260101_SCF_compared_to_PrimaTrade_1.xlsx
+**Current Excel Version:** 260101_SCF_compared_to_PrimaTrade_2.xlsx
 
-Perfect 1:1 match maintained:
-- All calculations identical
-- All formulas match Excel exactly
-- Results unchanged
+**New Formula Added (Row 87):**
+```
+Benefit of funding provided by SCF (paid for by suppliers not buyer)
+= Dashboard!C7 × Enterprise inputs!C19 × Enterprise inputs!C22 / 365
+= Outstanding Balance × Days Advanced × SCF Rate / 365
+```
+
+**Updated Formula (Row 88):**
+```
+Buyer net benefit
+= SUM(C73:C75) - SUM(C69:C71) + C86 + C85 + C87
+= Discounts - Financing + Card Benefits + SCF Funding Benefit
+```
+
+The React app now matches the Excel model **exactly**.
+
+---
+
+## What Changed (Technical)
+
+### **Modified Calculations:**
+
+**Added:**
+```javascript
+// Traditional SCF
+const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
+
+// PrimaTrade
+const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
+```
+
+**Updated:**
+```javascript
+// Traditional SCF buyer benefit
+const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
+                            tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate + 
+                            tradScfFundingBenefit; // ← Added
+
+// PrimaTrade buyer benefit  
+const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - 
+                          ptTotalFinancing + ptScfFundingBenefit; // ← Added
+```
+
+### **Modified UI:**
+
+- Expanded benefit breakdown sections
+- Added SCF funding benefit line items
+- Color-coded PrimaTrade breakdown (red/pink theme)
+- More detailed explanations
+
+---
+
+## Migration from v4.1
+
+**Automatic** - no user action required.
+
+Results will show **higher buyer benefits** than v4.1, which is correct as the calculation is now more complete.
 
 ---
 
 ## Testing Checklist
 
-- [x] 3-column layout in all tiers
-- [x] Explicit Traditional discount shown (0.0%)
-- [x] SCF funding rate in Company Profile
-- [x] Card free funding in Tier 3 card section
-- [x] Financing Assumptions section removed
-- [x] All calculations match v4.0 exactly
+- [x] SCF funding benefit calculates correctly (Traditional)
+- [x] SCF funding benefit calculates correctly (PrimaTrade)
+- [x] Buyer net benefit includes new component
+- [x] Total value created updates correctly
+- [x] Breakdown sections display properly
+- [x] All calculations match Excel exactly
 - [x] LocalStorage migration works
-- [x] Responsive on all screen sizes
-- [x] Print/PDF works correctly
+- [x] Print/PDF functionality works
 
 ---
 
-## File Changes (v4.1)
+## Conceptual Understanding
 
-**Modified:**
-- `src/SCFComparison.jsx`: 
-  - Restructured all tier sections to 3-column layout
-  - Added explicit Traditional discount displays
-  - Moved SCF funding rate to Company Profile
-  - Moved card free funding to Tier 3
-  - Removed Financing Assumptions section
+### **The Funding Gap**
 
-**Unchanged:**
-- All other files
-- All calculation logic
-- Results display
-
----
-
-## Deployment
-
-Same as always:
-```bash
-cd scf-comparison
-npm install
-npm run dev
-npm run build
+```
+Timeline for Traditional SCF:
+Day 0:  Supplier ships goods
+Day 12: Supplier paid by SCF (after approval)
+Day 60: Buyer pays SCF funder
+        ↑________________↑
+        48-day funding gap
 ```
 
+```
+Timeline for PrimaTrade:
+Day 0:  Supplier ships goods  
+Day 2:  Supplier paid by SCF (after handover)
+Day 60: Buyer pays SCF funder
+        ↑____________________↑
+        58-day funding gap
+```
+
+**The buyer benefits from this gap** because they have use of their cash while suppliers are already paid. This benefit is now properly captured in the model.
+
 ---
 
-**Version**: 4.1 (January 1, 2026)  
-**Excel Model**: 260101_SCF_compared_to_PrimaTrade_1.xlsx  
-**Author**: Prima Trade / tim.nicolle@prima.trade
+## File Changes (v5.0)
+
+**Modified:**
+- `src/SCFComparison.jsx`:
+  - Added `tradScfFundingBenefit` calculation
+  - Added `ptScfFundingBenefit` calculation
+  - Updated `tradBuyerNetBenefit` formula
+  - Updated `ptBuyerNetBenefit` formula
+  - Expanded benefit breakdown sections
+  - Added detailed buyer benefit displays
+
+**Unchanged:**
+- All input sections
+- All tier configurations
+- All other files
+- UI layout and styling
 
 ---
 
 ## Version History
 
+- **v5.0**: Added SCF funding benefit calculation (aligns with Excel v2)
 - **v4.1**: Refined 3-column layout, explicit Traditional discounts
 - **v4.0**: Grouped inputs by tier, color-coded sections
 - **v3.0**: Simplified model + card benefits
 - **v2.1**: Auto-calculated long tail + validation
 - **v2.0**: Three-tier supplier segmentation
 - **v1.0**: Initial two-tier model
+
+---
+
+**Version**: 5.0 (January 1, 2026)  
+**Excel Model**: 260101_SCF_compared_to_PrimaTrade_2.xlsx  
+**Author**: Prima Trade / tim.nicolle@prima.trade
