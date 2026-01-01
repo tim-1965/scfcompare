@@ -1,287 +1,319 @@
 # SCF Comparison Calculator - Update Summary
 
-## Version 5.0 (January 1, 2026)
+## Version 5.1 (January 1, 2026)
 
-### Major Calculation Update - SCF Funding Benefit Added
+### Tooltips Added - Enhanced User Guidance
 
-This version implements a **significant new calculation** that more accurately captures the buyer's benefit from SCF programs.
-
----
-
-## 🎯 Key Change: New Buyer Benefit Component
-
-### **SCF Funding Benefit**
-
-A new calculation has been added that captures the **value of funding provided by the SCF program**:
-
-```
-SCF Funding Benefit = Outstanding Balance × Days Advanced × SCF Rate / 365
-```
-
-**What this represents:**
-- The buyer gets to keep their cash for the "Days Advanced" period
-- Suppliers are paid early (funded by SCF), but buyer still pays on standard terms (e.g., 60 days)
-- This creates a funding benefit for the buyer
-- The suppliers effectively pay for this through their discounts/financing costs
+This version adds comprehensive tooltips to all input fields in Panel 1, providing contextual help directly from the Excel model's notes.
 
 ---
 
-## Calculation Details
+## 🎯 New Feature: Interactive Tooltips
 
-### **Traditional SCF:**
+### **What's New**
 
-**Buyer Net Benefit (OLD - v4.1):**
-```
-= Discounts - Financing Costs 
-  + Card Rebate 
-  + Card Free Funding
-```
+Every input field in Panel 1 now has a small **ℹ️ icon** that shows helpful context when you hover over it.
 
-**Buyer Net Benefit (NEW - v5.0):**
+**Example:**
 ```
-= Discounts - Financing Costs 
-  + Card Rebate 
-  + Card Free Funding
-  + SCF Funding Benefit ← NEW!
+Total Procurement Spend (ℹ️)
+├─ Hover over icon
+└─ Shows: "All procurement expenditure of all kinds"
 ```
 
-### **PrimaTrade:**
+### **Where Tooltips Appear**
 
-**Buyer Net Benefit (OLD - v4.1):**
-```
-= Discounts - Financing Costs
+Tooltips are added to **all input labels** in Panel 1 only:
+
+1. **Company Profile**
+   - Total Procurement Spend
+   - Total Number of Suppliers
+   - SCF Funding Rate
+
+2. **Supplier Tiers (All 3 Tiers)**
+   - Number of Suppliers / Share of Spend
+   - Participation Rates (Traditional & PrimaTrade)
+   - Early Payment Discounts
+   - Supplier Savings Rates
+
+3. **Card Programme (Tier 3)**
+   - Card Usage %
+   - Supplier Cost %
+   - Buyer Rebate %
+   - Free Funding Period
+
+4. **AP Process & Payment Timing**
+   - All invoice processing delays
+   - Payment terms
+   - SCF payment timing (Traditional & PrimaTrade)
+
+---
+
+## 💡 Tooltip Content
+
+All tooltip text is extracted **directly from the Excel model** (`260101_SCF_compared_to_PrimaTrade_2.xlsx`, Column F notes).
+
+### **Example Tooltips:**
+
+**Company Profile:**
+- "All procurement expenditure of all kinds"
+- "All suppliers across goods + services"
+- "Approximate annual financing rate charged by SCF funders"
+
+**Tier 1 - Existing SCF:**
+- "Current number of suppliers in SCF (typically larger)"
+- "Approximate spend concentration for the suppliers in SCF"
+- "Participation rate among suppliers currently in SCF"
+- "Discount as % of invoice value"
+- "Rate used to value supplier benefit of being paid earlier"
+
+**Tier 2 - Next Level:**
+- "The number of regular suppliers that would benefit from SCF"
+- "Additional share of spend that should be in SCF"
+- "Participation rate for the next layer of suppliers if offered SCF"
+
+**Tier 3 - Long Tail:**
+- "Participation rate among the long tail / SMEs"
+
+**Card Programme:**
+- "Share of long-tail spend currently paid via cards (typical)"
+- "All-in cost to supplier (set as needed)"
+- "Buyer rebate that the card issuer provides"
+- "Credit period that the buyer enjoys with the card program"
+
+**AP Process:**
+- "Days between despatch and confirmed delivery (so that approval can start)"
+- "More days when goods have to travel further (eg: from Asia)"
+- "How long it takes for invoices to be approved once delivery has happened"
+- "Contractual supplier payment terms"
+- "How much of the spend is cross-border with longer shipping times"
+- "Traditional SCF and cards: supplier receives funds after approval"
+- "PrimaTrade: supplier receives funds after handover"
+
+---
+
+## 🎨 UI Design
+
+### **Tooltip Component**
+
+```jsx
+<Tooltip text="Helpful explanation here">
+  <label>Input Label</label>
+</Tooltip>
 ```
 
-**Buyer Net Benefit (NEW - v5.0):**
+**Features:**
+- ℹ️ icon appears next to label
+- Hover/focus to show tooltip
+- Dark gray background with white text
+- 256px width for readability
+- Auto-positioning (appears below label)
+- Arrow pointer for visual connection
+- `print:hidden` class (doesn't appear in PDFs)
+
+**Visual Example:**
 ```
-= Discounts - Financing Costs
-  + SCF Funding Benefit ← NEW!
+┌─────────────────────────────┐
+│ Total Procurement Spend (ℹ️) │
+└─────────────────────────────┘
+         │
+         ▼
+    ┌──────────────────────────────────────┐
+    │ All procurement expenditure of all   │
+    │ kinds                                 │
+    └──────────────────────────────────────┘
 ```
 
 ---
 
-## Example Calculation
+## 🔧 Technical Implementation
 
-Let's say:
-- Participating Spend: $468M/year
-- Days Advanced: 50 days
-- SCF Rate: 7%
+### **New Component**
 
-**Outstanding Balance:**
-```
-= $468M × (50 / 365)
-= $64.1M
-```
+Added `Tooltip` component to `SCFComparison.jsx`:
 
-**SCF Funding Benefit:**
-```
-= $64.1M × 50 × 7% / 365
-= $614,794/year
-```
-
-This $615K represents the **value to the buyer** of having suppliers paid early while the buyer still pays on standard terms.
-
----
-
-## Why This Matters
-
-### **More Accurate Buyer Value**
-
-Previously, the model only credited buyers for:
-1. Early payment discounts (PrimaTrade only)
-2. Card rebates (Traditional SCF only)
-3. Card free funding (Traditional SCF only)
-
-But it **missed** the fundamental funding benefit that comes from the gap between when suppliers are paid vs when the buyer pays.
-
-### **Both Programs Benefit**
-
-Both Traditional SCF and PrimaTrade now show this funding benefit, because:
-- **Traditional SCF**: Suppliers paid ~12 days after handover, buyer pays 60 days → ~48 days gap
-- **PrimaTrade**: Suppliers paid ~2 days after handover, buyer pays 60 days → ~58 days gap
-
-PrimaTrade creates a **larger** funding benefit because it pays suppliers even earlier.
-
----
-
-## Impact on Results
-
-### **Buyer Benefit Increases**
-
-With this new calculation, buyer benefits will be **higher** in both scenarios, but especially in PrimaTrade:
-
-**Typical Impact:**
-- Traditional SCF buyer benefit: +$400K - $700K
-- PrimaTrade buyer benefit: +$800K - $1.2M
-
-The exact increase depends on:
-- Participating spend
-- Days advanced
-- SCF funding rate
-
-### **Total Value Created Increases**
-
-Since buyer benefit increases, total value created increases proportionally:
-
-```
-Total Value = Supplier Net Benefit + Buyer Net Benefit
-```
-
-Both components now more accurately reflect the economic reality of SCF programs.
-
----
-
-## UI Changes
-
-### **New Breakdown Displays**
-
-**Traditional SCF Benefits:**
-```
-Traditional SCF Buyer Benefits Breakdown (included above):
-├─ Early payment discounts received:        $XXX,XXX
-├─ Less: SCF financing costs paid:         -$XXX,XXX
-├─ Card rebate from suppliers on cards:     $XXX,XXX
-├─ Card free funding period benefit:        $XXX,XXX
-└─ SCF funding benefit (paid by suppliers): $XXX,XXX ← NEW!
-```
-
-**PrimaTrade Benefits:**
-```
-PrimaTrade Buyer Benefits Breakdown (included above):
-├─ Early payment discounts received:        $X,XXX,XXX
-├─ Less: SCF financing costs paid:         -$XXX,XXX
-└─ SCF funding benefit (paid by suppliers): $X,XXX,XXX ← NEW!
-```
-
-These breakdowns appear below the Economics table in the Comparison Results view.
-
----
-
-## Excel Model Alignment
-
-**Current Excel Version:** 260101_SCF_compared_to_PrimaTrade_2.xlsx
-
-**New Formula Added (Row 87):**
-```
-Benefit of funding provided by SCF (paid for by suppliers not buyer)
-= Dashboard!C7 × Enterprise inputs!C19 × Enterprise inputs!C22 / 365
-= Outstanding Balance × Days Advanced × SCF Rate / 365
-```
-
-**Updated Formula (Row 88):**
-```
-Buyer net benefit
-= SUM(C73:C75) - SUM(C69:C71) + C86 + C85 + C87
-= Discounts - Financing + Card Benefits + SCF Funding Benefit
-```
-
-The React app now matches the Excel model **exactly**.
-
----
-
-## What Changed (Technical)
-
-### **Modified Calculations:**
-
-**Added:**
 ```javascript
-// Traditional SCF
-const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
+const Tooltip = ({ text, children }) => {
+  const [isVisible, setIsVisible] = useState(false);
 
-// PrimaTrade
-const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
+  return (
+    <div className="relative inline-flex items-center">
+      {children}
+      <button
+        type="button"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onFocus={() => setIsVisible(true)}
+        onBlur={() => setIsVisible(false)}
+        className="ml-1.5 text-gray-400 hover:text-gray-600 transition-colors print:hidden"
+      >
+        <Info className="w-3.5 h-3.5" />
+      </button>
+      {isVisible && (
+        <div className="absolute left-0 top-full mt-1 z-50 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg">
+          {text}
+        </div>
+      )}
+    </div>
+  );
+};
 ```
 
-**Updated:**
+### **Updated renderInput Function**
+
+Added optional `tooltip` parameter:
+
 ```javascript
-// Traditional SCF buyer benefit
-const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
-                            tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate + 
-                            tradScfFundingBenefit; // ← Added
-
-// PrimaTrade buyer benefit  
-const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - 
-                          ptTotalFinancing + ptScfFundingBenefit; // ← Added
+const renderInput = (
+  label, 
+  value, 
+  setValue, 
+  min, 
+  max, 
+  step, 
+  unit = '', 
+  isPercent = false, 
+  disabled = false, 
+  tooltip = null  // ← NEW!
+) => {
+  // If tooltip provided, wrap label in Tooltip component
+  // Otherwise, render plain label
+}
 ```
 
-### **Modified UI:**
+### **Updated All Input Calls**
 
-- Expanded benefit breakdown sections
-- Added SCF funding benefit line items
-- Color-coded PrimaTrade breakdown (red/pink theme)
-- More detailed explanations
+Every `renderInput` call now includes tooltip text:
+
+```javascript
+// Before (v5.0)
+{renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM')}
+
+// After (v5.1)
+{renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'All procurement expenditure of all kinds')}
+```
 
 ---
 
-## Migration from v4.1
-
-**Automatic** - no user action required.
-
-Results will show **higher buyer benefits** than v4.1, which is correct as the calculation is now more complete.
-
----
-
-## Testing Checklist
-
-- [x] SCF funding benefit calculates correctly (Traditional)
-- [x] SCF funding benefit calculates correctly (PrimaTrade)
-- [x] Buyer net benefit includes new component
-- [x] Total value created updates correctly
-- [x] Breakdown sections display properly
-- [x] All calculations match Excel exactly
-- [x] LocalStorage migration works
-- [x] Print/PDF functionality works
-
----
-
-## Conceptual Understanding
-
-### **The Funding Gap**
-
-```
-Timeline for Traditional SCF:
-Day 0:  Supplier ships goods
-Day 12: Supplier paid by SCF (after approval)
-Day 60: Buyer pays SCF funder
-        ↑________________↑
-        48-day funding gap
-```
-
-```
-Timeline for PrimaTrade:
-Day 0:  Supplier ships goods  
-Day 2:  Supplier paid by SCF (after handover)
-Day 60: Buyer pays SCF funder
-        ↑____________________↑
-        58-day funding gap
-```
-
-**The buyer benefits from this gap** because they have use of their cash while suppliers are already paid. This benefit is now properly captured in the model.
-
----
-
-## File Changes (v5.0)
+## 📦 What Changed (Files)
 
 **Modified:**
 - `src/SCFComparison.jsx`:
-  - Added `tradScfFundingBenefit` calculation
-  - Added `ptScfFundingBenefit` calculation
-  - Updated `tradBuyerNetBenefit` formula
-  - Updated `ptBuyerNetBenefit` formula
-  - Expanded benefit breakdown sections
-  - Added detailed buyer benefit displays
+  - Added `Info` icon import from lucide-react
+  - Added `Tooltip` component
+  - Updated `renderInput` function signature
+  - Added tooltip parameter to all `renderInput` calls
+  - Added tooltips to static labels (Traditional discount 0.0% labels in Tiers 1, 2, 3)
 
 **Unchanged:**
-- All input sections
-- All tier configurations
+- All calculations
 - All other files
-- UI layout and styling
+- UI layout (except tooltip icons)
+- Print/PDF functionality
+
+---
+
+## ✅ Benefits
+
+### **1. Self-Documenting Interface**
+Users can understand each input without referring to external documentation.
+
+### **2. Direct from Source**
+All tooltip text comes from the Excel model, ensuring consistency.
+
+### **3. Non-Intrusive**
+Tooltips only appear on hover/focus - they don't clutter the interface.
+
+### **4. Print-Friendly**
+Tooltips are hidden in PDFs (via `print:hidden` class).
+
+### **5. Accessible**
+Works with both mouse (hover) and keyboard (focus).
+
+---
+
+## 🔍 Tooltip Coverage
+
+**Total Tooltips Added:** ~25 input fields
+
+**Coverage by Section:**
+- Company Profile: 3 tooltips
+- Tier 1 (Existing SCF): 7 tooltips
+- Tier 2 (Next Level): 7 tooltips
+- Tier 3 (Long Tail): 7 tooltips
+- Card Programme: 4 tooltips
+- AP Process & Timing: 5 tooltips
+
+---
+
+## 📝 Example Usage
+
+**User Action:**
+1. Hovers over ℹ️ icon next to "Card Usage %"
+2. Sees tooltip: "Share of long-tail spend currently paid via cards (typical)"
+3. Understands what the input represents
+4. Enters appropriate value
+
+**Benefits:**
+- No need to refer to documentation
+- Clear context for each parameter
+- Reduces user errors
+- Improves confidence in inputs
+
+---
+
+## 🎯 Future Enhancements (Not in v5.1)
+
+Potential improvements for future versions:
+- Click-to-pin tooltips (stay open until clicked again)
+- Expand/collapse all tooltips button
+- Tooltip search/filter
+- Mobile-optimized tooltips (tap instead of hover)
+
+---
+
+## 📊 Excel Model Alignment
+
+**Current Excel Version:** 260101_SCF_compared_to_PrimaTrade_2.xlsx
+
+All tooltip text extracted from Column F (Notes) of "Enterprise inputs" sheet:
+- Row 3-9: Company profile notes
+- Row 12-17: AP timing notes
+- Row 22-33: Financing & participation notes
+- Row 36-39: Card programme notes
+
+Perfect 1:1 alignment maintained.
+
+---
+
+## 🧪 Testing Checklist
+
+- [x] Tooltips appear on hover
+- [x] Tooltips appear on focus (keyboard navigation)
+- [x] Tooltips disappear on mouse leave
+- [x] Tooltips disappear on blur
+- [x] Tooltip text matches Excel notes
+- [x] All input fields have tooltips
+- [x] Tooltips don't break layout
+- [x] Tooltips hidden in print/PDF
+- [x] Tooltip z-index works (appears above content)
+- [x] Tooltip width appropriate (64 = 256px)
+- [x] Mobile compatibility maintained
+
+---
+
+## 🚀 Migration from v5.0
+
+**Automatic** - no user action required.
+
+Users will see new ℹ️ icons next to all input labels. Hovering reveals helpful context.
 
 ---
 
 ## Version History
 
-- **v5.0**: Added SCF funding benefit calculation (aligns with Excel v2)
+- **v5.1**: Added tooltips to all input fields
+- **v5.0**: Added SCF funding benefit calculation
 - **v4.1**: Refined 3-column layout, explicit Traditional discounts
 - **v4.0**: Grouped inputs by tier, color-coded sections
 - **v3.0**: Simplified model + card benefits
@@ -291,6 +323,6 @@ Day 60: Buyer pays SCF funder
 
 ---
 
-**Version**: 5.0 (January 1, 2026)  
+**Version**: 5.1 (January 1, 2026)  
 **Excel Model**: 260101_SCF_compared_to_PrimaTrade_2.xlsx  
 **Author**: Prima Trade / tim.nicolle@prima.trade
