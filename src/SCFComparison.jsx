@@ -399,22 +399,26 @@ export default function SCFComparison() {
     {
       label: 'Programme size',
       trad: formatCurrency(tradOutstandingBalance),
-      pt: formatCurrency(ptOutstandingBalance)
+      pt: formatCurrency(ptOutstandingBalance),
+      tooltip: "The funding program is bigger with more suppliers and with longer funding periods"
     },
     {
       label: 'Number of suppliers eligible',
       trad: formatNumber(tier1Suppliers, 0),
-      pt: formatNumber(totalSuppliers, 0)
+      pt: formatNumber(totalSuppliers, 0),
+      tooltip: "The number of suppliers involved is higher"
     },
     {
       label: 'Active number of suppliers using SCF',
       trad: formatNumber(tradTotalActive, 0),
-      pt: formatNumber(ptTotalActive, 0)
+      pt: formatNumber(ptTotalActive, 0),
+      tooltip: "Smaller suppliers will more actively use the SCF program"
     },
     {
       label: 'Total economic value of the SCF program',
       trad: formatCurrency(tradTotalValue),
-      pt: formatCurrency(ptTotalValue)
+      pt: formatCurrency(ptTotalValue),
+      tooltip: "Total value created by the program is bigger as it reaches those who need it"
     }
   ];
 
@@ -462,7 +466,7 @@ export default function SCFComparison() {
               {label}
             </label>
           )}
-          <div className="flex items-baseline gap-1 justify-end text-right w-[160px] shrink-0 ml-auto">
+          <div className="flex items-baseline gap-1 justify-end text-right w-[110px] shrink-0 ml-auto">
             <input
               type={formatDisplay ? 'text' : 'number'}
               inputMode="decimal"
@@ -685,7 +689,7 @@ export default function SCFComparison() {
                       </div>
                       
                       {/* Three Columns */}
-                      <div className="grid md:grid-cols-3 gap-6">
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Column 1: Participation Rate */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
@@ -741,7 +745,7 @@ export default function SCFComparison() {
                       </div>
                       
                        {/* Three Columns */}
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {/* Column 1: Participation rate */}
                           <div className="space-y-3">
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
@@ -806,7 +810,7 @@ export default function SCFComparison() {
                       </div>
                       
                       {/* Three Columns */}
-                      <div className="grid md:grid-cols-3 gap-6 pb-4 border-b border-orange-200">
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 border-b border-orange-200">
                         {/* Column 1: Participation rate */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation rate</h4>
@@ -907,6 +911,7 @@ export default function SCFComparison() {
           {activeView === 'comparison' && (
             <div data-panel="comparison" className="space-y-6">
               {/* Highlights Box */}
+                 <div className="max-w-5xl mx-auto">
                  <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -934,7 +939,15 @@ export default function SCFComparison() {
                             key={stat.label}
                             className={`${index === highlightStats.length - 1 ? 'border-b-2 border-gray-200' : 'border-b border-gray-100'} bg-white hover:bg-[#FFF6F2] transition-colors`}
                           >
-                            <td className="py-3 px-4 text-sm font-semibold text-gray-900">{stat.label}</td>
+                            <td className="py-3 px-4 text-sm font-semibold text-gray-900">
+                              {stat.tooltip ? (
+                                <Tooltip text={stat.tooltip}>
+                                  <span>{stat.label}</span>
+                                </Tooltip>
+                              ) : (
+                                <span>{stat.label}</span>
+                              )}
+                            </td>
                             <td className="py-3 px-4 text-sm text-right font-bold text-gray-800">{stat.trad}</td>
                             <td className="py-3 px-4 text-sm text-right font-bold text-[#D64933]">{stat.pt}</td>
                           </tr>
@@ -943,32 +956,56 @@ export default function SCFComparison() {
                           <td colSpan="3" className="py-3 px-3 text-sm font-bold text-gray-900 bg-gray-50">Breakdown of economic value</td>
                         </tr>
                         <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">Benefit of early payments to suppliers</td>
+                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
+                            <Tooltip text="Supplier benefit as a result of early payments">
+                              <span>Benefit of early payments to suppliers</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradSupplierTimeValue)}</td>
                           <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptSupplierTimeValue)}</td>
                         </tr>
                         <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">Cost of early payments (incl card) to suppliers</td>
+                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
+                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount)">
+                              <span>Cost of early payments (incl card) to suppliers</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradTotalCosts)}</td>
                           <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptTotalCosts)}</td>
                         </tr>
                         <tr className="border-b-2 border-gray-300 bg-blue-50">
-                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">Net supplier benefit</td>
+                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">
+                            <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost">
+                              <span>Net supplier benefit</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right font-bold">{formatCurrency(tradSupplierNetBenefit)}</td>
                           <td className="py-2 px-3 text-sm text-right font-bold text-[#D64933]">{formatCurrency(ptSupplierNetBenefit)}</td>
                         </tr>
                         <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">Benefit of funding provided to the buyer</td>
+                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
+                            <Tooltip text="Buyer gets funding as it still pays invoices on 60 days even though suppliers are paid earlier">
+                              <span>Benefit of funding provided to the buyer</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardFreeFunding + tradScfFundingBenefit)}</td>
                           <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptScfFundingBenefit)}</td>
                         </tr>
                         <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">Benefit of discounts and rebates earned by the buyer</td>
+                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                              <span>Benefit of discounts and rebates earned by the buyer</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardRebate + tradDiscountsPassedThrough)}</td>
                           <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptDiscountsPassedThrough)}</td>
                         </tr>
                         <tr className="bg-green-50">
-                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">Net buyer benefit</td>
+                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                              <span>Net buyer benefit</span>
+                            </Tooltip>
+                          </td>
                           <td className="py-2 px-3 text-sm text-right font-bold">{formatCurrency(tradBuyerNetBenefit)}</td>
                           <td className="py-2 px-3 text-sm text-right font-bold text-[#D64933]">{formatCurrency(ptBuyerNetBenefit)}</td>
                         </tr>
@@ -977,6 +1014,7 @@ export default function SCFComparison() {
                   </div>
 
                 </div>
+              </div>
               </div>
 
               {/* Economics (annualised) */}
@@ -1205,18 +1243,21 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={spendTier1}
                         ptValue={spendTier1}
+                        note="Total spend × tier 1 share"
                       />
                       <TableRow 
                         label={`Spend: Tier 2 suppliers`}
                         currencySymbol={currencySymbol}
                         tradValue={spendTier2}
                         ptValue={spendTier2}
+                        note="Total spend × tier 2 share"
                       />
                       <TableRow 
                         label="Spend: Long tail suppliers"
                         currencySymbol={currencySymbol}
                         tradValue={spendTier3}
                         ptValue={spendTier3}
+                        note="Remaining total spend"
                       />
                       <TableRow 
                         label="% Tier 1 participating"
