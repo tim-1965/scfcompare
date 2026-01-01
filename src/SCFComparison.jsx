@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, DollarSign, BarChart3, Calculator, Users, Clock, Printer, ArrowRight } from 'lucide-react';
+import { TrendingUp, DollarSign, BarChart3, Calculator, Users, Clock, Printer, CheckCircle } from 'lucide-react';
 
 export default function SCFComparison() {
-  const [activeView, setActiveView] = useState('inputs'); // 'inputs' or 'comparison'
+  const [activeView, setActiveView] = useState('inputs');
   const [showSaved, setShowSaved] = useState(false);
 
-  // Load saved values from localStorage
   const loadSavedValue = (key, defaultValue) => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('scfComparison');
@@ -30,49 +29,64 @@ export default function SCFComparison() {
   
   // 2) Supplier base & concentration
   const [totalSuppliers, setTotalSuppliers] = useState(() => loadSavedValue('totalSuppliers', 8000));
-  const [top50SharePct, setTop50SharePct] = useState(() => loadSavedValue('top50SharePct', 65));
-  const [avgInvoiceTop10, setAvgInvoiceTop10] = useState(() => loadSavedValue('avgInvoiceTop10', 400000));
-  const [avgInvoice11to50, setAvgInvoice11to50] = useState(() => loadSavedValue('avgInvoice11to50', 80000));
-  const [avgInvoiceLongTail, setAvgInvoiceLongTail] = useState(() => loadSavedValue('avgInvoiceLongTail', 3000));
+  const [existingScfSuppliers, setExistingScfSuppliers] = useState(() => loadSavedValue('existingScfSuppliers', 50));
+  const [idealScfSuppliers, setIdealScfSuppliers] = useState(() => loadSavedValue('idealScfSuppliers', 1000));
+  const [existingScfSharePct, setExistingScfSharePct] = useState(() => loadSavedValue('existingScfSharePct', 65));
+  const [idealScfSharePct, setIdealScfSharePct] = useState(() => loadSavedValue('idealScfSharePct', 30));
   
   // 3) Baseline AP process & payment timing
   const [delayDomestic, setDelayDomestic] = useState(() => loadSavedValue('delayDomestic', 4));
   const [delayCrossBorder, setDelayCrossBorder] = useState(() => loadSavedValue('delayCrossBorder', 21));
   const [processingTime, setProcessingTime] = useState(() => loadSavedValue('processingTime', 6));
   const [paymentTerms, setPaymentTerms] = useState(() => loadSavedValue('paymentTerms', 60));
-  const [domesticSharePct, setDomesticSharePct] = useState(() => loadSavedValue('domesticSharePct', 60));
   const [crossBorderSharePct, setCrossBorderSharePct] = useState(() => loadSavedValue('crossBorderSharePct', 40));
   
   // 4) Financing assumptions
   const [buyerCostOfFundsPct, setBuyerCostOfFundsPct] = useState(() => loadSavedValue('buyerCostOfFundsPct', 8));
   const [tradScfRatePct, setTradScfRatePct] = useState(() => loadSavedValue('tradScfRatePct', 7));
   const [ptScfRatePct, setPtScfRatePct] = useState(() => loadSavedValue('ptScfRatePct', 6.5));
-  const [supplierCostOfCapitalPct, setSupplierCostOfCapitalPct] = useState(() => loadSavedValue('supplierCostOfCapitalPct', 18));
   
   // 5) Card programme assumptions
   const [longTailCardPayPct, setLongTailCardPayPct] = useState(() => loadSavedValue('longTailCardPayPct', 60));
   const [cardCostPct, setCardCostPct] = useState(() => loadSavedValue('cardCostPct', 3.5));
   
-  // 6) Program-specific inputs
-  const [tradEligibleSuppliers, setTradEligibleSuppliers] = useState(() => loadSavedValue('tradEligibleSuppliers', 50));
-  const [top50ParticipationPct, setTop50ParticipationPct] = useState(() => loadSavedValue('top50ParticipationPct', 70));
-  const [ptLongTailParticipationPct, setPtLongTailParticipationPct] = useState(() => loadSavedValue('ptLongTailParticipationPct', 60));
+  // 6) Program-specific inputs - Participation rates
+  const [tradExistingScfPartPct, setTradExistingScfPartPct] = useState(() => loadSavedValue('tradExistingScfPartPct', 40));
+  const [ptExistingScfPartPct, setPtExistingScfPartPct] = useState(() => loadSavedValue('ptExistingScfPartPct', 40));
+  const [ptIdealScfPartPct, setPtIdealScfPartPct] = useState(() => loadSavedValue('ptIdealScfPartPct', 70));
+  const [ptLongTailPartPct, setPtLongTailPartPct] = useState(() => loadSavedValue('ptLongTailPartPct', 60));
+  
+  // Payment timing
   const [tradDaysAfterApproval, setTradDaysAfterApproval] = useState(() => loadSavedValue('tradDaysAfterApproval', 2));
   const [ptDaysAfterHandover, setPtDaysAfterHandover] = useState(() => loadSavedValue('ptDaysAfterHandover', 2));
-  const [ptEarlyPaymentDiscountPct, setPtEarlyPaymentDiscountPct] = useState(() => loadSavedValue('ptEarlyPaymentDiscountPct', 3.3));
-  const [ptCardCostCapturePct, setPtCardCostCapturePct] = useState(() => loadSavedValue('ptCardCostCapturePct', 70));
+  
+  // Early payment discounts by tier
+  const [ptDiscountExistingPct, setPtDiscountExistingPct] = useState(() => loadSavedValue('ptDiscountExistingPct', 0));
+  const [ptDiscountIdealPct, setPtDiscountIdealPct] = useState(() => loadSavedValue('ptDiscountIdealPct', 2.5));
+  const [ptDiscountLongTailPct, setPtDiscountLongTailPct] = useState(() => loadSavedValue('ptDiscountLongTailPct', 3.5));
+  
+  // Supplier savings rates by tier (what they save by being paid early)
+  const [tradSavingsExistingPct, setTradSavingsExistingPct] = useState(() => loadSavedValue('tradSavingsExistingPct', 8));
+  const [ptSavingsExistingPct, setPtSavingsExistingPct] = useState(() => loadSavedValue('ptSavingsExistingPct', 10));
+  const [tradSavingsIdealPct, setTradSavingsIdealPct] = useState(() => loadSavedValue('tradSavingsIdealPct', 12));
+  const [ptSavingsIdealPct, setPtSavingsIdealPct] = useState(() => loadSavedValue('ptSavingsIdealPct', 15));
+  const [tradSavingsLongTailPct, setTradSavingsLongTailPct] = useState(() => loadSavedValue('tradSavingsLongTailPct', 15));
+  const [ptSavingsLongTailPct, setPtSavingsLongTailPct] = useState(() => loadSavedValue('ptSavingsLongTailPct', 20));
 
   // Save all values to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const allValues = {
         currencySymbol, totalProcurementSpend, goodsPct, servicesPct, tailSpendPct,
-        totalSuppliers, top50SharePct, avgInvoiceTop10, avgInvoice11to50, avgInvoiceLongTail,
-        delayDomestic, delayCrossBorder, processingTime, paymentTerms, domesticSharePct, crossBorderSharePct,
-        buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct, supplierCostOfCapitalPct,
+        totalSuppliers, existingScfSuppliers, idealScfSuppliers, existingScfSharePct, idealScfSharePct,
+        delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct,
+        buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct,
         longTailCardPayPct, cardCostPct,
-        tradEligibleSuppliers, top50ParticipationPct, ptLongTailParticipationPct,
-        tradDaysAfterApproval, ptDaysAfterHandover, ptEarlyPaymentDiscountPct, ptCardCostCapturePct
+        tradExistingScfPartPct, ptExistingScfPartPct, ptIdealScfPartPct, ptLongTailPartPct,
+        tradDaysAfterApproval, ptDaysAfterHandover,
+        ptDiscountExistingPct, ptDiscountIdealPct, ptDiscountLongTailPct,
+        tradSavingsExistingPct, ptSavingsExistingPct, tradSavingsIdealPct, 
+        ptSavingsIdealPct, tradSavingsLongTailPct, ptSavingsLongTailPct
       };
       localStorage.setItem('scfComparison', JSON.stringify(allValues));
       
@@ -81,76 +95,155 @@ export default function SCFComparison() {
       return () => clearTimeout(timer);
     }
   }, [currencySymbol, totalProcurementSpend, goodsPct, servicesPct, tailSpendPct,
-      totalSuppliers, top50SharePct, avgInvoiceTop10, avgInvoice11to50, avgInvoiceLongTail,
-      delayDomestic, delayCrossBorder, processingTime, paymentTerms, domesticSharePct, crossBorderSharePct,
-      buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct, supplierCostOfCapitalPct,
+      totalSuppliers, existingScfSuppliers, idealScfSuppliers, existingScfSharePct, idealScfSharePct,
+      delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct,
+      buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct,
       longTailCardPayPct, cardCostPct,
-      tradEligibleSuppliers, top50ParticipationPct, ptLongTailParticipationPct,
-      tradDaysAfterApproval, ptDaysAfterHandover, ptEarlyPaymentDiscountPct, ptCardCostCapturePct]);
+      tradExistingScfPartPct, ptExistingScfPartPct, ptIdealScfPartPct, ptLongTailPartPct,
+      tradDaysAfterApproval, ptDaysAfterHandover,
+      ptDiscountExistingPct, ptDiscountIdealPct, ptDiscountLongTailPct,
+      tradSavingsExistingPct, ptSavingsExistingPct, tradSavingsIdealPct,
+      ptSavingsIdealPct, tradSavingsLongTailPct, ptSavingsLongTailPct]);
 
-  // Print handler
   const handlePrint = () => {
     window.print();
   };
 
   // ===== CALCULATIONS =====
   
-  // Convert to actual currency values
   const totalSpend = totalProcurementSpend * 1000000;
-  const goodsSpend = totalSpend * (goodsPct / 100);
-  const servicesSpend = totalSpend * (servicesPct / 100);
-  const tailSpend = totalSpend * (tailSpendPct / 100);
+  const domesticSharePct = 100 - crossBorderSharePct;
   
-  // Supplier tiers
-  const longTailSuppliers = Math.max(0, totalSuppliers - 50);
-  const top50Spend = totalSpend * (top50SharePct / 100);
-  const longTailSpend = totalSpend * (1 - top50SharePct / 100);
+  // Spend by tier
+  const spendExistingScf = totalSpend * (existingScfSharePct / 100);
+  const spendIdealScf = totalSpend * (idealScfSharePct / 100);
+  const spendLongTail = totalSpend * (1 - existingScfSharePct / 100 - idealScfSharePct / 100);
   
-  // Invoice volumes
-  const invoicesTop50 = avgInvoice11to50 > 0 ? top50Spend / avgInvoice11to50 : 0;
-  const invoicesLongTail = avgInvoiceLongTail > 0 ? longTailSpend / avgInvoiceLongTail : 0;
-  const totalInvoices = invoicesTop50 + invoicesLongTail;
+  // Average time to approve invoices (weighted by spend type and geography)
+  const avgApprovalTime = (
+    (1 - servicesPct / 100) * delayDomestic * (domesticSharePct / 100) +
+    (servicesPct / 100) * delayDomestic +
+    (tailSpendPct / 100 + goodsPct / 100) * delayCrossBorder * (crossBorderSharePct / 100) +
+    processingTime
+  );
   
-  // Weighted average delay from handover to delivery
-  const weightedDelay = (delayDomestic * domesticSharePct + delayCrossBorder * crossBorderSharePct) / 100;
-  
-  // TRADITIONAL SCF
-  const tradParticipatingSpend = top50Spend * (top50ParticipationPct / 100);
-  const tradParticipatingInvoices = invoicesTop50 * (top50ParticipationPct / 100);
-  const tradParticipatingSuppliers = tradEligibleSuppliers * (top50ParticipationPct / 100);
-  const tradSupplierCashReceipt = weightedDelay + processingTime + tradDaysAfterApproval;
+  // TRADITIONAL SCF CALCULATIONS
+  const tradEligibleSpend = spendExistingScf;
+  const tradParticipatingSpend = spendExistingScf * (tradExistingScfPartPct / 100);
+  const tradSupplierCashReceipt = avgApprovalTime + tradDaysAfterApproval;
   const tradDaysAdvanced = Math.max(0, paymentTerms - tradSupplierCashReceipt);
-  const tradScfFinancingCost = tradParticipatingSpend * (tradScfRatePct / 100) * (tradDaysAdvanced / 365);
-  const tradEarlyPaymentDiscount = 0; // Traditional SCF doesn't support discounts
-  const tradBuyerNetBenefit = tradEarlyPaymentDiscount - tradScfFinancingCost;
-  const tradSupplierTimeValue = tradParticipatingSpend * (supplierCostOfCapitalPct / 100) * (tradDaysAdvanced / 365);
-  const tradSupplierCardSavings = 0;
-  const tradSupplierNetBenefit = tradSupplierTimeValue - tradScfFinancingCost - tradEarlyPaymentDiscount;
-  const tradTotalValue = tradBuyerNetBenefit + tradSupplierNetBenefit;
   
-  // PRIMATRADE
-  const ptTop50PartSpend = top50Spend * (top50ParticipationPct / 100);
-  const ptLongTailPartSpend = longTailSpend * (ptLongTailParticipationPct / 100);
-  const ptParticipatingSpend = ptTop50PartSpend + ptLongTailPartSpend;
-  const ptTop50PartInvoices = invoicesTop50 * (top50ParticipationPct / 100);
-  const ptLongTailPartInvoices = invoicesLongTail * (ptLongTailParticipationPct / 100);
-  const ptParticipatingInvoices = ptTop50PartInvoices + ptLongTailPartInvoices;
-  const ptParticipatingSuppliers = 50 * (top50ParticipationPct / 100) + longTailSuppliers * (ptLongTailParticipationPct / 100);
+  // Financing costs by tier (Traditional)
+  const tradFinancingExisting = tradParticipatingSpend * (tradScfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingIdeal = 0;
+  const tradFinancingLongTail = 0;
+  const tradTotalFinancing = tradFinancingExisting + tradFinancingIdeal + tradFinancingLongTail;
+  
+  // Discounts by tier (Traditional - all zero)
+  const tradDiscountExisting = 0;
+  const tradDiscountIdeal = 0;
+  const tradDiscountLongTail = 0;
+  const tradTotalDiscounts = 0;
+  
+  // Actual discount (MAX of financing cost and agreed discount)
+  const tradActualDiscountExisting = Math.max(tradFinancingExisting, tradDiscountExisting);
+  const tradActualDiscountIdeal = Math.max(tradFinancingIdeal, tradDiscountIdeal);
+  const tradActualDiscountLongTail = Math.max(tradFinancingLongTail, tradDiscountLongTail);
+  const tradTotalActualDiscounts = tradActualDiscountExisting + tradActualDiscountIdeal + tradActualDiscountLongTail;
+  
+  // Buyer benefit
+  const tradBuyerNetBenefit = tradTotalActualDiscounts - tradTotalFinancing;
+  
+  // Supplier time value benefits
+  const tradSupplierBenefitExisting = tradParticipatingSpend * (tradSavingsExistingPct / 100) * (tradDaysAdvanced / 365);
+  const tradSupplierBenefitIdeal = 0;
+  const tradSupplierBenefitLongTail = 0;
+  const tradTotalSupplierTimeValue = tradSupplierBenefitExisting + tradSupplierBenefitIdeal + tradSupplierBenefitLongTail;
+  
+  // Card savings (Traditional - none)
+  const tradCardSavings = 0;
+  
+  // Supplier net benefit
+  const tradSupplierNetBenefit = tradCardSavings + tradTotalSupplierTimeValue - tradTotalActualDiscounts;
+  
+  // Total value created
+  const tradTotalValue = tradSupplierNetBenefit + tradBuyerNetBenefit;
+  
+  // Active suppliers (Traditional)
+  const tradActiveExisting = existingScfSuppliers * (tradExistingScfPartPct / 100);
+  const tradActiveIdeal = 0;
+  const tradActiveLongTail = 0;
+  const tradTotalActive = tradActiveExisting + tradActiveIdeal + tradActiveLongTail;
+  
+  // Outstanding balance (Traditional)
+  const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
+  
+  // PRIMATRADE CALCULATIONS
+  const ptEligibleSpend = spendExistingScf + spendIdealScf + spendLongTail;
+  const ptParticipatingExisting = spendExistingScf * (ptExistingScfPartPct / 100);
+  const ptParticipatingIdeal = spendIdealScf * (ptIdealScfPartPct / 100);
+  const ptParticipatingLongTail = spendLongTail * (ptLongTailPartPct / 100);
+  const ptParticipatingSpend = ptParticipatingExisting + ptParticipatingIdeal + ptParticipatingLongTail;
+  
   const ptSupplierCashReceipt = ptDaysAfterHandover;
   const ptDaysAdvanced = Math.max(0, paymentTerms - ptSupplierCashReceipt);
-  const ptDaysFasterVsTrad = tradSupplierCashReceipt - ptSupplierCashReceipt;
-  const ptScfFinancingCost = ptParticipatingSpend * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptEarlyPaymentDiscount = ptParticipatingSpend * (ptEarlyPaymentDiscountPct / 100);
-  const ptBuyerNetBenefit = ptEarlyPaymentDiscount - ptScfFinancingCost;
-  const ptSupplierTimeValue = ptParticipatingSpend * (supplierCostOfCapitalPct / 100) * (ptDaysAdvanced / 365);
-  const ptSupplierCardSavings = (ptLongTailPartSpend) * (longTailCardPayPct / 100) * (cardCostPct / 100) * (ptCardCostCapturePct / 100);
-  const ptSupplierNetBenefit = ptSupplierTimeValue - ptEarlyPaymentDiscount + ptSupplierCardSavings;
-  const ptTotalValue = ptBuyerNetBenefit + ptSupplierNetBenefit;
+  const ptDaysFaster = tradSupplierCashReceipt - ptSupplierCashReceipt;
   
-  // Deltas
+  // Financing costs by tier (PrimaTrade)
+  const ptFinancingExisting = ptParticipatingExisting * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingIdeal = ptParticipatingIdeal * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingLongTail = ptParticipatingLongTail * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptTotalFinancing = ptFinancingExisting + ptFinancingIdeal + ptFinancingLongTail;
+  
+  // Agreed discounts by tier
+  const ptDiscountExisting = ptParticipatingExisting * (ptDiscountExistingPct / 100);
+  const ptDiscountIdeal = ptParticipatingIdeal * (ptDiscountIdealPct / 100);
+  const ptDiscountLongTail = ptParticipatingLongTail * (ptDiscountLongTailPct / 100);
+  const ptTotalDiscounts = ptDiscountExisting + ptDiscountIdeal + ptDiscountLongTail;
+  
+  // Actual discount (MAX of financing cost and agreed discount)
+  const ptActualDiscountExisting = Math.max(ptFinancingExisting, ptDiscountExisting);
+  const ptActualDiscountIdeal = Math.max(ptFinancingIdeal, ptDiscountIdeal);
+  const ptActualDiscountLongTail = Math.max(ptFinancingLongTail, ptDiscountLongTail);
+  const ptTotalActualDiscounts = ptActualDiscountExisting + ptActualDiscountIdeal + ptActualDiscountLongTail;
+  
+  // Buyer benefit
+  const ptBuyerNetBenefit = ptTotalActualDiscounts - ptTotalFinancing;
+  
+  // Supplier time value benefits
+  const ptSupplierBenefitExisting = ptParticipatingExisting * (ptSavingsExistingPct / 100) * (ptDaysAdvanced / 365);
+  const ptSupplierBenefitIdeal = ptParticipatingIdeal * (ptSavingsIdealPct / 100) * (ptDaysAdvanced / 365);
+  const ptSupplierBenefitLongTail = ptParticipatingLongTail * (ptSavingsLongTailPct / 100) * (ptDaysAdvanced / 365);
+  const ptTotalSupplierTimeValue = ptSupplierBenefitExisting + ptSupplierBenefitIdeal + ptSupplierBenefitLongTail;
+  
+  // Card savings (PrimaTrade)
+  const ptCardSavings = ptParticipatingLongTail * (longTailCardPayPct / 100) * (cardCostPct / 100) * (ptLongTailPartPct / 100);
+  
+  // Supplier net benefit
+  const ptSupplierNetBenefit = ptCardSavings + ptTotalSupplierTimeValue - ptTotalActualDiscounts;
+  
+  // Total value created
+  const ptTotalValue = ptSupplierNetBenefit + ptBuyerNetBenefit;
+  
+  // Active suppliers (PrimaTrade)
+  const ptActiveExisting = existingScfSuppliers * (ptExistingScfPartPct / 100);
+  const ptActiveIdeal = (idealScfSuppliers - existingScfSuppliers) * (ptIdealScfPartPct / 100);
+  const ptActiveLongTail = (totalSuppliers - idealScfSuppliers) * (ptLongTailPartPct / 100);
+  const ptTotalActive = ptActiveExisting + ptActiveIdeal + ptActiveLongTail;
+  
+  // Suppliers switching from cards
+  const ptSuppliersFromCards = ptActiveLongTail;
+  
+  // Outstanding balance (PrimaTrade)
+  const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
+  
+  // DELTAS
+  const deltaEligibleSpend = ptEligibleSpend - tradEligibleSpend;
   const deltaParticipatingSpend = ptParticipatingSpend - tradParticipatingSpend;
-  const deltaSuppliers = ptParticipatingSuppliers - tradParticipatingSuppliers;
-  const deltaInvoices = ptParticipatingInvoices - tradParticipatingInvoices;
+  const deltaOutstandingBalance = ptOutstandingBalance - tradOutstandingBalance;
+  const deltaEligibleSuppliers = totalSuppliers - existingScfSuppliers;
+  const deltaActiveSuppliers = ptTotalActive - tradTotalActive;
+  const deltaSuppliersFromCards = ptSuppliersFromCards;
   const deltaCashReceipt = ptSupplierCashReceipt - tradSupplierCashReceipt;
   const deltaDaysAdvanced = ptDaysAdvanced - tradDaysAdvanced;
   const deltaBuyerBenefit = ptBuyerNetBenefit - tradBuyerNetBenefit;
@@ -238,6 +331,7 @@ export default function SCFComparison() {
             </div>
             {showSaved && (
               <div className="flex items-center gap-2 text-green-600 text-sm">
+                <CheckCircle className="w-4 h-4" />
                 <span>Saved</span>
               </div>
             )}
@@ -333,13 +427,16 @@ export default function SCFComparison() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, 'suppliers')}
-                    {renderInput('Top 50 Suppliers Share of Spend', top50SharePct, setTop50SharePct, 0, 100, 1, '', true)}
+                    {renderInput('Current Suppliers in SCF', existingScfSuppliers, setExistingScfSuppliers, 10, 500, 10, 'suppliers')}
+                    {renderInput('Ideal Suppliers for SCF (before long tail)', idealScfSuppliers, setIdealScfSuppliers, 100, 5000, 50, 'suppliers')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Average Invoice Values (for volume estimation)</h3>
-                    {renderInput('Top 10 Suppliers', avgInvoiceTop10, setAvgInvoiceTop10, 1000, 2000000, 1000, currencySymbol)}
-                    {renderInput('Suppliers 11-50', avgInvoice11to50, setAvgInvoice11to50, 1000, 500000, 1000, currencySymbol)}
-                    {renderInput('Long Tail Suppliers', avgInvoiceLongTail, setAvgInvoiceLongTail, 100, 50000, 100, currencySymbol)}
+                    <h3 className="text-sm font-semibold text-gray-700">Spend Concentration</h3>
+                    {renderInput(`Existing SCF ${existingScfSuppliers} Suppliers' Share`, existingScfSharePct, setExistingScfSharePct, 0, 100, 1, '', true)}
+                    {renderInput(`${existingScfSuppliers}-${idealScfSuppliers} Suppliers' Share`, idealScfSharePct, setIdealScfSharePct, 0, 100, 1, '', true)}
+                    <div className="text-sm text-gray-600 mt-2">
+                      Long tail share: {(100 - existingScfSharePct - idealScfSharePct).toFixed(1)}%
+                    </div>
                   </div>
                 </div>
               </div>
@@ -355,20 +452,14 @@ export default function SCFComparison() {
                     <h3 className="text-sm font-semibold text-gray-700">Delay from Handover to Delivery</h3>
                     {renderInput('Domestic & Services', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
                     {renderInput('Cross-Border', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
-                    {renderInput('Processing Time (Delivery to Approval)', processingTime, setProcessingTime, 0, 30, 1, 'days')}
+                    {renderInput('Delivery to Approval Processing Time', processingTime, setProcessingTime, 0, 30, 1, 'days')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Payment Terms & Mix</h3>
-                    {renderInput('Standard Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
-                    <div className="bg-gradient-to-br from-white to-red-50 rounded-lg p-4 border-2 border-[#F08070]">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-3">Spend Mix (must sum to 100%)</h3>
-                      <div className="space-y-3">
-                        {renderInput('Domestic Share', domesticSharePct, setDomesticSharePct, 0, 100, 1, '', true)}
-                        {renderInput('Cross-Border Share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 1, '', true)}
-                        <div className={`text-right text-sm font-semibold ${Math.abs(domesticSharePct + crossBorderSharePct - 100) < 0.1 ? 'text-green-600' : 'text-red-600'}`}>
-                          Total: {(domesticSharePct + crossBorderSharePct).toFixed(1)}%
-                        </div>
-                      </div>
+                    <h3 className="text-sm font-semibold text-gray-700">Payment Terms</h3>
+                    {renderInput('Standard Payment Terms (from invoice)', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
+                    {renderInput('Cross-Border Share of Spend', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                    <div className="text-sm text-gray-600 mt-2">
+                      Domestic share: {(100 - crossBorderSharePct).toFixed(1)}%
                     </div>
                   </div>
                 </div>
@@ -387,41 +478,75 @@ export default function SCFComparison() {
                     {renderInput('PrimaTrade Blended Funder Rate', ptScfRatePct, setPtScfRatePct, 0, 20, 0.1, '', true)}
                   </div>
                   <div className="space-y-4">
-                    {renderInput('Supplier Cost of Capital', supplierCostOfCapitalPct, setSupplierCostOfCapitalPct, 0, 30, 0.5, '', true)}
+                    <h3 className="text-sm font-semibold text-gray-700">Card Programme</h3>
                     {renderInput('Long Tail on Cards Today', longTailCardPayPct, setLongTailCardPayPct, 0, 100, 5, '', true)}
                     {renderInput('Card Programme Cost Rate', cardCostPct, setCardCostPct, 0, 10, 0.1, '', true)}
                   </div>
                 </div>
               </div>
 
-              {/* Program-Specific Inputs */}
+              {/* Program Parameters - Participation */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Calculator className="w-6 h-6 text-[#F08070]" />
-                  Program-Specific Parameters
+                  Programme Participation Rates
                 </h2>
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Traditional SCF</h3>
-                    {renderInput('Eligible Suppliers (typically 20/30/50)', tradEligibleSuppliers, setTradEligibleSuppliers, 10, 100, 5, 'suppliers')}
-                    {renderInput('Days After Approval to Payment', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days')}
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Existing SCF {existingScfSuppliers}</h3>
+                    {renderInput('Traditional SCF', tradExistingScfPartPct, setTradExistingScfPartPct, 0, 100, 5, '', true)}
+                    {renderInput('PrimaTrade', ptExistingScfPartPct, setPtExistingScfPartPct, 0, 100, 5, '', true)}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">PrimaTrade</h3>
-                    {renderInput('Days After Handover to Payment', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days')}
-                    {renderInput('Early Payment Discount %', ptEarlyPaymentDiscountPct, setPtEarlyPaymentDiscountPct, 0, 10, 0.1, '', true)}
-                    {renderInput('Share of Card Cost Captured', ptCardCostCapturePct, setPtCardCostCapturePct, 0, 100, 5, '', true)}
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">{existingScfSuppliers}-{idealScfSuppliers} Tier</h3>
+                    <div className="text-sm text-gray-500 mb-2">Traditional: 0% (not eligible)</div>
+                    {renderInput('PrimaTrade', ptIdealScfPartPct, setPtIdealScfPartPct, 0, 100, 5, '', true)}
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Long Tail</h3>
+                    <div className="text-sm text-gray-500 mb-2">Traditional: 0% (not eligible)</div>
+                    {renderInput('PrimaTrade', ptLongTailPartPct, setPtLongTailPartPct, 0, 100, 5, '', true)}
                   </div>
                 </div>
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Participation Rates</h3>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      {renderInput('Top 50 Suppliers Participation', top50ParticipationPct, setTop50ParticipationPct, 0, 100, 5, '', true)}
-                    </div>
-                    <div>
-                      {renderInput('Long Tail Suppliers Participation (PT only)', ptLongTailParticipationPct, setPtLongTailParticipationPct, 0, 100, 5, '', true)}
-                    </div>
+              </div>
+
+              {/* Program Parameters - Timing & Discounts */}
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Timing & Early Payment Discounts</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Payment Timing</h3>
+                    {renderInput('Traditional: Days After Approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days')}
+                    {renderInput('PrimaTrade: Days After Handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days')}
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">PrimaTrade Early Payment Discounts</h3>
+                    {renderInput(`Existing SCF ${existingScfSuppliers}`, ptDiscountExistingPct, setPtDiscountExistingPct, 0, 10, 0.1, '', true)}
+                    {renderInput(`${existingScfSuppliers}-${idealScfSuppliers} Tier`, ptDiscountIdealPct, setPtDiscountIdealPct, 0, 10, 0.1, '', true)}
+                    {renderInput('Long Tail', ptDiscountLongTailPct, setPtDiscountLongTailPct, 0, 10, 0.1, '', true)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Supplier Savings Rates */}
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Supplier Savings from Early Payment (Annual Rate)</h2>
+                <p className="text-sm text-gray-600 mb-4">What suppliers save by being paid early (their cost of capital)</p>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Existing SCF {existingScfSuppliers}</h3>
+                    {renderInput('Traditional SCF', tradSavingsExistingPct, setTradSavingsExistingPct, 0, 30, 0.5, '', true)}
+                    {renderInput('PrimaTrade', ptSavingsExistingPct, setPtSavingsExistingPct, 0, 30, 0.5, '', true)}
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">{existingScfSuppliers}-{idealScfSuppliers} Tier</h3>
+                    {renderInput('Traditional SCF', tradSavingsIdealPct, setTradSavingsIdealPct, 0, 30, 0.5, '', true)}
+                    {renderInput('PrimaTrade', ptSavingsIdealPct, setPtSavingsIdealPct, 0, 30, 0.5, '', true)}
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Long Tail</h3>
+                    {renderInput('Traditional SCF', tradSavingsLongTailPct, setTradSavingsLongTailPct, 0, 30, 0.5, '', true)}
+                    {renderInput('PrimaTrade', ptSavingsLongTailPct, setPtSavingsLongTailPct, 0, 30, 0.5, '', true)}
                   </div>
                 </div>
               </div>
@@ -431,29 +556,44 @@ export default function SCFComparison() {
           {/* Panel 2: Comparison Results */}
           {activeView === 'comparison' && (
             <div data-panel="comparison" className="space-y-6">
-              {/* Headline Comparison */}
-              <div className="bg-gradient-to-r from-[#D64933] to-[#F08070] rounded-lg shadow-xl p-6 text-white">
-                <h2 className="text-2xl font-bold mb-6">Headline Comparison</h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Participating Spend</div>
-                    <div className="text-3xl font-bold mb-1">{formatCurrency(deltaParticipatingSpend)}</div>
-                    <div className="text-red-100 text-sm">Additional spend (PT vs Trad)</div>
+              {/* Dashboard Summary */}
+              <div className="bg-gradient-to-r from-[#D64933] to-[#F08070] rounded-lg shadow-xl p-6 sm:p-8 text-white">
+                <h2 className="text-2xl font-bold mb-6">Dashboard — Headline KPIs</h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Eligible Spend</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">{formatCurrency(deltaEligibleSpend)}</div>
+                    <div className="text-red-100 text-xs">All spend eligible via automation</div>
                   </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Supplier Inclusion</div>
-                    <div className="text-3xl font-bold mb-1">+{formatNumber(deltaSuppliers, 0)}</div>
-                    <div className="text-red-100 text-sm">More suppliers included</div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Participating Spend</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">{formatCurrency(deltaParticipatingSpend)}</div>
+                    <div className="text-red-100 text-xs">Higher participation from smaller suppliers</div>
                   </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Days Faster Payment</div>
-                    <div className="text-3xl font-bold mb-1">{formatNumber(ptDaysFasterVsTrad, 0)}</div>
-                    <div className="text-red-100 text-sm">Days earlier vs Traditional</div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Outstanding Balance</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">{formatCurrency(deltaOutstandingBalance)}</div>
+                    <div className="text-red-100 text-xs">Funding requirement increase</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Eligible Suppliers</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">+{formatNumber(deltaEligibleSuppliers, 0)}</div>
+                    <div className="text-red-100 text-xs">More suppliers involved</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Active Suppliers</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">+{formatNumber(deltaActiveSuppliers, 0)}</div>
+                    <div className="text-red-100 text-xs">More actively using SCF</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-red-100 text-xs sm:text-sm mb-1">Days Faster Payment</div>
+                    <div className="text-xl sm:text-2xl font-bold mb-1">{formatNumber(ptDaysFaster, 1)}</div>
+                    <div className="text-red-100 text-xs">Via PO Match & automation</div>
                   </div>
                 </div>
               </div>
 
-              {/* Detailed Metrics Table */}
+              {/* Programme Scope */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Programme Scope & Volume</h2>
                 <div className="overflow-x-auto">
@@ -468,16 +608,10 @@ export default function SCFComparison() {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       <tr>
-                        <td className="py-3 px-4 text-sm">Eligible suppliers</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(tradEligibleSuppliers)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(totalSuppliers)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(totalSuppliers - tradEligibleSuppliers)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Participating suppliers</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(tradParticipatingSuppliers, 0)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(ptParticipatingSuppliers, 0)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(deltaSuppliers, 0)}</td>
+                        <td className="py-3 px-4 text-sm">Eligible spend (annual)</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradEligibleSpend)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptEligibleSpend)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(deltaEligibleSpend)}</td>
                       </tr>
                       <tr>
                         <td className="py-3 px-4 text-sm">Participating spend (annual)</td>
@@ -486,17 +620,35 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(deltaParticipatingSpend)}</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Participating invoices (annual)</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(tradParticipatingInvoices, 0)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(ptParticipatingInvoices, 0)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(deltaInvoices, 0)}</td>
+                        <td className="py-3 px-4 text-sm">Outstanding balance of SCF programme</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradOutstandingBalance)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptOutstandingBalance)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(deltaOutstandingBalance)}</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-sm">Eligible suppliers</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(existingScfSuppliers)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(totalSuppliers)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(deltaEligibleSuppliers)}</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-sm">Active suppliers using SCF</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(tradTotalActive, 0)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(ptTotalActive, 0)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(deltaActiveSuppliers, 0)}</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-sm">Suppliers using SCF instead of cards</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">0</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(ptSuppliersFromCards, 0)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">+{formatNumber(deltaSuppliersFromCards, 0)}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Timing Comparison */}
+              {/* Timing */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Timing (from completion/handover)</h2>
                 <div className="overflow-x-auto">
@@ -517,29 +669,17 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatNumber(deltaCashReceipt, 1)} days</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Due date from invoice</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{paymentTerms} days</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{paymentTerms} days</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">0 days</td>
-                      </tr>
-                      <tr>
                         <td className="py-3 px-4 text-sm">Days advanced vs due date</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(tradDaysAdvanced, 1)} days</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatNumber(ptDaysAdvanced, 1)} days</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatNumber(deltaDaysAdvanced, 1)} days</td>
-                      </tr>
-                      <tr className="bg-green-50">
-                        <td className="py-3 px-4 text-sm font-semibold">Days faster vs Traditional SCF</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">—</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold text-[#D64933]">{formatNumber(ptDaysFasterVsTrad, 1)} days</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium"></td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Economics Comparison */}
+              {/* Economics */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Economics (annualised)</h2>
                 <div className="overflow-x-auto">
@@ -553,35 +693,11 @@ export default function SCFComparison() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Supplier SCF financing cost</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradScfFinancingCost)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptScfFinancingCost)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(ptScfFinancingCost - tradScfFinancingCost)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Early payment discount (gross)</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradEarlyPaymentDiscount)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptEarlyPaymentDiscount)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(ptEarlyPaymentDiscount - tradEarlyPaymentDiscount)}</td>
-                      </tr>
                       <tr className="bg-green-50">
-                        <td className="py-3 px-4 text-sm font-semibold">Buyer net benefit</td>
+                        <td className="py-3 px-4 text-sm font-semibold">Buyer direct benefit</td>
                         <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(tradBuyerNetBenefit)}</td>
                         <td className="py-3 px-4 text-sm text-right font-bold text-[#D64933]">{formatCurrency(ptBuyerNetBenefit)}</td>
                         <td className="py-3 px-4 text-sm text-right font-bold text-purple-700">{formatCurrency(deltaBuyerBenefit)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Supplier time-value benefit</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradSupplierTimeValue)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptSupplierTimeValue)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(ptSupplierTimeValue - tradSupplierTimeValue)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Supplier card processing costs saved</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradSupplierCardSavings)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptSupplierCardSavings)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-purple-700">{formatCurrency(ptSupplierCardSavings - tradSupplierCardSavings)}</td>
                       </tr>
                       <tr className="bg-blue-50">
                         <td className="py-3 px-4 text-sm font-semibold">Supplier net benefit</td>
@@ -600,36 +716,36 @@ export default function SCFComparison() {
                 </div>
               </div>
 
-              {/* Key Benefits Summary */}
-              <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-8 text-white">
-                <h2 className="text-2xl font-bold mb-6">PrimaTrade Advantage Summary</h2>
+              {/* Key Benefits */}
+              <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-6 sm:p-8 text-white">
+                <h2 className="text-2xl font-bold mb-6">PrimaTrade Key Benefits</h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <ArrowRight className="w-6 h-6 flex-shrink-0 mt-1" />
+                    <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
                     <div>
-                      <div className="font-semibold text-lg">Early Invoice Approval</div>
-                      <div className="text-red-100">Invoices approved at handover ({ptDaysAfterHandover} days) vs. after delivery & processing ({formatNumber(tradSupplierCashReceipt, 1)} days) — saving {formatNumber(ptDaysFasterVsTrad, 1)} days</div>
+                      <div className="font-semibold text-lg">Early Invoice Approval (PO Match)</div>
+                      <div className="text-red-100">Invoices approved at handover ({ptDaysAfterHandover} days) vs after delivery & processing ({formatNumber(tradSupplierCashReceipt, 1)} days) — saving {formatNumber(ptDaysFaster, 1)} days and enabling automation</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <ArrowRight className="w-6 h-6 flex-shrink-0 mt-1" />
+                    <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
                     <div>
                       <div className="font-semibold text-lg">Supplier Discount Flexibility</div>
-                      <div className="text-red-100">PrimaTrade enables {formatPercent(ptEarlyPaymentDiscountPct)} discounts that exceed financing costs, creating {formatCurrency(ptBuyerNetBenefit)} buyer value</div>
+                      <div className="text-red-100">PrimaTrade enables early payment discounts that can exceed financing costs, creating {formatCurrency(ptBuyerNetBenefit)} annual buyer value vs {formatCurrency(tradBuyerNetBenefit)} in Traditional SCF</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <ArrowRight className="w-6 h-6 flex-shrink-0 mt-1" />
+                    <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
+                    <div>
+                      <div className="font-semibold text-lg">Self-Digitization & AP Automation (~40% reduction)</div>
+                      <div className="text-red-100">Suppliers self-digitize and self-match invoices to POs, delivering major AP workload reduction. Works for all invoice types including services.</div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
                     <div>
                       <div className="font-semibold text-lg">Long Tail Inclusion</div>
-                      <div className="text-red-100">All suppliers ({formatNumber(totalSuppliers)} total) can participate vs. only {tradEligibleSuppliers} in Traditional SCF — adding {formatNumber(deltaSuppliers, 0)} suppliers</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <ArrowRight className="w-6 h-6 flex-shrink-0 mt-1" />
-                    <div>
-                      <div className="font-semibold text-lg">Card Cost Savings</div>
-                      <div className="text-red-100">Long tail suppliers save {formatCurrency(ptSupplierCardSavings)} in card processing fees through automated self-digitization</div>
+                      <div className="text-red-100">All suppliers ({formatNumber(totalSuppliers)} total) can participate vs only {existingScfSuppliers} in Traditional SCF — adding {formatNumber(deltaActiveSuppliers, 0)} active suppliers. Captures card costs (up to {formatPercent(cardCostPct)}) for buyer benefit: {formatCurrency(ptCardSavings)} annually.</div>
                     </div>
                   </div>
                 </div>
