@@ -624,7 +624,7 @@ export default function SCFComparison() {
                 </div>
               </div>
 
- <div className="max-w-5xl mx-auto">
+ <div className="max-w-[52rem] mx-auto">
  <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-5 sm:p-6">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
