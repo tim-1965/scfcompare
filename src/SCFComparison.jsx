@@ -450,7 +450,7 @@ export default function SCFComparison() {
 
     return (
       <div className="space-y-2 w-full">
-        <div className="flex items-baseline gap-3 w-full justify-between">
+         <div className="grid grid-cols-[1fr,auto] items-baseline gap-3 w-full">
           {tooltip ? (
             <Tooltip text={tooltip}>
               <label className={`text-sm font-medium flex-1 ${disabled ? 'text-gray-400' : 'text-gray-700'} ${labelClassName}`}>
@@ -462,7 +462,7 @@ export default function SCFComparison() {
               {label}
             </label>
           )}
-          <div className="flex items-baseline gap-1 min-w-[130px] justify-end text-right">
+          <div className="flex items-baseline gap-1 justify-end text-right w-[160px] shrink-0 ml-auto">
             <input
               type={formatDisplay ? 'text' : 'number'}
               inputMode="decimal"
@@ -470,7 +470,7 @@ export default function SCFComparison() {
               onChange={(e) => handleChange(e.target.value)}
               onBlur={(e) => handleBlur(e.target.value)}
               disabled={disabled}
-              className={`w-28 text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
+              className={`w-full text-right px-2 py-1 border border-gray-300 rounded text-sm font-semibold ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'text-[#D64933]'}`}
               step={step}
               min={min}
               max={max}
@@ -1139,56 +1139,7 @@ export default function SCFComparison() {
                 </div>
               </div>
 
-              {/* Supplier Tiers & Spend */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Supplier Tiers & Spend</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Item</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text="Total suppliers minus Existing SCF 50">
-                            <span>Suppliers: Long tail</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{formatNumber(tier3Suppliers, 0)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text={`Total spend × (Existing SCF ${tier1Suppliers} share)`}>
-                            <span>Spend: Tier 1 suppliers</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{formatCurrency(spendTier1)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text={`Total spend × (${tier1Suppliers}-${tier2Suppliers} share)`}>
-                            <span>Spend: Tier 2 suppliers</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{formatCurrency(spendTier2)}</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text="Remaining total spend">
-                            <span>Spend: Long tail suppliers</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{formatCurrency(spendTier3)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Baseline AP Cost & Timing */}
+             {/* Baseline AP Cost & Timing */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Baseline AP Cost & Timing</h2>
                 <div className="overflow-x-auto">
