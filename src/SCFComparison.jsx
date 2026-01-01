@@ -486,10 +486,10 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
-                         <div className="w-full max-w-[260px]">
+                          <div className="w-full">
                           {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full')}
                         </div>
-                        <div className="w-full max-w-[260px]">
+                        <div className="w-full">
                           {renderInput('Share of total spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full')}
                         </div>
                       </div>
@@ -526,10 +526,10 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
-                         <div className="w-full max-w-[260px]">
+                            <div className="w-full">
                           {renderInput('Ideal further suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full')}
                         </div>
-                        <div className="w-full max-w-[260px]">
+                           <div className="w-full">
                           {renderInput('Share of total spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full')}
                         </div>
                       </div>
@@ -568,13 +568,13 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
-                           <div className="w-full max-w-[260px] space-y-2">
+                            <div className="w-full space-y-2">
                           <div className="flex justify-between items-baseline">
                             <label className="text-sm font-medium text-gray-700">Number of suppliers (auto-calc)</label>
                             <span className="text-sm font-semibold text-gray-900">{formatNumber(tier3Suppliers)}</span>
                           </div>
                         </div>
-                         <div className="w-full max-w-[260px] space-y-2">
+                          <div className="w-full space-y-2">
                           <div className="flex justify-between items-baseline">
                             <label className="text-sm font-medium text-gray-700">Share of total spend (auto-calc)</label>
                             <span className={`text-sm font-semibold ${tier3SpendPct >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
@@ -634,9 +634,9 @@ export default function SCFComparison() {
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Delivery timing</h3>
-                    {renderInput('Handover to accepted delivery (domestic/services)', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
-                    {renderInput('Handover to accepted delivery (cross-border)', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
+                    <h3 className="text-sm font-semibold text-gray-700">Days between handover and accepted delivery</h3>
+                    {renderInput('Domestic / services', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
+                    {renderInput('Cross-border', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Term and approval timing</h3>
