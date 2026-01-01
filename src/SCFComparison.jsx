@@ -387,7 +387,7 @@ export default function SCFComparison() {
                   <DollarSign className="w-6 h-6 text-[#F08070]" />
                   Company Profile
                 </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Currency</label>
                     <select
@@ -407,6 +407,9 @@ export default function SCFComparison() {
                   <div>
                     {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
                   </div>
+                  <div>
+                    {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
+                  </div>
                 </div>
               </div>
 
@@ -421,30 +424,41 @@ export default function SCFComparison() {
                   {/* Tier 1: Existing SCF */}
                   <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50/30">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF Suppliers</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="lg:col-span-4 grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
+                    <div className="space-y-4">
+                      {/* Basic Info */}
+                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
                         {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '')}
                         {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true)}
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Participation Rates</p>
-                        {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Early Payment Discount</p>
-                        {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 10, 0.1, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Supplier Savings Rate</p>
-                        {renderInput('Traditional', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true)}
-                      </div>
-                      <div className="lg:col-start-4">
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true)}
+                      
+                      {/* Three Columns */}
+                      <div className="grid md:grid-cols-3 gap-6">
+                        {/* Column 1: Participation Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation Rate</h4>
+                          {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true)}
+                          {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true)}
+                        </div>
+                        
+                        {/* Column 2: Early Payment Discount */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early Payment Discount</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
+                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                            </div>
+                            <div className="text-xs text-gray-500 italic">No discounts in traditional SCF</div>
+                          </div>
+                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 10, 0.1, '', true)}
+                        </div>
+                        
+                        {/* Column 3: Supplier Savings Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier Savings Rate</h4>
+                          {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true)}
+                          {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -452,30 +466,47 @@ export default function SCFComparison() {
                   {/* Tier 2: Next Level */}
                   <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/30">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level ({tier1Suppliers}-{tier2Suppliers}) Suppliers</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="lg:col-span-4 grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
+                    <div className="space-y-4">
+                      {/* Basic Info */}
+                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
                         {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '')}
                         {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true)}
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Participation Rates</p>
-                        <div className="text-sm text-gray-500 italic">Traditional: 0% (not eligible)</div>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Early Payment Discount</p>
-                        {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 10, 0.1, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Supplier Savings Rate</p>
-                        {renderInput('Traditional', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true)}
-                      </div>
-                      <div className="lg:col-start-4">
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true)}
+                      
+                      {/* Three Columns */}
+                      <div className="grid md:grid-cols-3 gap-6">
+                        {/* Column 1: Participation Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation Rate</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
+                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                            </div>
+                            <div className="text-xs text-gray-500 italic">Not eligible</div>
+                          </div>
+                          {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
+                        </div>
+                        
+                        {/* Column 2: Early Payment Discount */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early Payment Discount</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
+                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                            </div>
+                            <div className="text-xs text-gray-500 italic">Not eligible</div>
+                          </div>
+                          {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 10, 0.1, '', true)}
+                        </div>
+                        
+                        {/* Column 3: Supplier Savings Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier Savings Rate</h4>
+                          {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true)}
+                          {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -483,8 +514,9 @@ export default function SCFComparison() {
                   {/* Tier 3: Long Tail */}
                   <div className="border-2 border-orange-200 rounded-lg p-4 bg-orange-50/30">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 3: Long Tail Suppliers</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="lg:col-span-4 grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
+                    <div className="space-y-4">
+                      {/* Basic Info */}
+                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
                         <div className="space-y-2">
                           <div className="flex justify-between items-baseline">
                             <label className="text-sm font-medium text-gray-700">Number of Suppliers (auto-calc)</label>
@@ -503,38 +535,51 @@ export default function SCFComparison() {
                           )}
                         </div>
                       </div>
+                      
+                      {/* Three Columns */}
+                      <div className="grid md:grid-cols-3 gap-6 pb-4 border-b border-orange-200">
+                        {/* Column 1: Participation Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation Rate</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
+                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                            </div>
+                            <div className="text-xs text-gray-500 italic">Not eligible</div>
+                          </div>
+                          {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true)}
+                        </div>
+                        
+                        {/* Column 2: Early Payment Discount */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early Payment Discount</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-baseline">
+                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
+                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
+                            </div>
+                            <div className="text-xs text-gray-500 italic">Not eligible</div>
+                          </div>
+                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 10, 0.1, '', true)}
+                        </div>
+                        
+                        {/* Column 3: Supplier Savings Rate */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier Savings Rate</h4>
+                          {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true)}
+                          {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true)}
+                        </div>
+                      </div>
+                      
+                      {/* Card Programme */}
                       <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Participation Rates</p>
-                        <div className="text-sm text-gray-500 italic">Traditional: 0% (not eligible)</div>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Early Payment Discount</p>
-                        {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 10, 0.1, '', true)}
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">Supplier Savings Rate</p>
-                        {renderInput('Traditional', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true)}
-                      </div>
-                      <div className="lg:col-start-4">
-                        <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
-                        {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true)}
-                      </div>
-                      <div className="lg:col-span-4 grid md:grid-cols-4 gap-4 pt-4 border-t border-orange-200">
-                        <div>
-                          <p className="text-xs text-gray-600 mb-2 font-semibold">Card Programme</p>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card Programme (Traditional SCF only)</h4>
+                        <div className="grid md:grid-cols-4 gap-4">
                           {renderInput('Card Usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true)}
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
                           {renderInput('Supplier Cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true)}
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-600 mb-2 font-semibold">&nbsp;</p>
                           {renderInput('Buyer Rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true)}
+                          {renderInput('Free Funding Period (buyer)', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
                         </div>
                       </div>
                     </div>
@@ -564,22 +609,6 @@ export default function SCFComparison() {
                     <h3 className="text-sm font-semibold text-gray-700">SCF Payment Timing</h3>
                     {renderInput('Traditional: Days After Approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days')}
                     {renderInput('PrimaTrade: Days After Handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days')}
-                  </div>
-                </div>
-              </div>
-
-              {/* Financing */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-6 h-6 text-[#F08070]" />
-                  Financing Assumptions
-                </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
-                  </div>
-                  <div>
-                    {renderInput('Card Free Funding Period (for buyer)', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
                   </div>
                 </div>
               </div>
