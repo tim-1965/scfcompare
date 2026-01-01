@@ -30,6 +30,7 @@ export default function SCFComparison() {
   const [tier1SpendPct, setTier1SpendPct] = useState(() => loadSavedValue('tier1SpendPct', 65));
   const [tier1TradPartPct, setTier1TradPartPct] = useState(() => loadSavedValue('tier1TradPartPct', 40));
   const [tier1PtPartPct, setTier1PtPartPct] = useState(() => loadSavedValue('tier1PtPartPct', 40));
+  const [tier1TradDiscountPct, setTier1TradDiscountPct] = useState(() => loadSavedValue('tier1TradDiscountPct', 0));
   const [tier1PtDiscountPct, setTier1PtDiscountPct] = useState(() => loadSavedValue('tier1PtDiscountPct', 0));
   const [tier1TradSavingsPct, setTier1TradSavingsPct] = useState(() => loadSavedValue('tier1TradSavingsPct', 8));
   const [tier1PtSavingsPct, setTier1PtSavingsPct] = useState(() => loadSavedValue('tier1PtSavingsPct', 10));
@@ -38,12 +39,14 @@ export default function SCFComparison() {
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
   const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 30));
   const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
+  const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
   const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.5));
   const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 12));
   const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 15));
   
   // Tier 3: Long Tail (auto-calculated)
   const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 60));
+  const [tier3TradDiscountPct, setTier3TradDiscountPct] = useState(() => loadSavedValue('tier3TradDiscountPct', 0));
   const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.5));
   const [tier3TradSavingsPct, setTier3TradSavingsPct] = useState(() => loadSavedValue('tier3TradSavingsPct', 15));
   const [tier3PtSavingsPct, setTier3PtSavingsPct] = useState(() => loadSavedValue('tier3PtSavingsPct', 20));
@@ -69,9 +72,9 @@ export default function SCFComparison() {
     if (typeof window !== 'undefined') {
       const allValues = {
         currencySymbol, totalProcurementSpend, totalSuppliers,
-        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-        tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-        tier3PtPartPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
+        tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+        tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays
       };
@@ -82,9 +85,9 @@ export default function SCFComparison() {
       return () => clearTimeout(timer);
     }
   }, [currencySymbol, totalProcurementSpend, totalSuppliers,
-      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-      tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-      tier3PtPartPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
+      tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+      tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays]);
 
@@ -122,10 +125,10 @@ export default function SCFComparison() {
   const tradFinancingTier3 = 0;
   const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
   
-  // Discounts by tier (Traditional - all zero)
-  const tradDiscountTier1 = 0;
-  const tradDiscountTier2 = 0;
-  const tradDiscountTier3 = 0;
+  // Discounts by tier (Traditional)
+  const tradDiscountTier1 = tradParticipatingSpend * (tier1TradDiscountPct / 100);
+  const tradDiscountTier2 = spendTier2 * (0 / 100) * (tier2TradDiscountPct / 100);
+  const tradDiscountTier3 = spendTier3 * (0 / 100) * (tier3TradDiscountPct / 100);
   
   // Actual discount (MAX of financing cost and agreed discount)
   const tradActualDiscountTier1 = Math.max(tradFinancingTier1, tradDiscountTier1);
@@ -389,17 +392,17 @@ export default function SCFComparison() {
             <div data-panel="inputs" className="space-y-4 sm:space-y-6">
               {/* Company Profile */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <DollarSign className="w-6 h-6 text-[#F08070]" />
-                  Company Profile
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2">
+               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <DollarSign className="w-6 h-6 text-[#F08070]" />
+                    Company Profile
+                  </h2>
+                  <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">Currency</label>
                     <select
                       value={currencySymbol}
                       onChange={(e) => setCurrencySymbol(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
                     >
                       <option value="$">$ USD</option>
                       <option value="€">€ EUR</option>
@@ -407,11 +410,16 @@ export default function SCFComparison() {
                       <option value="¥">¥ JPY</option>
                     </select>
                   </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div>
                     {renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM')}
                   </div>
                   <div>
                     {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
+                  </div>
+                  <div>
+                    {renderInput('Cross-Border Share (excl. services)', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div>
                     {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
@@ -449,14 +457,8 @@ export default function SCFComparison() {
                         {/* Column 2: Early Payment Discount */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">No discounts in traditional SCF</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 10, 0.1, '', true)}
+                          {renderInput('Traditional SCF', tier1TradDiscountPct, setTier1TradDiscountPct, 0, 5, 0.1, '', true)}
+                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 5, 0.1, '', true)}
                         </div>
                         
                         {/* Column 3: Supplier Savings Rate */}
@@ -497,14 +499,8 @@ export default function SCFComparison() {
                         {/* Column 2: Early Payment Discount */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 10, 0.1, '', true)}
+                          {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true)}
+                          {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true)}
                         </div>
                         
                         {/* Column 3: Supplier Savings Rate */}
@@ -560,14 +556,8 @@ export default function SCFComparison() {
                         {/* Column 2: Early Payment Discount */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early Payment Discount</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
-                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 10, 0.1, '', true)}
+                          {renderInput('Traditional SCF', tier3TradDiscountPct, setTier3TradDiscountPct, 0, 5, 0.1, '', true)}
+                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 5, 0.1, '', true)}
                         </div>
                         
                         {/* Column 3: Supplier Savings Rate */}
@@ -609,7 +599,6 @@ export default function SCFComparison() {
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Payment Terms</h3>
                     {renderInput('Standard Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
-                    {renderInput('Cross-Border Share (excl. services)', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">SCF Payment Timing</h3>
