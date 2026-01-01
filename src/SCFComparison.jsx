@@ -23,9 +23,6 @@ export default function SCFComparison() {
   // 1) Company & spend profile
   const [currencySymbol, setCurrencySymbol] = useState(() => loadSavedValue('currencySymbol', '$'));
   const [totalProcurementSpend, setTotalProcurementSpend] = useState(() => loadSavedValue('totalProcurementSpend', 1800));
-  const [goodsPct, setGoodsPct] = useState(() => loadSavedValue('goodsPct', 75));
-  const [servicesPct, setServicesPct] = useState(() => loadSavedValue('servicesPct', 20));
-  const [tailSpendPct, setTailSpendPct] = useState(() => loadSavedValue('tailSpendPct', 5));
   
   // 2) Supplier base & concentration
   const [totalSuppliers, setTotalSuppliers] = useState(() => loadSavedValue('totalSuppliers', 8000));
@@ -42,15 +39,13 @@ export default function SCFComparison() {
   const [crossBorderSharePct, setCrossBorderSharePct] = useState(() => loadSavedValue('crossBorderSharePct', 40));
   
   // 4) Financing assumptions
-  const [buyerCostOfFundsPct, setBuyerCostOfFundsPct] = useState(() => loadSavedValue('buyerCostOfFundsPct', 8));
-  const [tradScfRatePct, setTradScfRatePct] = useState(() => loadSavedValue('tradScfRatePct', 7));
-  const [ptScfRatePct, setPtScfRatePct] = useState(() => loadSavedValue('ptScfRatePct', 6.5));
-  
-  // 5) Card programme assumptions
+  const [scfRatePct, setScfRatePct] = useState(() => loadSavedValue('scfRatePct', 7));
   const [longTailCardPayPct, setLongTailCardPayPct] = useState(() => loadSavedValue('longTailCardPayPct', 60));
   const [cardCostPct, setCardCostPct] = useState(() => loadSavedValue('cardCostPct', 3.5));
+  const [cardRebatePct, setCardRebatePct] = useState(() => loadSavedValue('cardRebatePct', 1.0));
+  const [cardFreeFundingDays, setCardFreeFundingDays] = useState(() => loadSavedValue('cardFreeFundingDays', 20));
   
-  // 6) Program-specific inputs - Participation rates
+  // 5) Program-specific inputs - Participation rates
   const [tradExistingScfPartPct, setTradExistingScfPartPct] = useState(() => loadSavedValue('tradExistingScfPartPct', 40));
   const [ptExistingScfPartPct, setPtExistingScfPartPct] = useState(() => loadSavedValue('ptExistingScfPartPct', 40));
   const [ptIdealScfPartPct, setPtIdealScfPartPct] = useState(() => loadSavedValue('ptIdealScfPartPct', 70));
@@ -65,7 +60,7 @@ export default function SCFComparison() {
   const [ptDiscountIdealPct, setPtDiscountIdealPct] = useState(() => loadSavedValue('ptDiscountIdealPct', 2.5));
   const [ptDiscountLongTailPct, setPtDiscountLongTailPct] = useState(() => loadSavedValue('ptDiscountLongTailPct', 3.5));
   
-  // Supplier savings rates by tier (what they save by being paid early)
+  // Supplier savings rates by tier
   const [tradSavingsExistingPct, setTradSavingsExistingPct] = useState(() => loadSavedValue('tradSavingsExistingPct', 8));
   const [ptSavingsExistingPct, setPtSavingsExistingPct] = useState(() => loadSavedValue('ptSavingsExistingPct', 10));
   const [tradSavingsIdealPct, setTradSavingsIdealPct] = useState(() => loadSavedValue('tradSavingsIdealPct', 12));
@@ -77,11 +72,10 @@ export default function SCFComparison() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const allValues = {
-        currencySymbol, totalProcurementSpend, goodsPct, servicesPct, tailSpendPct,
+        currencySymbol, totalProcurementSpend,
         totalSuppliers, existingScfSuppliers, idealScfSuppliers, existingScfSharePct, idealScfSharePct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct,
-        buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct,
-        longTailCardPayPct, cardCostPct,
+        scfRatePct, longTailCardPayPct, cardCostPct, cardRebatePct, cardFreeFundingDays,
         tradExistingScfPartPct, ptExistingScfPartPct, ptIdealScfPartPct, ptLongTailPartPct,
         tradDaysAfterApproval, ptDaysAfterHandover,
         ptDiscountExistingPct, ptDiscountIdealPct, ptDiscountLongTailPct,
@@ -94,11 +88,10 @@ export default function SCFComparison() {
       const timer = setTimeout(() => setShowSaved(false), 1500);
       return () => clearTimeout(timer);
     }
-  }, [currencySymbol, totalProcurementSpend, goodsPct, servicesPct, tailSpendPct,
+  }, [currencySymbol, totalProcurementSpend,
       totalSuppliers, existingScfSuppliers, idealScfSuppliers, existingScfSharePct, idealScfSharePct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct,
-      buyerCostOfFundsPct, tradScfRatePct, ptScfRatePct,
-      longTailCardPayPct, cardCostPct,
+      scfRatePct, longTailCardPayPct, cardCostPct, cardRebatePct, cardFreeFundingDays,
       tradExistingScfPartPct, ptExistingScfPartPct, ptIdealScfPartPct, ptLongTailPartPct,
       tradDaysAfterApproval, ptDaysAfterHandover,
       ptDiscountExistingPct, ptDiscountIdealPct, ptDiscountLongTailPct,
@@ -117,15 +110,11 @@ export default function SCFComparison() {
   // Spend by tier
   const spendExistingScf = totalSpend * (existingScfSharePct / 100);
   const spendIdealScf = totalSpend * (idealScfSharePct / 100);
-  const spendLongTail = totalSpend * (1 - existingScfSharePct / 100 - idealScfSharePct / 100);
+  const spendLongTail = totalSpend - spendExistingScf - spendIdealScf;
   
-  // Average time to approve invoices (weighted by spend type and geography)
-  const avgApprovalTime = (
-    (1 - servicesPct / 100) * delayDomestic * (domesticSharePct / 100) +
-    (servicesPct / 100) * delayDomestic +
-    (tailSpendPct / 100 + goodsPct / 100) * delayCrossBorder * (crossBorderSharePct / 100) +
-    processingTime
-  );
+  // Average time to approve invoices (weighted)
+  const avgApprovalTime = (domesticSharePct / 100) * (delayDomestic + processingTime) + 
+                          (crossBorderSharePct / 100) * (delayCrossBorder + processingTime);
   
   // TRADITIONAL SCF CALCULATIONS
   const tradEligibleSpend = spendExistingScf;
@@ -134,7 +123,7 @@ export default function SCFComparison() {
   const tradDaysAdvanced = Math.max(0, paymentTerms - tradSupplierCashReceipt);
   
   // Financing costs by tier (Traditional)
-  const tradFinancingExisting = tradParticipatingSpend * (tradScfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingExisting = tradParticipatingSpend * (scfRatePct / 100) * (tradDaysAdvanced / 365);
   const tradFinancingIdeal = 0;
   const tradFinancingLongTail = 0;
   const tradTotalFinancing = tradFinancingExisting + tradFinancingIdeal + tradFinancingLongTail;
@@ -143,30 +132,39 @@ export default function SCFComparison() {
   const tradDiscountExisting = 0;
   const tradDiscountIdeal = 0;
   const tradDiscountLongTail = 0;
-  const tradTotalDiscounts = 0;
   
   // Actual discount (MAX of financing cost and agreed discount)
   const tradActualDiscountExisting = Math.max(tradFinancingExisting, tradDiscountExisting);
   const tradActualDiscountIdeal = Math.max(tradFinancingIdeal, tradDiscountIdeal);
   const tradActualDiscountLongTail = Math.max(tradFinancingLongTail, tradDiscountLongTail);
-  const tradTotalActualDiscounts = tradActualDiscountExisting + tradActualDiscountIdeal + tradActualDiscountLongTail;
   
-  // Buyer benefit
-  const tradBuyerNetBenefit = tradTotalActualDiscounts - tradTotalFinancing;
+  // Card costs for long tail (Traditional)
+  const tradCardCosts = spendLongTail * (cardCostPct / 100) * (longTailCardPayPct / 100);
   
-  // Supplier time value benefits
+  // Total supplier costs (Traditional)
+  const tradTotalSupplierCosts = tradActualDiscountExisting + tradActualDiscountIdeal + tradActualDiscountLongTail + tradCardCosts;
+  
+  // Supplier time value benefits (Traditional)
   const tradSupplierBenefitExisting = tradParticipatingSpend * (tradSavingsExistingPct / 100) * (tradDaysAdvanced / 365);
   const tradSupplierBenefitIdeal = 0;
-  const tradSupplierBenefitLongTail = 0;
+  // Long tail benefit uses MIN function: MIN(participating + on cards, total long tail) * days * rate
+  const tradLongTailParticipating = spendLongTail * (0 / 100); // 0% participation
+  const tradLongTailOnCards = spendLongTail * (longTailCardPayPct / 100);
+  const tradSupplierBenefitLongTail = Math.min(tradLongTailParticipating + tradLongTailOnCards, spendLongTail) * (tradDaysAdvanced / 365) * (tradSavingsLongTailPct / 100);
   const tradTotalSupplierTimeValue = tradSupplierBenefitExisting + tradSupplierBenefitIdeal + tradSupplierBenefitLongTail;
   
-  // Card savings (Traditional - none)
-  const tradCardSavings = 0;
+  // Supplier net benefit (Traditional)
+  const tradSupplierNetBenefit = tradTotalSupplierTimeValue - tradTotalSupplierCosts;
   
-  // Supplier net benefit
-  const tradSupplierNetBenefit = tradCardSavings + tradTotalSupplierTimeValue - tradTotalActualDiscounts;
+  // Buyer card benefits (Traditional)
+  const tradBuyerCardRebate = (cardRebatePct / 100) * (longTailCardPayPct / 100) * spendLongTail;
+  const tradBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (longTailCardPayPct / 100) * spendLongTail;
   
-  // Total value created
+  // Buyer net benefit (Traditional)
+  const tradBuyerNetBenefit = tradActualDiscountExisting + tradActualDiscountIdeal + tradActualDiscountLongTail - 
+                              tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate;
+  
+  // Total value created (Traditional)
   const tradTotalValue = tradSupplierNetBenefit + tradBuyerNetBenefit;
   
   // Active suppliers (Traditional)
@@ -190,39 +188,44 @@ export default function SCFComparison() {
   const ptDaysFaster = tradSupplierCashReceipt - ptSupplierCashReceipt;
   
   // Financing costs by tier (PrimaTrade)
-  const ptFinancingExisting = ptParticipatingExisting * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptFinancingIdeal = ptParticipatingIdeal * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptFinancingLongTail = ptParticipatingLongTail * (ptScfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingExisting = ptParticipatingExisting * (scfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingIdeal = ptParticipatingIdeal * (scfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingLongTail = ptParticipatingLongTail * (scfRatePct / 100) * (ptDaysAdvanced / 365);
   const ptTotalFinancing = ptFinancingExisting + ptFinancingIdeal + ptFinancingLongTail;
   
   // Agreed discounts by tier
   const ptDiscountExisting = ptParticipatingExisting * (ptDiscountExistingPct / 100);
   const ptDiscountIdeal = ptParticipatingIdeal * (ptDiscountIdealPct / 100);
   const ptDiscountLongTail = ptParticipatingLongTail * (ptDiscountLongTailPct / 100);
-  const ptTotalDiscounts = ptDiscountExisting + ptDiscountIdeal + ptDiscountLongTail;
   
   // Actual discount (MAX of financing cost and agreed discount)
   const ptActualDiscountExisting = Math.max(ptFinancingExisting, ptDiscountExisting);
   const ptActualDiscountIdeal = Math.max(ptFinancingIdeal, ptDiscountIdeal);
   const ptActualDiscountLongTail = Math.max(ptFinancingLongTail, ptDiscountLongTail);
-  const ptTotalActualDiscounts = ptActualDiscountExisting + ptActualDiscountIdeal + ptActualDiscountLongTail;
   
-  // Buyer benefit
-  const ptBuyerNetBenefit = ptTotalActualDiscounts - ptTotalFinancing;
+  // No card costs for PrimaTrade
+  const ptCardCosts = 0;
   
-  // Supplier time value benefits
+  // Total supplier costs (PrimaTrade)
+  const ptTotalSupplierCosts = ptActualDiscountExisting + ptActualDiscountIdeal + ptActualDiscountLongTail + ptCardCosts;
+  
+  // Supplier time value benefits (PrimaTrade)
   const ptSupplierBenefitExisting = ptParticipatingExisting * (ptSavingsExistingPct / 100) * (ptDaysAdvanced / 365);
   const ptSupplierBenefitIdeal = ptParticipatingIdeal * (ptSavingsIdealPct / 100) * (ptDaysAdvanced / 365);
   const ptSupplierBenefitLongTail = ptParticipatingLongTail * (ptSavingsLongTailPct / 100) * (ptDaysAdvanced / 365);
   const ptTotalSupplierTimeValue = ptSupplierBenefitExisting + ptSupplierBenefitIdeal + ptSupplierBenefitLongTail;
   
-  // Card savings (PrimaTrade)
-  const ptCardSavings = ptParticipatingLongTail * (longTailCardPayPct / 100) * (cardCostPct / 100) * (ptLongTailPartPct / 100);
+  // Supplier net benefit (PrimaTrade)
+  const ptSupplierNetBenefit = ptTotalSupplierTimeValue - ptTotalSupplierCosts;
   
-  // Supplier net benefit
-  const ptSupplierNetBenefit = ptCardSavings + ptTotalSupplierTimeValue - ptTotalActualDiscounts;
+  // No card benefits for buyer with PrimaTrade
+  const ptBuyerCardRebate = 0;
+  const ptBuyerCardFreeFunding = 0;
   
-  // Total value created
+  // Buyer net benefit (PrimaTrade)
+  const ptBuyerNetBenefit = ptActualDiscountExisting + ptActualDiscountIdeal + ptActualDiscountLongTail - ptTotalFinancing;
+  
+  // Total value created (PrimaTrade)
   const ptTotalValue = ptSupplierNetBenefit + ptBuyerNetBenefit;
   
   // Active suppliers (PrimaTrade)
@@ -402,19 +405,6 @@ export default function SCFComparison() {
                     </div>
                     {renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM')}
                   </div>
-                  <div className="space-y-4">
-                    <div className="bg-gradient-to-br from-white to-red-50 rounded-lg p-4 border-2 border-[#F08070]">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-3">Spend Breakdown (must sum to 100%)</h3>
-                      <div className="space-y-3">
-                        {renderInput('Goods (for resale)', goodsPct, setGoodsPct, 0, 100, 1, '', true)}
-                        {renderInput('Services', servicesPct, setServicesPct, 0, 100, 1, '', true)}
-                        {renderInput('Tail / Incidental', tailSpendPct, setTailSpendPct, 0, 100, 1, '', true)}
-                        <div className={`text-right text-sm font-semibold ${Math.abs(goodsPct + servicesPct + tailSpendPct - 100) < 0.1 ? 'text-green-600' : 'text-red-600'}`}>
-                          Total: {(goodsPct + servicesPct + tailSpendPct).toFixed(1)}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -431,11 +421,32 @@ export default function SCFComparison() {
                     {renderInput('Ideal Suppliers for SCF (before long tail)', idealScfSuppliers, setIdealScfSuppliers, 100, 5000, 50, 'suppliers')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Spend Concentration</h3>
-                    {renderInput(`Existing SCF ${existingScfSuppliers} Suppliers' Share`, existingScfSharePct, setExistingScfSharePct, 0, 100, 1, '', true)}
-                    {renderInput(`${existingScfSuppliers}-${idealScfSuppliers} Suppliers' Share`, idealScfSharePct, setIdealScfSharePct, 0, 100, 1, '', true)}
-                    <div className="text-sm text-gray-600 mt-2">
-                      Long tail share: {(100 - existingScfSharePct - idealScfSharePct).toFixed(1)}%
+                    <div className="bg-gradient-to-br from-white to-red-50 rounded-lg p-4 border-2 border-[#F08070]">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-3">Spend Concentration (must sum to 100%)</h3>
+                      <div className="space-y-3">
+                        {renderInput(`Existing SCF ${existingScfSuppliers} Suppliers' Share`, existingScfSharePct, setExistingScfSharePct, 0, 100, 1, '', true)}
+                        {renderInput(`${existingScfSuppliers}-${idealScfSuppliers} Suppliers' Share`, idealScfSharePct, setIdealScfSharePct, 0, 100, 1, '', true)}
+                        <div className="pt-2 border-t border-gray-200">
+                          <div className="flex justify-between items-baseline mb-2">
+                            <label className="text-sm font-medium text-gray-700">Long Tail Share (auto-calculated)</label>
+                            <span className={`text-sm font-semibold ${(100 - existingScfSharePct - idealScfSharePct) >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                              {(100 - existingScfSharePct - idealScfSharePct).toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
+                        {(existingScfSharePct + idealScfSharePct) > 100 && (
+                          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-700 font-medium">
+                              ⚠️ Error: Total exceeds 100%. Please adjust the sliders above so the Long Tail share is 0% or positive.
+                            </p>
+                          </div>
+                        )}
+                        {(existingScfSharePct + idealScfSharePct) <= 100 && (
+                          <div className={`text-right text-sm font-semibold ${Math.abs(existingScfSharePct + idealScfSharePct + (100 - existingScfSharePct - idealScfSharePct) - 100) < 0.1 ? 'text-green-600' : 'text-red-600'}`}>
+                            Total: {(existingScfSharePct + idealScfSharePct + (100 - existingScfSharePct - idealScfSharePct)).toFixed(1)}%
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -457,9 +468,9 @@ export default function SCFComparison() {
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Payment Terms</h3>
                     {renderInput('Standard Payment Terms (from invoice)', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
-                    {renderInput('Cross-Border Share of Spend', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                    {renderInput('Cross-Border Share (excl. services)', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                     <div className="text-sm text-gray-600 mt-2">
-                      Domestic share: {(100 - crossBorderSharePct).toFixed(1)}%
+                      Domestic & services share: {(100 - crossBorderSharePct).toFixed(1)}%
                     </div>
                   </div>
                 </div>
@@ -473,14 +484,15 @@ export default function SCFComparison() {
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    {renderInput('Buyer Cost of Funds / WACC', buyerCostOfFundsPct, setBuyerCostOfFundsPct, 0, 20, 0.1, '', true)}
-                    {renderInput('Traditional SCF Funder Rate', tradScfRatePct, setTradScfRatePct, 0, 20, 0.1, '', true)}
-                    {renderInput('PrimaTrade Blended Funder Rate', ptScfRatePct, setPtScfRatePct, 0, 20, 0.1, '', true)}
+                    <h3 className="text-sm font-semibold text-gray-700">SCF Funding</h3>
+                    {renderInput('SCF Funding Rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Card Programme</h3>
+                    <h3 className="text-sm font-semibold text-gray-700">Card Programme (Long Tail)</h3>
                     {renderInput('Long Tail on Cards Today', longTailCardPayPct, setLongTailCardPayPct, 0, 100, 5, '', true)}
-                    {renderInput('Card Programme Cost Rate', cardCostPct, setCardCostPct, 0, 10, 0.1, '', true)}
+                    {renderInput('Card Cost Rate (for suppliers)', cardCostPct, setCardCostPct, 0, 10, 0.1, '', true)}
+                    {renderInput('Card Rebate (for buyer)', cardRebatePct, setCardRebatePct, 0, 5, 0.1, '', true)}
+                    {renderInput('Free Funding Period (for buyer)', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
                   </div>
                 </div>
               </div>
@@ -714,6 +726,23 @@ export default function SCFComparison() {
                     </tbody>
                   </table>
                 </div>
+                
+                {/* Card Benefits Detail for Traditional SCF */}
+                {tradBuyerCardRebate > 0 || tradBuyerCardFreeFunding > 0 ? (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Traditional SCF Card Benefits (included in buyer benefit above):</h3>
+                    <div className="space-y-1 text-sm text-gray-700">
+                      <div className="flex justify-between">
+                        <span>Card rebate from suppliers on cards:</span>
+                        <span className="font-medium">{formatCurrency(tradBuyerCardRebate)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Free funding period benefit:</span>
+                        <span className="font-medium">{formatCurrency(tradBuyerCardFreeFunding)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {/* Key Benefits */}
@@ -731,7 +760,7 @@ export default function SCFComparison() {
                     <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
                     <div>
                       <div className="font-semibold text-lg">Supplier Discount Flexibility</div>
-                      <div className="text-red-100">PrimaTrade enables early payment discounts that can exceed financing costs, creating {formatCurrency(ptBuyerNetBenefit)} annual buyer value vs {formatCurrency(tradBuyerNetBenefit)} in Traditional SCF</div>
+                      <div className="text-red-100">PrimaTrade enables early payment discounts that exceed financing costs, diverting card charges to buyer benefit: {formatCurrency(ptBuyerNetBenefit)} annual buyer value vs {formatCurrency(tradBuyerNetBenefit)} in Traditional SCF</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -745,7 +774,7 @@ export default function SCFComparison() {
                     <CheckCircle className="w-6 h-6 flex-shrink-0 mt-1" />
                     <div>
                       <div className="font-semibold text-lg">Long Tail Inclusion</div>
-                      <div className="text-red-100">All suppliers ({formatNumber(totalSuppliers)} total) can participate vs only {existingScfSuppliers} in Traditional SCF — adding {formatNumber(deltaActiveSuppliers, 0)} active suppliers. Captures card costs (up to {formatPercent(cardCostPct)}) for buyer benefit: {formatCurrency(ptCardSavings)} annually.</div>
+                      <div className="text-red-100">All suppliers ({formatNumber(totalSuppliers)} total) can participate vs only {existingScfSuppliers} in Traditional SCF — adding {formatNumber(deltaActiveSuppliers, 0)} active suppliers. Eliminates card costs (up to {formatPercent(cardCostPct)}) for suppliers while buyer loses card rebates but gains early payment discounts.</div>
                     </div>
                   </div>
                 </div>
