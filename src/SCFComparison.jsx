@@ -38,6 +38,7 @@ export default function SCFComparison() {
   // Tier 2: Next Level (50-1000)
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
   const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 30));
+  const [tier2TradPartPct, setTier2TradPartPct] = useState(() => loadSavedValue('tier2TradPartPct', 0));
   const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
   const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
   const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.5));
@@ -45,6 +46,7 @@ export default function SCFComparison() {
   const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 15));
   
   // Tier 3: Long Tail (auto-calculated)
+  const [tier3TradPartPct, setTier3TradPartPct] = useState(() => loadSavedValue('tier3TradPartPct', 0));
   const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 60));
   const [tier3TradDiscountPct, setTier3TradDiscountPct] = useState(() => loadSavedValue('tier3TradDiscountPct', 0));
   const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.5));
@@ -73,8 +75,8 @@ export default function SCFComparison() {
       const allValues = {
         currencySymbol, totalProcurementSpend, totalSuppliers,
         tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-        tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-        tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+        tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays
       };
@@ -86,8 +88,8 @@ export default function SCFComparison() {
     }
   }, [currencySymbol, totalProcurementSpend, totalSuppliers,
       tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-      tier2Suppliers, tier2SpendPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-      tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+      tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
+      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays]);
 
@@ -114,21 +116,23 @@ export default function SCFComparison() {
                           (crossBorderSharePct / 100) * (delayCrossBorder + processingTime);
   
   // TRADITIONAL SCF CALCULATIONS
-  const tradEligibleSpend = spendTier1;
-  const tradParticipatingSpend = spendTier1 * (tier1TradPartPct / 100);
+  const tradEligibleSpend = spendTier1 + spendTier2 + spendTier3;
+  const tradParticipatingTier1 = spendTier1 * (tier1TradPartPct / 100);
+  const tradParticipatingTier2 = spendTier2 * (tier2TradPartPct / 100);
+  const tradParticipatingTier3 = spendTier3 * (tier3TradPartPct / 100);
+  const tradParticipatingSpend = tradParticipatingTier1 + tradParticipatingTier2 + tradParticipatingTier3;
   const tradSupplierCashReceipt = avgApprovalTime + tradDaysAfterApproval;
   const tradDaysAdvanced = Math.max(0, paymentTerms - tradSupplierCashReceipt);
   
   // Financing costs by tier (Traditional)
-  const tradFinancingTier1 = tradParticipatingSpend * (scfRatePct / 100) * (tradDaysAdvanced / 365);
-  const tradFinancingTier2 = 0;
-  const tradFinancingTier3 = 0;
-  const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
+  const tradFinancingTier1 = tradParticipatingTier1 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingTier2 = tradParticipatingTier2 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
+  const tradFinancingTier3 = tradParticipatingTier3 * (scfRatePct / 100) * (tradDaysAdvanced / 365);const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
   
   // Discounts by tier (Traditional)
-  const tradDiscountTier1 = tradParticipatingSpend * (tier1TradDiscountPct / 100);
-  const tradDiscountTier2 = spendTier2 * (0 / 100) * (tier2TradDiscountPct / 100);
-  const tradDiscountTier3 = spendTier3 * (0 / 100) * (tier3TradDiscountPct / 100);
+  const tradDiscountTier1 = tradParticipatingTier1 * (tier1TradDiscountPct / 100);
+  const tradDiscountTier2 = tradParticipatingTier2 * (tier2TradDiscountPct / 100);
+  const tradDiscountTier3 = tradParticipatingTier3 * (tier3TradDiscountPct / 100);
   
   // Actual discount (MAX of financing cost and agreed discount)
   const tradActualDiscountTier1 = Math.max(tradFinancingTier1, tradDiscountTier1);
@@ -142,10 +146,10 @@ export default function SCFComparison() {
   const tradTotalSupplierCosts = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 + tradCardCosts;
   
   // Supplier time value benefits (Traditional)
-  const tradSupplierBenefitTier1 = tradParticipatingSpend * (tier1TradSavingsPct / 100) * (tradDaysAdvanced / 365);
-  const tradSupplierBenefitTier2 = 0;
+  const tradSupplierBenefitTier1 = tradParticipatingTier1 * (tier1TradSavingsPct / 100) * (tradDaysAdvanced / 365);
+  const tradSupplierBenefitTier2 = tradParticipatingTier2 * (tier2TradSavingsPct / 100) * (tradDaysAdvanced / 365);
   // Tier 3 benefit uses MIN function
-  const tradTier3Participating = spendTier3 * (0 / 100);
+  const tradTier3Participating = tradParticipatingTier3;
   const tradTier3OnCards = spendTier3 * (tier3CardUsagePct / 100);
   const tradSupplierBenefitTier3 = Math.min(tradTier3Participating + tradTier3OnCards, spendTier3) * (tradDaysAdvanced / 365) * (tier3TradSavingsPct / 100);
   const tradTotalSupplierTimeValue = tradSupplierBenefitTier1 + tradSupplierBenefitTier2 + tradSupplierBenefitTier3;
@@ -172,8 +176,8 @@ export default function SCFComparison() {
   
   // Active suppliers (Traditional)
   const tradActiveTier1 = tier1Suppliers * (tier1TradPartPct / 100);
-  const tradActiveTier2 = 0;
-  const tradActiveTier3 = 0;
+  const tradActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2TradPartPct / 100);
+  const tradActiveTier3 = tier3Suppliers * (tier3TradPartPct / 100);
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
   
   // PRIMATRADE CALCULATIONS
@@ -243,11 +247,13 @@ export default function SCFComparison() {
   // Suppliers switching from cards
   const ptSuppliersFromCards = ptActiveTier3;
   
+  const tradEligibleSuppliers = tier1Suppliers + (tier2Suppliers - tier1Suppliers) + tier3Suppliers;
+
   // DELTAS
   const deltaEligibleSpend = ptEligibleSpend - tradEligibleSpend;
   const deltaParticipatingSpend = ptParticipatingSpend - tradParticipatingSpend;
   const deltaOutstandingBalance = ptOutstandingBalance - tradOutstandingBalance;
-  const deltaEligibleSuppliers = totalSuppliers - tier1Suppliers;
+  const deltaEligibleSuppliers = totalSuppliers - tradEligibleSuppliers;
   const deltaActiveSuppliers = ptTotalActive - tradTotalActive;
   const deltaSuppliersFromCards = ptSuppliersFromCards;
   const deltaCashReceipt = ptSupplierCashReceipt - tradSupplierCashReceipt;
@@ -487,12 +493,7 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation Rate</h4>
                           <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
+                          {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true)}
                           {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
                         </div>
                         
@@ -543,13 +544,7 @@ export default function SCFComparison() {
                         {/* Column 1: Participation Rate */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation Rate</h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-baseline">
-                              <label className="text-sm font-medium text-gray-700">Traditional SCF</label>
-                              <span className="text-sm font-semibold text-gray-900">0.0%</span>
-                            </div>
-                            <div className="text-xs text-gray-500 italic">Not eligible</div>
-                          </div>
+                          {renderInput('Traditional SCF', tier3TradPartPct, setTier3TradPartPct, 0, 100, 5, '', true)}
                           {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true)}
                         </div>
                         
@@ -591,13 +586,13 @@ export default function SCFComparison() {
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Invoice Processing</h3>
+                    <h3 className="text-sm font-semibold text-gray-700">Delivery Timing</h3>
                     {renderInput('Handover to Delivery (Domestic)', delayDomestic, setDelayDomestic, 0, 30, 1, 'days')}
                     {renderInput('Handover to Delivery (Cross-Border)', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days')}
-                    {renderInput('Delivery to Approval', processingTime, setProcessingTime, 0, 30, 1, 'days')}
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Payment Terms</h3>
+                    <h3 className="text-sm font-semibold text-gray-700">Term and Approval Timing</h3>
+                    {renderInput('Delivery to Approval', processingTime, setProcessingTime, 0, 30, 1, 'days')}
                     {renderInput('Standard Payment Terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days')}
                   </div>
                   <div className="space-y-4">
