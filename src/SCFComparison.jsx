@@ -422,10 +422,10 @@ export default function SCFComparison() {
                     {renderInput('Total Procurement Spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM')}
                   </div>
                   <div>
-                    {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
+                    {renderInput('Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
                   </div>
                   <div>
-                    {renderInput('International share%', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                    {renderInput('International Share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div>
                     {renderInput('SCF Funding Rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
@@ -488,7 +488,7 @@ export default function SCFComparison() {
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
                          <div className="w-full max-w-[260px]">
-                          {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full')}
+                          {renderInput('Ideal further suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full')}
                         </div>
                         <div className="w-full max-w-[260px]">
                           {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full')}
