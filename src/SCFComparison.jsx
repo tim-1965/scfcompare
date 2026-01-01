@@ -487,31 +487,32 @@ export default function SCFComparison() {
                         {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true)}
                       </div>
                       
-                      {/* Three Columns */}
-                      <div className="grid md:grid-cols-3 gap-6">
-                        {/* Column 1: Participation Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation Rate</h4>
-                          <div className="space-y-2">
-                          {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true)}
-                          {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
-                        </div>
-                        
-                        {/* Column 2: Early Payment Discount */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early Payment Discount</h4>
-                          {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true)}
-                          {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true)}
-                        </div>
-                        
-                        {/* Column 3: Supplier Savings Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier Savings Rate</h4>
-                          {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true)}
-                          {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true)}
+                       {/* Three Columns */}
+                        <div className="grid md:grid-cols-3 gap-6">
+                          {/* Column 1: Participation Rate */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation Rate</h4>
+                            <div className="space-y-2">
+                              {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true)}
+                              {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true)}
+                            </div>
+                          </div>
+
+                          {/* Column 2: Early Payment Discount */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early Payment Discount</h4>
+                            {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true)}
+                            {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true)}
+                          </div>
+
+                          {/* Column 3: Supplier Savings Rate */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier Savings Rate</h4>
+                            {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true)}
+                            {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true)}
+                          </div>
                         </div>
                       </div>
-                    </div>
                   </div>
 
                   {/* Tier 3: Long Tail */}
