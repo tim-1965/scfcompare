@@ -284,7 +284,7 @@ export default function SCFComparison() {
     return `${value.toFixed(1)}%`;
   };
 
-  const renderInput = (label, value, setValue, min, max, step, unit = '', isPercent = false, disabled = false) => (
+  const renderInput = (label, value, setValue, min, max, step, unit = '', isPercent = false, disabled = false, sliderWidth = 'w-full') => (
     <div className="space-y-2">
       <div className="flex justify-between items-baseline">
         <label className={`text-sm font-medium ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>{label}</label>
@@ -316,7 +316,7 @@ export default function SCFComparison() {
           step={step}
           value={value}
           onChange={(e) => setValue(parseFloat(e.target.value))}
-          className="slider w-full"
+           className={`slider ${sliderWidth}`}
           style={{
             background: `linear-gradient(to right, #F08070 0%, #F08070 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
           }}
@@ -425,7 +425,7 @@ export default function SCFComparison() {
                     {renderInput('Total Number of Suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '')}
                   </div>
                   <div>
-                    {renderInput('Cross-Border Share (excl. services)', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
+                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true)}
                   </div>
                   <div>
                     {renderInput('SCF Funding Rate (Annual)', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true)}
@@ -447,8 +447,8 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
-                        {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '')}
-                        {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true)}
+                        {renderInput('Number of Suppliers', tier1Suppliers, setTier1Suppliers, 10, 500, 10, '', false, false, 'w-full max-w-[260px]')}
+                        {renderInput('Share of Total Spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full max-w-[260px]')}
                       </div>
                       
                       {/* Three Columns */}
@@ -483,8 +483,8 @@ export default function SCFComparison() {
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
-                        {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '')}
-                        {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true)}
+                        {renderInput('Ideal Suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full max-w-[260px]')}
+                        {renderInput('Share of Total Spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full max-w-[260px]')}
                       </div>
                       
                        {/* Three Columns */}
@@ -571,7 +571,7 @@ export default function SCFComparison() {
                           {renderInput('Card Usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true)}
                           {renderInput('Supplier Cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true)}
                           {renderInput('Buyer Rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true)}
-                          {renderInput('Free Funding Period (buyer)', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
+                          {renderInput('Buyer Free Period', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days')}
                         </div>
                       </div>
                     </div>
