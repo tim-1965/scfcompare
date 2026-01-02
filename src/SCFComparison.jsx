@@ -126,6 +126,8 @@ export default function SCFComparison() {
   const [tier1PtDiscountPct, setTier1PtDiscountPct] = useState(() => loadSavedValue('tier1PtDiscountPct', 0));
   const [tier1TradSavingsPct, setTier1TradSavingsPct] = useState(() => loadSavedValue('tier1TradSavingsPct', 8));
   const [tier1PtSavingsPct, setTier1PtSavingsPct] = useState(() => loadSavedValue('tier1PtSavingsPct', 10));
+  const [tier1TradPaymentTerms, setTier1TradPaymentTerms] = useState(() => loadSavedValue('tier1TradPaymentTerms', 90));
+  const [tier1PtPaymentTerms, setTier1PtPaymentTerms] = useState(() => loadSavedValue('tier1PtPaymentTerms', 90));
   
   // Tier 2: Next Level (50-1000)
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
@@ -136,6 +138,8 @@ export default function SCFComparison() {
   const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.0));
   const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 10));
   const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 12));
+  const [tier2TradPaymentTerms, setTier2TradPaymentTerms] = useState(() => loadSavedValue('tier2TradPaymentTerms', 45));
+  const [tier2PtPaymentTerms, setTier2PtPaymentTerms] = useState(() => loadSavedValue('tier2PtPaymentTerms', 90));
   
   // Tier 3: Long Tail (auto-calculated)
   const [tier3TradPartPct, setTier3TradPartPct] = useState(() => loadSavedValue('tier3TradPartPct', 0));
@@ -148,12 +152,13 @@ export default function SCFComparison() {
   const [tier3CardCostPct, setTier3CardCostPct] = useState(() => loadSavedValue('tier3CardCostPct', 3.5));
   const [tier3CardRebatePct, setTier3CardRebatePct] = useState(() => loadSavedValue('tier3CardRebatePct', 1.0));
   const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 25));
+  const [tier3TradPaymentTerms, setTier3TradPaymentTerms] = useState(() => loadSavedValue('tier3TradPaymentTerms', 45));
+  const [tier3PtPaymentTerms, setTier3PtPaymentTerms] = useState(() => loadSavedValue('tier3PtPaymentTerms', 90));
   
   // AP Process & Payment Timing
   const [delayDomestic, setDelayDomestic] = useState(() => loadSavedValue('delayDomestic', 4));
   const [delayCrossBorder, setDelayCrossBorder] = useState(() => loadSavedValue('delayCrossBorder', 21));
   const [processingTime, setProcessingTime] = useState(() => loadSavedValue('processingTime', 6));
-  const [paymentTerms, setPaymentTerms] = useState(() => loadSavedValue('paymentTerms', 60));
   const [crossBorderSharePct, setCrossBorderSharePct] = useState(() => loadSavedValue('crossBorderSharePct', 40));
   const [tradDaysAfterApproval, setTradDaysAfterApproval] = useState(() => loadSavedValue('tradDaysAfterApproval', 2));
   const [ptDaysAfterHandover, setPtDaysAfterHandover] = useState(() => loadSavedValue('ptDaysAfterHandover', 2));
@@ -165,8 +170,7 @@ export default function SCFComparison() {
   // Simulation inputs
   const [turnover, setTurnover] = useState(() => loadSavedValue('turnover', 750000000));
   const [costOfSales, setCostOfSales] = useState(() => loadSavedValue('costOfSales', 500000000));
-  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 50000000));
-  const [profitBeforeTax, setProfitBeforeTax] = useState(() => loadSavedValue('profitBeforeTax', 10000000));
+  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 30000000));
   const [netInterest, setNetInterest] = useState(() => loadSavedValue('netInterest', 40000000));
   const [ebitda, setEbitda] = useState(() => loadSavedValue('ebitda', 90000000));
   const [tradePayables, setTradePayables] = useState(() => loadSavedValue('tradePayables', 82000000));
@@ -179,10 +183,10 @@ export default function SCFComparison() {
     if (typeof window !== 'undefined') {
       const allValues = {
         currencySymbol, totalProcurementSpend, totalSuppliers,
-        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-        tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
-        delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
+        tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct, tier1TradPaymentTerms, tier1PtPaymentTerms,
+        tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct, tier2TradPaymentTerms, tier2PtPaymentTerms,
+        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct, tier3TradPaymentTerms, tier3PtPaymentTerms,
+        delayDomestic, delayCrossBorder, processingTime, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays,
         turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow
       };
@@ -193,10 +197,10 @@ export default function SCFComparison() {
       return () => clearTimeout(timer);
     }
   }, [currencySymbol, totalProcurementSpend, totalSuppliers,
-      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
-      tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
-      delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
+      tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct, tier1TradPaymentTerms, tier1PtPaymentTerms,
+      tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct, tier2TradPaymentTerms, tier2PtPaymentTerms,
+      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct, tier3TradPaymentTerms, tier3PtPaymentTerms,
+      delayDomestic, delayCrossBorder, processingTime, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays,
       turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow]);
 
@@ -230,6 +234,8 @@ export default function SCFComparison() {
       setTier1PtDiscountPct(0);
       setTier1TradSavingsPct(8);
       setTier1PtSavingsPct(10);
+      setTier1TradPaymentTerms(90);
+      setTier1PtPaymentTerms(90);
       setTier2Suppliers(1000);
       setTier2SpendPct(25);
       setTier2TradPartPct(0);
@@ -238,6 +244,8 @@ export default function SCFComparison() {
       setTier2PtDiscountPct(2.0);
       setTier2TradSavingsPct(10);
       setTier2PtSavingsPct(12);
+      setTier2TradPaymentTerms(45);
+      setTier2PtPaymentTerms(90);
       setTier3TradPartPct(0);
       setTier3PtPartPct(80);
       setTier3TradDiscountPct(0);
@@ -248,10 +256,11 @@ export default function SCFComparison() {
       setTier3CardCostPct(3.5);
       setTier3CardRebatePct(1.0);
       setTier3CardRemainPct(15);
+      setTier3TradPaymentTerms(45);
+      setTier3PtPaymentTerms(90);
       setDelayDomestic(4);
       setDelayCrossBorder(21);
       setProcessingTime(6);
-      setPaymentTerms(60);
       setCrossBorderSharePct(40);
       setTradDaysAfterApproval(3);
       setPtDaysAfterHandover(3);
@@ -295,12 +304,17 @@ export default function SCFComparison() {
   const tradParticipatingTier3 = spendTier3 * (tier3TradPartPct / 100);
   const tradParticipatingSpend = tradParticipatingTier1 + tradParticipatingTier2 + tradParticipatingTier3;
   const tradSupplierCashReceipt = avgApprovalTime + tradDaysAfterApproval;
-  const tradDaysAdvanced = Math.max(0, paymentTerms - tradSupplierCashReceipt);
+  
+  // Tier-specific days advanced based on tier-specific payment terms
+  const tradDaysAdvancedTier1 = Math.max(0, tier1TradPaymentTerms - tradSupplierCashReceipt);
+  const tradDaysAdvancedTier2 = Math.max(0, tier2TradPaymentTerms - tradSupplierCashReceipt);
+  const tradDaysAdvancedTier3 = Math.max(0, tier3TradPaymentTerms - tradSupplierCashReceipt);
   
   // Financing costs by tier (Traditional)
-  const tradFinancingTier1 = tradParticipatingTier1 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
-  const tradFinancingTier2 = tradParticipatingTier2 * (scfRatePct / 100) * (tradDaysAdvanced / 365);
-  const tradFinancingTier3 = tradParticipatingTier3 * (scfRatePct / 100) * (tradDaysAdvanced / 365);const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
+  const tradFinancingTier1 = tradParticipatingTier1 * (scfRatePct / 100) * (tradDaysAdvancedTier1 / 365);
+  const tradFinancingTier2 = tradParticipatingTier2 * (scfRatePct / 100) * (tradDaysAdvancedTier2 / 365);
+  const tradFinancingTier3 = tradParticipatingTier3 * (scfRatePct / 100) * (tradDaysAdvancedTier3 / 365);
+  const tradTotalFinancing = tradFinancingTier1 + tradFinancingTier2 + tradFinancingTier3;
   
   // Discounts by tier (Traditional)
   const tradDiscountTier1 = tradParticipatingTier1 * (tier1TradDiscountPct / 100);
@@ -319,12 +333,12 @@ export default function SCFComparison() {
   const tradTotalSupplierCosts = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 + tradCardCosts;
   
   // Supplier time value benefits (Traditional)
-  const tradSupplierBenefitTier1 = tradParticipatingTier1 * (tier1TradSavingsPct / 100) * (tradDaysAdvanced / 365);
-  const tradSupplierBenefitTier2 = tradParticipatingTier2 * (tier2TradSavingsPct / 100) * (tradDaysAdvanced / 365);
+  const tradSupplierBenefitTier1 = tradParticipatingTier1 * (tier1TradSavingsPct / 100) * (tradDaysAdvancedTier1 / 365);
+  const tradSupplierBenefitTier2 = tradParticipatingTier2 * (tier2TradSavingsPct / 100) * (tradDaysAdvancedTier2 / 365);
   // Tier 3 benefit uses MIN function
   const tradTier3Participating = tradParticipatingTier3;
   const tradTier3OnCards = spendTier3 * (tier3CardUsagePct / 100);
-  const tradSupplierBenefitTier3 = Math.min(tradTier3Participating + tradTier3OnCards, spendTier3) * (tradDaysAdvanced / 365) * (tier3TradSavingsPct / 100);
+  const tradSupplierBenefitTier3 = Math.min(tradTier3Participating + tradTier3OnCards, spendTier3) * (tradDaysAdvancedTier3 / 365) * (tier3TradSavingsPct / 100);
   const tradTotalSupplierTimeValue = tradSupplierBenefitTier1 + tradSupplierBenefitTier2 + tradSupplierBenefitTier3;
   
   // Supplier net benefit (Traditional)
@@ -334,8 +348,15 @@ export default function SCFComparison() {
   const tradBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   const tradBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3;
   
-  // Outstanding balance (Traditional)
-  const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
+  // Trade credit and working capital calculations (Traditional)
+  const tradCardSpend = spendTier3 * (tier3CardUsagePct / 100);
+  const tradCardFreeFundingBalance = tradCardSpend * (cardFreeFundingDays / 365);
+  const tradTotalTradeCredit = (spendTier1 * tier1TradPaymentTerms + spendTier2 * tier2TradPaymentTerms + spendTier3 * tier3TradPaymentTerms) / 365;
+  
+  // Outstanding balance (Traditional) - tier-specific calculation
+  const tradOutstandingBalance = (tradParticipatingTier1 * (tier1TradPartPct / 100) * tradDaysAdvancedTier1 +
+                                   tradParticipatingTier2 * (tier2TradPartPct / 100) * tradDaysAdvancedTier2 +
+                                   tradParticipatingTier3 * (tier3TradPartPct / 100) * tradDaysAdvancedTier3) / 365;
 
   // Benefit of SCF funding (Traditional) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
   const tradScfFundingBenefit = tradOutstandingBalance * (scfRatePct / 100);
@@ -368,13 +389,17 @@ export default function SCFComparison() {
   const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3 - (spendTier3 * (tier3PtPartPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   
   const ptSupplierCashReceipt = ptDaysAfterHandover;
-  const ptDaysAdvanced = Math.max(0, paymentTerms - ptSupplierCashReceipt);
+  
+  // Tier-specific days advanced based on tier-specific payment terms
+  const ptDaysAdvancedTier1 = Math.max(0, tier1PtPaymentTerms - ptSupplierCashReceipt);
+  const ptDaysAdvancedTier2 = Math.max(0, tier2PtPaymentTerms - ptSupplierCashReceipt);
+  const ptDaysAdvancedTier3 = Math.max(0, tier3PtPaymentTerms - ptSupplierCashReceipt);
   const ptDaysFaster = tradSupplierCashReceipt - ptSupplierCashReceipt;
   
   // Financing costs by tier (PrimaTrade)
-  const ptFinancingTier1 = ptParticipatingTier1 * (scfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptFinancingTier2 = ptParticipatingTier2 * (scfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvanced / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
+  const ptFinancingTier1 = ptParticipatingTier1 * (scfRatePct / 100) * (ptDaysAdvancedTier1 / 365);
+  const ptFinancingTier2 = ptParticipatingTier2 * (scfRatePct / 100) * (ptDaysAdvancedTier2 / 365);
+  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvancedTier3 / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalFinancing = ptFinancingTier1 + ptFinancingTier2 + ptFinancingTier3;
   
   // Agreed discounts by tier
@@ -394,9 +419,9 @@ export default function SCFComparison() {
   const ptTotalSupplierCosts = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 + ptCardCosts;
   
   // Supplier time value benefits (PrimaTrade)
-  const ptSupplierBenefitTier1 = ptParticipatingTier1 * (tier1PtSavingsPct / 100) * (ptDaysAdvanced / 365);
-  const ptSupplierBenefitTier2 = ptParticipatingTier2 * (tier2PtSavingsPct / 100) * (ptDaysAdvanced / 365);
-  const ptSupplierBenefitTier3 = (ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvanced / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) + tradSupplierBenefitTier3;
+  const ptSupplierBenefitTier1 = ptParticipatingTier1 * (tier1PtSavingsPct / 100) * (ptDaysAdvancedTier1 / 365);
+  const ptSupplierBenefitTier2 = ptParticipatingTier2 * (tier2PtSavingsPct / 100) * (ptDaysAdvancedTier2 / 365);
+  const ptSupplierBenefitTier3 = (ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvancedTier3 / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) + tradSupplierBenefitTier3;
   const ptTotalSupplierTimeValue = ptSupplierBenefitTier1 + ptSupplierBenefitTier2 + ptSupplierBenefitTier3;
   
   // Supplier net benefit (PrimaTrade)
@@ -406,8 +431,18 @@ export default function SCFComparison() {
   const ptBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3 * (tier3CardRemainPct / 100);
   const ptBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3 * (tier3CardRemainPct / 100);
   
-  // Outstanding balance (PrimaTrade)
-  const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
+  // Trade credit and working capital calculations (PrimaTrade)
+  const ptCardSpend = spendTier3 * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
+  const ptCardFreeFundingBalance = ptCardSpend * (cardFreeFundingDays / 365);
+  const ptTotalTradeCredit = (spendTier1 * tier1PtPaymentTerms + spendTier2 * tier2PtPaymentTerms + spendTier3 * tier3PtPaymentTerms) / 365;
+  
+  // Additional working capital generated by PrimaTrade
+  const additionalWorkingCapital = ptTotalTradeCredit - tradTotalTradeCredit + tradCardFreeFundingBalance - ptCardFreeFundingBalance;
+  
+  // Outstanding balance (PrimaTrade) - tier-specific calculation
+  const ptOutstandingBalance = (ptParticipatingTier1 * (tier1PtPartPct / 100) * ptDaysAdvancedTier1 +
+                                 ptParticipatingTier2 * (tier2PtPartPct / 100) * ptDaysAdvancedTier2 +
+                                 ptParticipatingTier3 * (tier3PtPartPct / 100) * ptDaysAdvancedTier3 * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) / 365;
 
   // Benefit of SCF funding (PrimaTrade) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
   const ptScfFundingBenefit = ptOutstandingBalance * (scfRatePct / 100);
@@ -460,8 +495,8 @@ export default function SCFComparison() {
   // Calculate delta of funding benefits (card rebates, free funding, SCF funding benefit)
   const deltaFundingBenefits = deltaBuyerBenefit - deltaEarlyPaymentDiscounts;
   
-  // Working capital released
-  const totalWCBenefit = deltaOutstandingBalance;
+  // Working capital released - use the more accurate calculation
+  const totalWCBenefit = additionalWorkingCapital;
   
   // Adjusted financials with PrimaTrade
   const adjustedCostOfSales = costOfSales - deltaEarlyPaymentDiscounts;
@@ -516,6 +551,12 @@ export default function SCFComparison() {
       trad: formatCurrency(tradOutstandingBalance),
       pt: formatCurrency(ptOutstandingBalance),
       tooltip: "The funding programme is bigger with more suppliers and with longer funding periods"
+    },
+    {
+      label: 'Additional working capital generated by PrimaTrade',
+      trad: formatCurrency(0),
+      pt: formatCurrency(additionalWorkingCapital),
+      tooltip: "Impact of PrimaTrade SCF (movement in trade credit and movement in card balances)"
     },
     {
       label: 'Number of suppliers eligible',
@@ -907,7 +948,7 @@ export default function SCFComparison() {
                       </div>
                       
                       {/* Three Columns */}
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {/* Column 1: Participation Rate */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
@@ -940,6 +981,17 @@ export default function SCFComparison() {
                             tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
                           })}
                         </div>
+                        
+                        {/* Column 4: Payment Terms */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Payment terms (days)</h4>
+                          {renderInput('Average payment term', tier1TradPaymentTerms, setTier1TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                            tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
+                          })}
+                          {renderInput('New payment term', tier1PtPaymentTerms, setTier1PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -963,7 +1015,7 @@ export default function SCFComparison() {
                       </div>
                       
                        {/* Three Columns */}
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                           {/* Column 1: Participation rate */}
                           <div className="space-y-3">
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
@@ -998,6 +1050,17 @@ export default function SCFComparison() {
                               tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
                             })}
                           </div>
+                          
+                          {/* Column 4: Payment Terms */}
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Payment terms (days)</h4>
+                            {renderInput('Average payment term', tier2TradPaymentTerms, setTier2TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                              tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
+                            })}
+                            {renderInput('New payment term', tier2PtPaymentTerms, setTier2PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                              tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
+                            })}
+                          </div>
                         </div>
                       </div>
                   </div>
@@ -1028,7 +1091,7 @@ export default function SCFComparison() {
                       </div>
                       
                       {/* Three Columns */}
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 border-b border-orange-200">
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-4 border-b border-orange-200">
                         {/* Column 1: Participation rate */}
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation rate</h4>
@@ -1059,6 +1122,17 @@ export default function SCFComparison() {
                           })}
                           {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
                             tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance, avoidance of card charges, and more efficient local financing.'
+                          })}
+                        </div>
+                        
+                        {/* Column 4: Payment Terms */}
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Payment terms (days)</h4>
+                          {renderInput('Average payment term', tier3TradPaymentTerms, setTier3TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                            tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
+                          })}
+                          {renderInput('New payment term', tier3PtPaymentTerms, setTier3PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
+                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
                           })}
                         </div>
                       </div>
@@ -1113,9 +1187,6 @@ export default function SCFComparison() {
                     <h3 className="text-sm font-semibold text-gray-700">Term and approval timing</h3>
                     {renderInput('Delivery to invoice approval', processingTime, setProcessingTime, 0, 30, 1, 'days', false, false, 'w-full', {
                       tooltip: 'The typical number of days it takes for invoices to be approved once delivery has been confirmed.'
-                    })}
-                    {renderInput('Standard invoice payment terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days', false, false, 'w-full', {
-                      tooltip: 'The standard term for invoices (days between issue date and payment due date) - typically measured from the date when services are delivered or goods handed over.'
                     })}
                   </div>
                   <div className="space-y-4">
@@ -1649,19 +1720,6 @@ export default function SCFComparison() {
                           </div>
                         </div>
                         
-                         <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Profit before Tax</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={profitBeforeTax / 1000000}
-                              onChange={(e) => setProfitBeforeTax(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
                         <div className="flex items-center justify-between gap-3">
                           <label className="text-sm text-gray-700 flex-1">EBITDA</label>
                           <div className="flex items-center gap-2">
@@ -1745,15 +1803,15 @@ export default function SCFComparison() {
                       
                       <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
                         <p>
-                          Upgrading your SCF offerings to a next generation solution can materially improve your financial ratios and your financial statements at enterprise level. PrimaTrade's platform is proven at scale and enables the support offereing SCF to be delivered to those suppliers that truly need it (mid-tier and long-tail suppliers) whilst monetising the benefits for your own P&L.
+                          Trade digitalisation can make a difference to the whole of your enterprise. In this tab, you can enter some key financial numbers from your P&L, balance sheet and cash flow - and we simulate the impact of trade digitalisation on those numbers and your ratios.
                         </p>
                         
                         <p>
-                          This simulation compares a traditional SCF solution (assumed to be already in the historic numbers) with the impact that PrimaTrade's platform can deliver. The key differences are: more suppliers are included (using PO match, automation and digitisation) and the efficiencies are monetised to benefit the buyer via early payment discounts.
+                          Most clients can deliver a material improvement in their key ratios (eg: interest cover, leverage, margins) as a result of the efficiencies which digitalisation brings.
                         </p>
                         
                         <p>
-                          Instead of suppliers using external funding (eg: factoring) or paying high fees to card providers, they are funded efficiently via the PrimaTrade platform with the buyer taking the P&L win of these costs for itself.
+                          This is not an accounting trick - these efficiencies are real. It is simply more efficient to have suppliers digitise their trade documents so that payments can be made more quickly, work in head office can be reduced, and the re-processing of paperwork by third parties (customs brokers, forwarders) can be stopped. PrimaTrade's platform surfaces these benefits and enables the importer to receive them without significant changes to processes or systems.
                         </p>
                       </div>
                     </div>
@@ -1801,12 +1859,6 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(netInterest)}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedNetInterest)}</td>
                         <td className="py-3 px-4 text-xs text-gray-600">Lower as net debt reduced by working capital improvements</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Profit before tax</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(profitBeforeTax)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedProfitBeforeTax)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reflects the benefit of discounts, rebates and lower interest costs </td>
                       </tr>
                       <tr className="bg-[#F08070]/10">
                         <td className="py-3 px-4 text-sm font-semibold">EBITDA</td>
