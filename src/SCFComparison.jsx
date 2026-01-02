@@ -197,12 +197,9 @@ export default function SCFComparison() {
 
   const handleReset = () => {
     if (window.confirm('Reset all values to defaults? This will clear any changes you have made.')) {
-      // Clear localStorage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('scfComparison');
       }
-      
-      // Reset all state to defaults
       setCurrencySymbol('$');
       setTotalProcurementSpend(500);
       setTotalSuppliers(8000);
@@ -1071,21 +1068,21 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Value of the additional trade credit the buyer receives which SCF supports">
+                            <Tooltip text="Buyer gets funding as it still pays invoices on 60 days even though suppliers are paid earlier">
                               <span>Benefit of funding provided to the buyer</span>
                             </Tooltip>
                           </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardFreeFunding + tradScfFundingBenefit)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptBuyerCardFreeFunding + ptScfFundingBenefit)}</td>
+                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptScfFundingBenefit)}</td>
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="The buyer benefits from early payment discounts (including diversion of card charges to itself)">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
                               <span>Benefit of discounts and rebates earned by the buyer</span>
                             </Tooltip>
                           </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardRebate + tradDiscountsPassedThrough)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptBuyerCardRebate + ptDiscountsPassedThrough)}</td>
+                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptDiscountsPassedThrough)}</td>
                         </tr>
                         <tr className="bg-green-50">
                           <td className="py-2 px-3 text-sm font-semibold text-gray-900">
@@ -1230,18 +1227,17 @@ export default function SCFComparison() {
                         note="Average delay between supplier payment and settlement by the buyer times the SCF rate"
                       />
                       <TableRow 
-                        label="Funding benefit provided by SCF (paid for by suppliers)"
+                        label="Benefit of SCF funding"
                         currencySymbol={currencySymbol}
                         tradValue={tradScfFundingBenefit}
                         ptValue={ptScfFundingBenefit}
                         note="Value of the additional trade credit the buyer receives which SCF supports"
                       />
                       <TableRow 
-                        label="Buyer benefit: early payment discounts less SCF costs (buyer P&L)"
+                        label="Early payment discounts less SCF costs"
                         currencySymbol={currencySymbol}
                         tradValue={tradDiscountsPassedThrough}
                         ptValue={ptDiscountsPassedThrough}
-                        note="Buyer's P&L win; PrimaTrade this amount reduces the cost of goods/services purchased"
                       />
                       <tr className="bg-green-100 font-bold">
                         <td className="py-2 px-3 text-sm">
