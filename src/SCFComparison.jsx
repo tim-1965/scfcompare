@@ -484,7 +484,8 @@ export default function SCFComparison() {
   const deltaActiveSuppliers = ptTotalActive - tradTotalActive;
   const deltaSuppliersFromCards = ptSuppliersFromCards;
   const deltaCashReceipt = ptSupplierCashReceipt - tradSupplierCashReceipt;
-  const deltaDaysAdvanced = ptDaysAdvanced - tradDaysAdvanced;
+  // Removed as no longer used
+  //const deltaDaysAdvanced = ptDaysAdvanced - tradDaysAdvanced;
   const deltaBuyerBenefit = ptBuyerNetBenefit - tradBuyerNetBenefit;
   const deltaSupplierBenefit = ptSupplierNetBenefit - tradSupplierNetBenefit;
   const deltaTotalValue = ptTotalValue - tradTotalValue;
