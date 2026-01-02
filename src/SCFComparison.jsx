@@ -451,7 +451,7 @@ export default function SCFComparison() {
       label: 'Working capital provided to suppliers',
       trad: formatCurrency(tradOutstandingBalance),
       pt: formatCurrency(ptOutstandingBalance),
-      tooltip: "The funding program is bigger with more suppliers and with longer funding periods"
+      tooltip: "The funding programme is bigger with more suppliers and with longer funding periods"
     },
     {
       label: 'Number of suppliers eligible',
@@ -469,7 +469,7 @@ export default function SCFComparison() {
       label: 'Total economic value of the SCF program',
       trad: formatCurrency(tradTotalValue),
       pt: formatCurrency(ptTotalValue),
-      tooltip: "Total value created by the program is bigger as it reaches those who need it"
+      tooltip: "Total value created by the programme is bigger as it reaches those who need it"
     }
   ];
 
@@ -618,7 +618,7 @@ export default function SCFComparison() {
         {/* Explanatory Text Box */}
         <div className="bg-gradient-to-r from-[#F08070]/10 to-[#D64933]/5 border-l-4 border-[#D64933] rounded-r-lg p-4 mb-6">
           <p className="text-sm text-gray-700 leading-relaxed">
-            This app enables you to compare a PrimaTrade SCF program with a traditional SCF program. Adjust the input parameters to reflect your company's procurement profile and current (or potential) SCF arrangements and card payment program. The results will update automatically.
+            This app enables you to compare a PrimaTrade SCF programme with a traditional SCF programme. Adjust the input parameters to reflect your company's procurement profile and current (or potential) SCF arrangements and card payment program. The results will update automatically.
             PrimaTrade offers the ability to reach all your suppliers supported by a high level of automation - even suppliers in the long tail and in difficult jurisdictions. 
             You can also replace expensive card payment programs with more efficient SCF, collecting an early payment discount to bring in-house the fees that are currently paid externally. 
             On top, PrimaTrade enables early payments to be approved before delivery (at shipment), delivering much earlier cash to suppliers and much more value.
@@ -730,11 +730,11 @@ export default function SCFComparison() {
                   PrimaTrade: innovations and differences
                 </h2>
           <p className="text-sm text-gray-700 leading-relaxed">
-            PrimaTrade's SCF platform is the first of the next generation of SCF solutions, already proven at scale. Key innovations include:'
-            <li><strong>Universal supplier access:</strong> PrimaTrade's platform automates buyer processes, document handling and payments to enable all suppliers to participate; suppliers in difficult jurisdictions and the long tail of smaller suppliers can be included using PrimaTrade's onboarding and KYC/AML capabilities.'</li>
-            <li><strong>Early payment at shipment:</strong> PrimaTrade enables buyers to approve early payments at shipment rather than delivery, bringing forward cash to suppliers by several weeks and increasing the value of the program.'</li>
-            <li><strong>Separation of discount and funding cost:</strong> PrimaTrade separates the early payment discount agreed with suppliers from the funding cost, routing the discount to the buyer P&L (net of funding costs) to maximise value for both parties.'</li>  
-            <li><strong>Card replacement:</strong> PrimaTrade enables buyers to replace expensive card payment programs with more efficient SCF funding, bringing the rebate in-house and reducing overall costs.
+            PrimaTrade's SCF platform is the first of the next generation of SCF solutions, already proven at scale. Key innovations include:
+            <li><strong>Universal supplier access:</strong> PrimaTrade's platform automates buyer processes (including early payment approvals before delivery), document handling and payments to enable all suppliers to participate; suppliers in difficult jurisdictions and the long tail of smaller suppliers can be included using PrimaTrade's onboarding and KYC/AML capabilities.</li>
+            <li><strong>Early payment at shipment:</strong> PrimaTrade enables buyers to approve early payments at shipment rather than delivery via supplier-driven PO matching and automation, bringing forward cash to suppliers by several weeks and increasing the value of the programme to both suppliers and buyers.</li>
+            <li><strong>Separation of discount and funding cost:</strong> PrimaTrade separates the early payment discount agreed with suppliers from the funding cost, routing the discount to the buyer P&L (net of funding costs) to maximise value for both parties.</li>  
+            <li><strong>Card programme replacement:</strong> PrimaTrade enables buyers to replace expensive card payment programmes with more efficient SCF funding, bringing the rebate in-house and reducing overall costs.
             </li>
           </p>
         </div>
