@@ -206,7 +206,7 @@ export default function SCFComparison() {
       setTier1Suppliers(50);
       setTier1SpendPct(65);
       setTier1TradPartPct(40);
-      setTier1PtPartPct(40);
+      setTier1PtPartPct(55);
       setTier1TradDiscountPct(0);
       setTier1PtDiscountPct(0);
       setTier1TradSavingsPct(8);
@@ -214,7 +214,7 @@ export default function SCFComparison() {
       setTier2Suppliers(1000);
       setTier2SpendPct(25);
       setTier2TradPartPct(0);
-      setTier2PtPartPct(65);
+      setTier2PtPartPct(70);
       setTier2TradDiscountPct(0);
       setTier2PtDiscountPct(2.0);
       setTier2TradSavingsPct(10);
@@ -228,14 +228,14 @@ export default function SCFComparison() {
       setTier3CardUsagePct(60);
       setTier3CardCostPct(3.5);
       setTier3CardRebatePct(1.0);
-      setTier3CardRemainPct(25);
+      setTier3CardRemainPct(15);
       setDelayDomestic(4);
       setDelayCrossBorder(21);
       setProcessingTime(6);
       setPaymentTerms(60);
       setCrossBorderSharePct(40);
-      setTradDaysAfterApproval(2);
-      setPtDaysAfterHandover(2);
+      setTradDaysAfterApproval(3);
+      setPtDaysAfterHandover(3);
       setScfRatePct(7);
       setCardFreeFundingDays(20);
     }
@@ -654,7 +654,7 @@ export default function SCFComparison() {
                   </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
                   <div>
-                    {renderInput('Total  spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
+                    {renderInput('Total spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
                       formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
                       parseInput: (input) => {
                         const numeric = input.replace(/[^0-9.]/g, '');
@@ -665,7 +665,7 @@ export default function SCFComparison() {
                     })}
                   </div>
                   <div>
-                    {renderInput('Number of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
+                    {renderInput('No. of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
                       tooltip: 'The total number of suppliers across goods + services.'
                     })}
                   </div>
@@ -980,10 +980,10 @@ export default function SCFComparison() {
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">SCF payment timing</h3>
                     {renderInput('Traditional SCF: after approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'Traditional SCF: the number of days it takes after invoice approval until the supplier receives funds, typically generation / transmission and processing of the payment file.'
+                      tooltip: 'Traditional SCF: the number of days it takes after invoice approval until the supplier requests and is paid its early payment, typically generation / transmission and processing of the payment file, supplier request being received and then actioned.'
                     })}
                     {renderInput('PrimaTrade: days after handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'PrimaTrade SCF: the number of days after goods hand over / service delivery for suppliers to PO match, automated early payment approval to be provided and the supplier receives funds.'
+                      tooltip: 'PrimaTrade SCF: the number of days after goods hand over / service delivery for suppliers to PO match, request early payment, for early payment approval to be given (which can be automated) and for the supplier to be paid. '
                     })}
                   </div>
                 </div>
@@ -1060,7 +1060,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Supplier benefit as a result of early payments">
+                            <Tooltip text="Supplier benefit as a result of early payments, calculated using supplier savings rates">
                               <span>Benefit of early payments to suppliers</span>
                             </Tooltip>
                           </td>
@@ -1069,7 +1069,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount)">
+                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount) and card costs">
                               <span>Cost of early payments (incl card) to suppliers</span>
                             </Tooltip>
                           </td>
@@ -1078,7 +1078,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b-2 border-gray-300 bg-blue-50">
                           <td className="py-2 px-3 text-sm font-semibold text-gray-900">
-                            <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost">
+                            <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost (and card costs)">
                               <span>Net supplier benefit</span>
                             </Tooltip>
                           </td>
@@ -1087,7 +1087,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Buyer gets funding as it still pays invoices on 60 days even though suppliers are paid earlier">
+                            <Tooltip text="Buyer gets a funding benefit via the cash flow support provided to suppliers by the SCF programme, calculated at the SCF rate.">
                               <span>Benefit of funding provided to the buyer</span>
                             </Tooltip>
                           </td>
@@ -1096,7 +1096,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost.">
                               <span>Benefit of discounts and rebates earned by the buyer</span>
                             </Tooltip>
                           </td>
@@ -1105,7 +1105,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="bg-green-50">
                           <td className="py-2 px-3 text-sm font-semibold text-gray-900">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) the P&L benefit arising from early payment discounts.">
                               <span>Net buyer benefit</span>
                             </Tooltip>
                           </td>
@@ -1139,49 +1139,49 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradFinancingTier1}
                         ptValue={ptFinancingTier1}
-                        note="Costs charged to suppliers by financiers (included in early payment discount)"
+                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
                       />
                       <TableRow 
                         label="Supplier SCF financing cost: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={tradFinancingTier2}
                         ptValue={ptFinancingTier2}
-                        note="Costs charged to suppliers by financiers (included in early payment discount)"
+                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
                       />
                       <TableRow 
                         label="Supplier SCF financing cost: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={tradFinancingTier3}
                         ptValue={ptFinancingTier3}
-                        note="Costs charged to suppliers by financiers (included in early payment discount)"
+                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
                       />
                       <TableRow 
                         label="Actual discount accepted: Tier 1"
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier1}
                         ptValue={ptActualDiscountTier1}
-                        note="Higher of the financing cost and the discount agreed with the buyer"
+                        note="Higher of the SCF financing cost and the discount agreed with the buyer"
                       />
                       <TableRow 
                         label="Actual discount accepted: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier2}
                         ptValue={ptActualDiscountTier2}
-                        note="Higher of the financing cost and the discount agreed with the buyer"
+                        note="Higher of the SCF financing cost and the discount agreed with the buyer"
                       />
                       <TableRow 
                         label="Actual discount accepted: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier3}
                         ptValue={ptActualDiscountTier3}
-                        note="Higher of the financing and the discount agreed with the buyer (ignoring any card charges)"
+                        note="Higher of the SCF financing and the discount agreed with the buyer (ignoring any card charges)"
                       />
                       <TableRow 
                         label="Card costs (long tail)"
                         currencySymbol={currencySymbol}
                         tradValue={tradCardCosts}
                         ptValue={ptCardCosts}
-                        note="Rate charged by card providers to suppliers (deducted from the supplier's receipt)"
+                        note="Rate charged by card providers to suppliers where supplier invoices are being settled by card (deducted from the supplier's receipt)"
                       />
                       <tr className="bg-gray-100 font-semibold">
                         <td className="py-2 px-3 text-sm">
@@ -1197,21 +1197,21 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier1}
                         ptValue={ptSupplierBenefitTier1}
-                        note="Supplier benefit as a result of early payments"
+                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
                       />
                       <TableRow 
                         label="Supplier benefit: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier2}
                         ptValue={ptSupplierBenefitTier2}
-                        note="Supplier benefit as a result of early payments"
+                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
                       />
                       <TableRow 
                         label="Supplier benefit: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier3}
                         ptValue={ptSupplierBenefitTier3}
-                        note="Supplier benefit as a result of early payments"
+                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
                       />
                       <tr className="bg-gray-100 font-semibold">
                         <td className="py-2 px-3 text-sm">
@@ -1224,7 +1224,7 @@ export default function SCFComparison() {
                       </tr>
                       <tr className="bg-blue-100 font-bold">
                         <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost">
+                          <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost and card costs">
                             <span>Supplier net benefit</span>
                           </Tooltip>
                         </td>
@@ -1236,21 +1236,21 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradBuyerCardRebate}
                         ptValue={ptBuyerCardRebate}
-                        note="Rebate returned to buyer by the card provider (out of the charge they make to suppliers)"
+                        note="Rebate returned to buyer by the card provider (out of the charge they make to suppliers)."
                       />
                       <TableRow 
                         label="Buyer free funding from cards"
                         currencySymbol={currencySymbol}
                         tradValue={tradBuyerCardFreeFunding}
                         ptValue={ptBuyerCardFreeFunding}
-                        note="Average delay between supplier payment and settlement by the buyer times the SCF rate"
+                        note="Average delay between supplier payment by the card provider and settlement by the buyer to the card provider times the SCF rate."
                       />
                       <TableRow 
                         label="Benefit of SCF funding"
                         currencySymbol={currencySymbol}
                         tradValue={tradScfFundingBenefit}
                         ptValue={ptScfFundingBenefit}
-                        note="Value of the additional trade credit the buyer receives which SCF supports"
+                        note="Value of the SCF working capital support to the supply chain that  the buyer receives calculated at the SCF rate."
                       />
                       <TableRow 
                         label="Early payment discounts less SCF costs"
@@ -1260,7 +1260,7 @@ export default function SCFComparison() {
                       />
                       <tr className="bg-green-100 font-bold">
                         <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                          <Tooltip text="Card rebates and funding benefit plus (PrimaTrade SCF only) early payment discounts less SCF financing costs">
                             <span>Buyer net benefit</span>
                           </Tooltip>
                         </td>
@@ -1269,7 +1269,7 @@ export default function SCFComparison() {
                       </tr>
                       <tr className="bg-[#F08070]/30 font-bold text-base">
                         <td className="py-4 px-4">
-                          <Tooltip text="Total of buyer and supplier net benefits">
+                          <Tooltip text="Total of buyer and supplier net benefits - so the economic value created by the SCF programme">
                             <span>Total value created (buyer + suppliers)</span>
                           </Tooltip>
                         </td>
@@ -1344,7 +1344,7 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={`${tier1Suppliers} suppliers`}
                         ptValue={`${totalSuppliers} suppliers`}
-                        note="PrimaTrade can include the full supplier base"
+                        note="PrimaTrade can include the full supplier base as a result of automation, digitisation, PO Match and PrimaTrade on-boarding capabilities."
                       />
                       <TableRow 
                         label={`Spend: Tier 1 suppliers`}
@@ -1365,7 +1365,7 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={spendTier3}
                         ptValue={spendTier3}
-                        note="Remaining total spend"
+                        note="Remaining total spend being the share of the long-tail supply chain."
                       />
                       <TableRow 
                         label="% Tier 1 participating"
@@ -1390,28 +1390,28 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradParticipatingSpend}
                         ptValue={ptParticipatingSpend}
-                        note="Participating spend × funding coverage."
+                        note="The total spend of participating suppliers that is funded early via the SCF programme."
                       />
                       <TableRow 
                         label="Active suppliers: Tier 1"
                         currencySymbol={currencySymbol}
                         tradValue={`${formatNumber(tradActiveTier1, 0)} suppliers`}
                         ptValue={`${formatNumber(ptActiveTier1, 0)} suppliers`}
-                        note="Likely little change for existing larger suppliers in the SCF program"
+                        note="Larger suppliers should find PrimaTrade SCF more attractive because the payments come significantly earlier (early payments are truly early)."
                       />
                       <TableRow 
                         label="Active suppliers: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={`${formatNumber(tradActiveTier2, 0)} suppliers`}
                         ptValue={`${formatNumber(ptActiveTier2, 0)} suppliers`}
-                        note="More suppliers included via automation supported by digitisation and PO Match"
+                        note="More suppliers included via automation supported by digitisation and PO Match. and PrimaTrade on-boarding capabilities."
                       />
                       <TableRow 
                         label="Active suppliers: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={`${formatNumber(tradActiveTier3, 0)} suppliers`}
                         ptValue={`${formatNumber(ptActiveTier3, 0)} suppliers`}
-                        note="More suppliers included via automation supported by digitisation and PO Match"
+                        note="Significantly more suppliers included via automation supported by digitisation and PO Match, and PrimaTrade on-boarding capabilities."
                       />
                     </tbody>
                   </table>
