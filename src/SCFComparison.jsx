@@ -564,6 +564,13 @@ export default function SCFComparison() {
 
       {/* Main Content */}
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Explanatory Text Box */}
+        <div className="bg-gradient-to-r from-[#F08070]/10 to-[#D64933]/5 border-l-4 border-[#D64933] rounded-r-lg p-4 mb-6">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            This app enables you to compare a PrimaTrade SCF program with a traditional SCF program. PrimaTrade offers the ability to reach all your suppliers supported by a high level of automation - even suppliers in the long tail and in difficult jurisdictions. You can also replace expensive card payment programs with more efficient SCF, collecting an early payment discount to bring in-house the fees that are currently paid externally. On top, PrimaTrade enables early payments to be approved before delivery (at shipment), delivering much earlier cash to suppliers and much more value.
+          </p>
+        </div>
+
         <div className="space-y-6">
           {/* Panel 1: Inputs */}
           {activeView === 'inputs' && (
