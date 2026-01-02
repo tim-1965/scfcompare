@@ -165,7 +165,8 @@ export default function SCFComparison() {
   // Simulation inputs
   const [turnover, setTurnover] = useState(() => loadSavedValue('turnover', 750000000));
   const [costOfSales, setCostOfSales] = useState(() => loadSavedValue('costOfSales', 500000000));
-  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 30000000));
+  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 50000000));
+  const [profitBeforeTax, setProfitBeforeTax] = useState(() => loadSavedValue('profitBeforeTax', 10000000));
   const [netInterest, setNetInterest] = useState(() => loadSavedValue('netInterest', 40000000));
   const [ebitda, setEbitda] = useState(() => loadSavedValue('ebitda', 90000000));
   const [tradePayables, setTradePayables] = useState(() => loadSavedValue('tradePayables', 82000000));
@@ -183,7 +184,7 @@ export default function SCFComparison() {
         tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays,
-        turnover, costOfSales, operatingProfit, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow
+        turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow
       };
       localStorage.setItem('scfComparison', JSON.stringify(allValues));
       
@@ -197,7 +198,7 @@ export default function SCFComparison() {
       tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays,
-      turnover, costOfSales, operatingProfit, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow]);
+      turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow]);
 
   useEffect(() => {
     if (tier1Suppliers === 0 && tier1SpendPct !== 0) {
@@ -258,7 +259,8 @@ export default function SCFComparison() {
       setCardFreeFundingDays(20);
       setTurnover(750000000);
       setCostOfSales(500000000);
-      setOperatingProfit(30000000);
+      setOperatingProfit(50000000);
+      setProfitBeforeTax(10000000);
       setNetInterest(40000000);
       setEbitda(90000000);
       setTradePayables(82000000);
@@ -452,18 +454,24 @@ export default function SCFComparison() {
   const deltaTotalValue = ptTotalValue - tradTotalValue;
 
   // SIMULATION CALCULATIONS
-  // Calculate total benefits from the comparison
-  const totalEPDBenefit = deltaBuyerBenefit; // Early payment discount and working capital benefits
-  const totalWCBenefit = deltaOutstandingBalance; // Working capital released
+  // Calculate delta of early payment discounts only (discounts passed through to buyer)
+  const deltaEarlyPaymentDiscounts = ptDiscountsPassedThrough - tradDiscountsPassedThrough;
+  
+  // Calculate delta of funding benefits (card rebates, free funding, SCF funding benefit)
+  const deltaFundingBenefits = deltaBuyerBenefit - deltaEarlyPaymentDiscounts;
+  
+  // Working capital released
+  const totalWCBenefit = deltaOutstandingBalance;
   
   // Adjusted financials with PrimaTrade
-  const adjustedCostOfSales = costOfSales - totalEPDBenefit;
-  const adjustedOperatingProfit = operatingProfit + totalEPDBenefit;
-  const adjustedEbitda = ebitda + totalEPDBenefit;
+  const adjustedCostOfSales = costOfSales - deltaEarlyPaymentDiscounts;
+  const adjustedOperatingProfit = operatingProfit + deltaEarlyPaymentDiscounts;
+  const adjustedProfitBeforeTax = profitBeforeTax + deltaBuyerBenefit; // Both discounts and funding benefits
+  const adjustedEbitda = ebitda + deltaEarlyPaymentDiscounts;
   const adjustedNetInterest = netInterest - (totalWCBenefit * (scfRatePct / 100));
   const adjustedTradePayables = tradePayables + totalWCBenefit;
   const adjustedNetDebt = netDebt - totalWCBenefit;
-  const adjustedEquity = equity + totalEPDBenefit;
+  const adjustedEquity = equity + deltaEarlyPaymentDiscounts;
   const adjustedFCF = freeCashFlow + totalWCBenefit;
   
   // Calculate ratios
@@ -1629,6 +1637,19 @@ export default function SCFComparison() {
                         </div>
                         
                         <div className="flex items-center justify-between gap-3">
+                          <label className="text-sm text-gray-700 flex-1">Profit before Tax</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={profitBeforeTax / 1000000}
+                              onChange={(e) => setProfitBeforeTax(parseFloat(e.target.value || 0) * 1000000)}
+                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
+                            />
+                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between gap-3">
                           <label className="text-sm text-gray-700 flex-1">Net Interest Payable</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -1767,13 +1788,19 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm">Cost of sales</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(costOfSales)}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedCostOfSales)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reduced by early payment discounts captured</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Reduced by early payment discounts (only)</td>
                       </tr>
                       <tr className="bg-[#F08070]/10">
                         <td className="py-3 px-4 text-sm font-semibold">Operating profit</td>
                         <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(operatingProfit)}</td>
                         <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedOperatingProfit)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Increased by cost savings from SCF benefits</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Increased by early payment discounts</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-sm">Profit before tax</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(profitBeforeTax)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedProfitBeforeTax)}</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Reflects the impact of both discounts and financial benefits</td>
                       </tr>
                       <tr>
                         <td className="py-3 px-4 text-sm">Net interest</td>
