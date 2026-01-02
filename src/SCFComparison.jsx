@@ -1660,7 +1660,7 @@ export default function SCFComparison() {
               {/* Simulation Inputs */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Historic Financial Position (for comparison)</h2>
-                <p className="text-sm text-gray-600 mb-6">Enter your current financial figures in millions to see the impact of digitalization</p>
+                <p className="text-sm text-gray-600 mb-6">Enter your current financial figures in millions to see the impact of upgrading SCF to a PrimaTrade  SCF programme</p>
                 
                 <div className="flex flex-col lg:flex-row gap-8">
                   {/* Input Fields - Two Columns */}
@@ -1721,7 +1721,20 @@ export default function SCFComparison() {
                             <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
                           </div>
                         </div>
-                        
+                    
+                         <div className="flex items-center justify-between gap-3">
+                          <label className="text-sm text-gray-700 flex-1">Profit before tax</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={profitBeforeTax / 1000000}
+                              onChange={(e) => setProfitbeforetax(parseFloat(e.target.value || 0) * 1000000)}
+                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
+                            />
+                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
+                          </div>
+                        </div>
+                    
                         <div className="flex items-center justify-between gap-3">
                           <label className="text-sm text-gray-700 flex-1">EBITDA</label>
                           <div className="flex items-center gap-2">
@@ -1795,31 +1808,31 @@ export default function SCFComparison() {
                     </div>
                   </div>
                   
-                  {/* Right Side - Explanatory Text Box */}
-                  <div className="flex-1 lg:min-w-[300px]">
-                    <div className="bg-gradient-to-br from-white to-[#F08070]/5 rounded-lg border-2 border-[#F08070]/30 p-6 h-full">
-                      <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-[#D64933]" />
-                        Enterprise-Wide Impact
-                      </h3>
-                      
-                      <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-                        <p>
-                          Trade digitalisation can make a difference to the whole of your enterprise. In this tab, you can enter some key financial numbers from your P&L, balance sheet and cash flow - and we simulate the impact of trade digitalisation on those numbers and your ratios.
-                        </p>
+                   {/* Right Side - Explanatory Text Box */}
+                    <div className="flex-1 lg:min-w-[300px]">
+                      <div className="bg-gradient-to-br from-white to-[#F08070]/5 rounded-lg border-2 border-[#F08070]/30 p-6 h-full">
+                        <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5 text-[#D64933]" />
+                          Enterprise-Wide Impact
+                        </h3>
                         
-                        <p>
-                          Most clients can deliver a material improvement in their key ratios (eg: interest cover, leverage, margins) as a result of the efficiencies which digitalisation brings.
-                        </p>
-                        
-                        <p>
-                          This is not an accounting trick - these efficiencies are real. It is simply more efficient to have suppliers digitise their trade documents so that payments can be made more quickly, work in head office can be reduced, and the re-processing of paperwork by third parties (customs brokers, forwarders) can be stopped. PrimaTrade's platform surfaces these benefits and enables the importer to receive them without significant changes to processes or systems.
-                        </p>
+                        <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+                          <p>
+                            Upgrading your SCF offerings to a next generation solution can materially improve your financial ratios and your financial statements at enterprise level. PrimaTrade's platform is proven at scale and enables the support offereing SCF to be delivered to those suppliers that truly need it (mid-tier and long-tail suppliers) whilst monetising the benefits for your own P&L.
+                          </p>
+                          
+                          <p>
+                            This simulation compares a traditional SCF solution (assumed to be already in the historic numbers) with the impact that PrimaTrade's platform can deliver. The key differences are: more suppliers are included (using PO match, automation and digitisation) and the efficiencies are monetised to benefit the buyer via early payment discounts.
+                          </p>
+                          
+                          <p>
+                            Instead of suppliers using external funding (eg: factoring) or paying high fees to card providers, they are funded efficiently via the PrimaTrade platform with the buyer taking the P&L win of these costs for itself.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
               {/* P&L Impact */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -1848,13 +1861,13 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm">Cost of sales</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(costOfSales)}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedCostOfSales)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reduced by early payment discounts (only)</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Reduced by supplier discounts which lower cost of goods</td>
                       </tr>
                       <tr className="bg-[#F08070]/10">
                         <td className="py-3 px-4 text-sm font-semibold">Operating profit</td>
                         <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(operatingProfit)}</td>
                         <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedOperatingProfit)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Increased by early payment discounts</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Higher as supplier discounts reduce cost of goods</td>
                       </tr>
                       <tr>
                         <td className="py-3 px-4 text-sm">Net interest</td>
@@ -1862,11 +1875,17 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedNetInterest)}</td>
                         <td className="py-3 px-4 text-xs text-gray-600">Lower as net debt reduced by working capital improvements</td>
                       </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-sm">Profit before tax</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(profitBeforeTax)}</td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedProfitBeforeTax)}</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Higher as all benefits show (both discounts and financial benefits flow through)</td>
+                      </tr>
                       <tr className="bg-[#F08070]/10">
                         <td className="py-3 px-4 text-sm font-semibold">EBITDA</td>
                         <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(ebitda)}</td>
                         <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedEbitda)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Up as cost of sales is lower</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Higher as cost of sales is lower</td>
                       </tr>
                     </tbody>
                   </table>
