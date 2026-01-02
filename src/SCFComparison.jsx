@@ -308,7 +308,7 @@ export default function SCFComparison() {
   // Outstanding balance (Traditional)
   const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
 
-  // Benefit of SCF funding (Traditional) - NEW in v5.0
+  // Benefit of SCF funding (Traditional) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
   const tradScfFundingBenefit = tradOutstandingBalance * (scfRatePct / 100);
   
   // Buyer net benefit (Traditional)
@@ -380,7 +380,7 @@ export default function SCFComparison() {
   // Outstanding balance (PrimaTrade)
   const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
 
-  // Benefit of SCF funding (PrimaTrade) - NEW in v5.0
+  // Benefit of SCF funding (PrimaTrade) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
   const ptScfFundingBenefit = ptOutstandingBalance * (scfRatePct / 100);
   
   // Buyer net benefit (PrimaTrade)
@@ -722,6 +722,22 @@ export default function SCFComparison() {
                 </div>
               </div>
               </div>
+
+        {/* PrimaTrade benefits and differences explanation */}
+        <div className="bg-gradient-to-r from-[#F08070]/10 to-[#D64933]/5 border-l-4 border-[#D64933] rounded-r-lg p-4 mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Users className="w-6 h-6 text-[#F08070]" />
+                  PrimaTrade: innovations and differences
+                </h2>
+          <p className="text-sm text-gray-700 leading-relaxed">
+            PrimaTrade's SCF platform is the first of the next generation of SCF solutions, already proven at scale. Key innovations include:'
+            <li><strong>Universal supplier access:</strong> PrimaTrade's platform automates buyer processes, document handling and payments to enable all suppliers to participate; suppliers in difficult jurisdictions and the long tail of smaller suppliers can be included using PrimaTrade's onboarding and KYC/AML capabilities.'</li>
+            <li><strong>Early payment at shipment:</strong> PrimaTrade enables buyers to approve early payments at shipment rather than delivery, bringing forward cash to suppliers by several weeks and increasing the value of the program.'</li>
+            <li><strong>Separation of discount and funding cost:</strong> PrimaTrade separates the early payment discount agreed with suppliers from the funding cost, routing the discount to the buyer P&L (net of funding costs) to maximise value for both parties.'</li>  
+            <li><strong>Card replacement:</strong> PrimaTrade enables buyers to replace expensive card payment programs with more efficient SCF funding, bringing the rebate in-house and reducing overall costs.
+            </li>
+          </p>
+        </div>
 
               {/* Supplier Tiers */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
