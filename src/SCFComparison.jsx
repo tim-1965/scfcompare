@@ -162,6 +162,17 @@ export default function SCFComparison() {
   const [scfRatePct, setScfRatePct] = useState(() => loadSavedValue('scfRatePct', 7));
   const [cardFreeFundingDays, setCardFreeFundingDays] = useState(() => loadSavedValue('cardFreeFundingDays', 20));
 
+  // Simulation inputs
+  const [turnover, setTurnover] = useState(() => loadSavedValue('turnover', 750000000));
+  const [costOfSales, setCostOfSales] = useState(() => loadSavedValue('costOfSales', 500000000));
+  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 30000000));
+  const [netInterest, setNetInterest] = useState(() => loadSavedValue('netInterest', 40000000));
+  const [ebitda, setEbitda] = useState(() => loadSavedValue('ebitda', 90000000));
+  const [tradePayables, setTradePayables] = useState(() => loadSavedValue('tradePayables', 82000000));
+  const [netDebt, setNetDebt] = useState(() => loadSavedValue('netDebt', 400000000));
+  const [equity, setEquity] = useState(() => loadSavedValue('equity', 160000000));
+  const [freeCashFlow, setFreeCashFlow] = useState(() => loadSavedValue('freeCashFlow', 22000000));
+
   // Save all values to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -171,7 +182,8 @@ export default function SCFComparison() {
         tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
         tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
-        scfRatePct, cardFreeFundingDays
+        scfRatePct, cardFreeFundingDays,
+        turnover, costOfSales, operatingProfit, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow
       };
       localStorage.setItem('scfComparison', JSON.stringify(allValues));
       
@@ -184,7 +196,8 @@ export default function SCFComparison() {
       tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
       tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
-      scfRatePct, cardFreeFundingDays]);
+      scfRatePct, cardFreeFundingDays,
+      turnover, costOfSales, operatingProfit, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow]);
 
   useEffect(() => {
     if (tier1Suppliers === 0 && tier1SpendPct !== 0) {
@@ -243,6 +256,15 @@ export default function SCFComparison() {
       setPtDaysAfterHandover(3);
       setScfRatePct(7);
       setCardFreeFundingDays(20);
+      setTurnover(750000000);
+      setCostOfSales(500000000);
+      setOperatingProfit(30000000);
+      setNetInterest(40000000);
+      setEbitda(90000000);
+      setTradePayables(82000000);
+      setNetDebt(400000000);
+      setEquity(160000000);
+      setFreeCashFlow(22000000);
     }
   };
 
@@ -428,6 +450,35 @@ export default function SCFComparison() {
   const deltaBuyerBenefit = ptBuyerNetBenefit - tradBuyerNetBenefit;
   const deltaSupplierBenefit = ptSupplierNetBenefit - tradSupplierNetBenefit;
   const deltaTotalValue = ptTotalValue - tradTotalValue;
+
+  // SIMULATION CALCULATIONS
+  // Calculate total benefits from the comparison
+  const totalEPDBenefit = deltaBuyerBenefit; // Early payment discount and working capital benefits
+  const totalWCBenefit = deltaOutstandingBalance; // Working capital released
+  
+  // Adjusted financials with PrimaTrade
+  const adjustedCostOfSales = costOfSales - totalEPDBenefit;
+  const adjustedOperatingProfit = operatingProfit + totalEPDBenefit;
+  const adjustedEbitda = ebitda + totalEPDBenefit;
+  const adjustedNetInterest = netInterest - (totalWCBenefit * (scfRatePct / 100));
+  const adjustedTradePayables = tradePayables + totalWCBenefit;
+  const adjustedNetDebt = netDebt - totalWCBenefit;
+  const adjustedEquity = equity + totalEPDBenefit;
+  const adjustedFCF = freeCashFlow + totalWCBenefit;
+  
+  // Calculate ratios
+  const ebitdaMargin = (ebitda / turnover) * 100;
+  const adjustedEbitdaMargin = (adjustedEbitda / turnover) * 100;
+  const operatingMargin = (operatingProfit / turnover) * 100;
+  const adjustedOperatingMargin = (adjustedOperatingProfit / turnover) * 100;
+  const leverage = netDebt / ebitda;
+  const adjustedLeverage = adjustedNetDebt / adjustedEbitda;
+  const solvency = netDebt / equity;
+  const adjustedSolvency = adjustedNetDebt / adjustedEquity;
+  const fcfSales = (freeCashFlow / turnover) * 100;
+  const adjustedFcfSales = (adjustedFCF / turnover) * 100;
+  const interestCover = ebitda / netInterest;
+  const adjustedInterestCover = adjustedEbitda / adjustedNetInterest;
 
   // Formatting helpers
   const formatCurrency = (value) => {
