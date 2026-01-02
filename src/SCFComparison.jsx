@@ -309,7 +309,7 @@ export default function SCFComparison() {
   const tradOutstandingBalance = (tradDaysAdvanced / 365) * tradParticipatingSpend;
 
   // Benefit of SCF funding (Traditional) - NEW in v5.0
-  const tradScfFundingBenefit = tradOutstandingBalance * (tradDaysAdvanced / 365) * (scfRatePct / 100);
+  const tradScfFundingBenefit = tradOutstandingBalance * (scfRatePct / 100);
   
   // Buyer net benefit (Traditional)
   const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
@@ -381,7 +381,7 @@ export default function SCFComparison() {
   const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
 
   // Benefit of SCF funding (PrimaTrade) - NEW in v5.0
-  const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
+  const ptScfFundingBenefit = ptOutstandingBalance * (scfRatePct / 100);
   
   // Buyer net benefit (PrimaTrade)
   const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptBuyerCardFreeFunding + ptBuyerCardRebate + ptScfFundingBenefit;
