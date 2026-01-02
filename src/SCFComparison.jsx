@@ -160,17 +160,20 @@ export default function SCFComparison() {
   const [delayCrossBorder, setDelayCrossBorder] = useState(() => loadSavedValue('delayCrossBorder', 21));
   const [processingTime, setProcessingTime] = useState(() => loadSavedValue('processingTime', 6));
   const [crossBorderSharePct, setCrossBorderSharePct] = useState(() => loadSavedValue('crossBorderSharePct', 40));
-  const [tradDaysAfterApproval, setTradDaysAfterApproval] = useState(() => loadSavedValue('tradDaysAfterApproval', 2));
-  const [ptDaysAfterHandover, setPtDaysAfterHandover] = useState(() => loadSavedValue('ptDaysAfterHandover', 2));
+  const [tradDaysAfterApproval, setTradDaysAfterApproval] = useState(() => loadSavedValue('tradDaysAfterApproval', 3));
+  const [ptDaysAfterHandover, setPtDaysAfterHandover] = useState(() => loadSavedValue('ptDaysAfterHandover', 3));
   
   // Financing
   const [scfRatePct, setScfRatePct] = useState(() => loadSavedValue('scfRatePct', 7));
   const [cardFreeFundingDays, setCardFreeFundingDays] = useState(() => loadSavedValue('cardFreeFundingDays', 20));
+  
+  // NEW: Baseline payment term
+  const [baselinePaymentTerm, setBaselinePaymentTerm] = useState(() => loadSavedValue('baselinePaymentTerm', 45));
 
   // Simulation inputs
   const [turnover, setTurnover] = useState(() => loadSavedValue('turnover', 750000000));
   const [costOfSales, setCostOfSales] = useState(() => loadSavedValue('costOfSales', 500000000));
-  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 30000000));
+  const [operatingProfit, setOperatingProfit] = useState(() => loadSavedValue('operatingProfit', 50000000));
   const [profitBeforeTax, setProfitBeforeTax] = useState(() => loadSavedValue('profitBeforeTax', 10000000));
   const [netInterest, setNetInterest] = useState(() => loadSavedValue('netInterest', 40000000));
   const [ebitda, setEbitda] = useState(() => loadSavedValue('ebitda', 90000000));
@@ -188,7 +191,7 @@ export default function SCFComparison() {
         tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct, tier2TradPaymentTerms, tier2PtPaymentTerms,
         tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct, tier3TradPaymentTerms, tier3PtPaymentTerms,
         delayDomestic, delayCrossBorder, processingTime, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
-        scfRatePct, cardFreeFundingDays,
+        scfRatePct, cardFreeFundingDays, baselinePaymentTerm,
         turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow
       };
       localStorage.setItem('scfComparison', JSON.stringify(allValues));
@@ -202,7 +205,7 @@ export default function SCFComparison() {
       tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct, tier2TradPaymentTerms, tier2PtPaymentTerms,
       tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct, tier3TradPaymentTerms, tier3PtPaymentTerms,
       delayDomestic, delayCrossBorder, processingTime, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
-      scfRatePct, cardFreeFundingDays,
+      scfRatePct, cardFreeFundingDays, baselinePaymentTerm,
       turnover, costOfSales, operatingProfit, profitBeforeTax, netInterest, ebitda, tradePayables, netDebt, equity, freeCashFlow]);
 
   useEffect(() => {
@@ -256,7 +259,7 @@ export default function SCFComparison() {
       setTier3CardUsagePct(60);
       setTier3CardCostPct(3.5);
       setTier3CardRebatePct(1.0);
-      setTier3CardRemainPct(15);
+      setTier3CardRemainPct(25);
       setTier3TradPaymentTerms(45);
       setTier3PtPaymentTerms(90);
       setDelayDomestic(4);
@@ -267,6 +270,7 @@ export default function SCFComparison() {
       setPtDaysAfterHandover(3);
       setScfRatePct(7);
       setCardFreeFundingDays(20);
+      setBaselinePaymentTerm(45);
       setTurnover(750000000);
       setCostOfSales(500000000);
       setOperatingProfit(50000000);
@@ -351,20 +355,25 @@ export default function SCFComparison() {
   
   // Trade credit and working capital calculations (Traditional)
   const tradCardSpend = spendTier3 * (tier3CardUsagePct / 100);
-  const tradCardFreeFundingBalance = tradCardSpend * (cardFreeFundingDays / 365);
-  const tradTotalTradeCredit = (spendTier1 * tier1TradPaymentTerms + spendTier2 * tier2TradPaymentTerms + spendTier3 * tier3TradPaymentTerms) / 365;
+  const tradCardFreeFundingBalance = tradCardSpend * ((cardFreeFundingDays + avgApprovalTime) / 365);
+  
+  // NEW: Updated total trade credit calculation including card balance
+  const tradTotalTradeCredit = (spendTier1 * tier1TradPaymentTerms + spendTier2 * tier2TradPaymentTerms + spendTier3 * tier3TradPaymentTerms) / 365 + tradCardFreeFundingBalance;
   
   // Outstanding balance (Traditional) - tier-specific calculation
   const tradOutstandingBalance = (tradParticipatingTier1 * (tier1TradPartPct / 100) * tradDaysAdvancedTier1 +
                                    tradParticipatingTier2 * (tier2TradPartPct / 100) * tradDaysAdvancedTier2 +
                                    tradParticipatingTier3 * (tier3TradPartPct / 100) * tradDaysAdvancedTier3) / 365;
 
-  // Benefit of SCF funding (Traditional) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
-  const tradScfFundingBenefit = tradOutstandingBalance * (scfRatePct / 100);
+  // NEW: Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
+  const tradScfFundingBenefit = ((tier1TradPaymentTerms - baselinePaymentTerm) * spendTier1 +
+                                   (tier2TradPaymentTerms - baselinePaymentTerm) * spendTier2 +
+                                   (tier3TradPaymentTerms - baselinePaymentTerm) * spendTier3) * (scfRatePct / 100) / 365 + 
+                                   tradBuyerCardFreeFunding;
   
   // Buyer net benefit (Traditional)
   const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
-                              tradTotalFinancing + tradBuyerCardFreeFunding + tradBuyerCardRebate + tradScfFundingBenefit;
+                              tradTotalFinancing + tradBuyerCardRebate + tradScfFundingBenefit;
   
   // Discounts passed through to buyer (Traditional)
   const tradDiscountsPassedThrough = (tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3) - tradTotalFinancing;
@@ -434,22 +443,27 @@ export default function SCFComparison() {
   
   // Trade credit and working capital calculations (PrimaTrade)
   const ptCardSpend = spendTier3 * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
-  const ptCardFreeFundingBalance = ptCardSpend * (cardFreeFundingDays / 365);
-  const ptTotalTradeCredit = (spendTier1 * tier1PtPaymentTerms + spendTier2 * tier2PtPaymentTerms + spendTier3 * tier3PtPaymentTerms) / 365;
+  const ptCardFreeFundingBalance = ptCardSpend * ((cardFreeFundingDays + avgApprovalTime) / 365);
+  
+  // NEW: Updated total trade credit calculation including card balance
+  const ptTotalTradeCredit = (spendTier1 * tier1PtPaymentTerms + spendTier2 * tier2PtPaymentTerms + spendTier3 * tier3PtPaymentTerms) / 365 + ptCardFreeFundingBalance;
   
   // Additional working capital generated by PrimaTrade
-  const additionalWorkingCapital = ptTotalTradeCredit - tradTotalTradeCredit + tradCardFreeFundingBalance - ptCardFreeFundingBalance;
+  const additionalWorkingCapital = ptTotalTradeCredit - tradTotalTradeCredit;
   
   // Outstanding balance (PrimaTrade) - tier-specific calculation
   const ptOutstandingBalance = (ptParticipatingTier1 * (tier1PtPartPct / 100) * ptDaysAdvancedTier1 +
                                  ptParticipatingTier2 * (tier2PtPartPct / 100) * ptDaysAdvancedTier2 +
                                  ptParticipatingTier3 * (tier3PtPartPct / 100) * ptDaysAdvancedTier3 * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) / 365;
 
-  // Benefit of SCF funding (PrimaTrade) - NEW in v5.0 note to Claude.ai/Codex - this should not be multiplied by (ptDaysAdvanced / 365) as this already included in ptOutstandingBalance
-  const ptScfFundingBenefit = ptOutstandingBalance * (scfRatePct / 100);
+  // NEW: Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
+  const ptScfFundingBenefit = ((tier1PtPaymentTerms - baselinePaymentTerm) * spendTier1 +
+                                 (tier2PtPaymentTerms - baselinePaymentTerm) * spendTier2 +
+                                 (tier3PtPaymentTerms - baselinePaymentTerm) * spendTier3) * (scfRatePct / 100) / 365 + 
+                                 ptBuyerCardFreeFunding;
   
   // Buyer net benefit (PrimaTrade)
-  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptBuyerCardFreeFunding + ptBuyerCardRebate + ptScfFundingBenefit;
+  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptBuyerCardRebate + ptScfFundingBenefit;
   
   // Discounts passed through to buyer (PrimaTrade)
   const ptDiscountsPassedThrough = (ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3) - ptTotalFinancing;
@@ -484,8 +498,6 @@ export default function SCFComparison() {
   const deltaActiveSuppliers = ptTotalActive - tradTotalActive;
   const deltaSuppliersFromCards = ptSuppliersFromCards;
   const deltaCashReceipt = ptSupplierCashReceipt - tradSupplierCashReceipt;
-  // Removed as no longer used
-  //const deltaDaysAdvanced = ptDaysAdvanced - tradDaysAdvanced;
   const deltaBuyerBenefit = ptBuyerNetBenefit - tradBuyerNetBenefit;
   const deltaSupplierBenefit = ptSupplierNetBenefit - tradSupplierNetBenefit;
   const deltaTotalValue = ptTotalValue - tradTotalValue;
@@ -522,7 +534,7 @@ export default function SCFComparison() {
   const adjustedSolvency = adjustedNetDebt / adjustedEquity;
   const fcfSales = (freeCashFlow / turnover) * 100;
   const adjustedFcfSales = (adjustedFCF / turnover) * 100;
-  const interestCover = ebitda / netInterest;
+  const interestCover = profitBeforeTax / netInterest;
   const adjustedInterestCover = adjustedProfitBeforeTax / adjustedNetInterest;
 
   // Formatting helpers
@@ -555,25 +567,25 @@ export default function SCFComparison() {
       tooltip: "The funding programme is bigger with more suppliers and with longer funding periods"
     },
     {
-      label: 'Additional working capital generated by PrimaTrade',
+      label: 'Additional working capital',
       trad: formatCurrency(0),
       pt: formatCurrency(additionalWorkingCapital),
       tooltip: "Impact of PrimaTrade SCF (movement in trade credit and movement in card balances)"
     },
     {
-      label: 'Number of suppliers eligible',
+      label: 'Suppliers eligible',
       trad: formatNumber(tier1Suppliers, 0),
       pt: formatNumber(totalSuppliers, 0),
       tooltip: "The number of suppliers involved is higher"
     },
     {
-      label: 'Active number of suppliers using SCF',
+      label: 'Active suppliers',
       trad: formatNumber(tradTotalActive, 0),
       pt: formatNumber(ptTotalActive, 0),
       tooltip: "Smaller suppliers will more actively use the SCF program"
     },
     {
-      label: 'Total economic value of the SCF program',
+      label: 'Total economic value',
       trad: formatCurrency(tradTotalValue),
       pt: formatCurrency(ptTotalValue),
       tooltip: "Total value created by the programme is bigger as it reaches those who need it"
@@ -661,12 +673,18 @@ export default function SCFComparison() {
         @media print {
           /* Show both panels on print */
           .print-inputs-panel,
-          .print-comparison-panel {
+          .print-comparison-panel,
+          .print-simulation-panel {
             display: block !important;
           }
           
           /* Start comparison panel on new page */
           .print-comparison-panel {
+            page-break-before: always !important;
+          }
+          
+          /* Start simulation panel on new page */
+          .print-simulation-panel {
             page-break-before: always !important;
           }
           
@@ -699,1239 +717,1283 @@ export default function SCFComparison() {
             font-size: 0.65rem !important;
           }
           
-          /* Make supplier sections more compact */
-          .print-inputs-panel > div:nth-child(2),
-          .print-inputs-panel > div:nth-child(3),
-          .print-inputs-panel > div:nth-child(4) {
-            padding: 0.4rem !important;
-            margin-bottom: 0.3rem !important;
+          /* Hide navigation tabs on print */
+          .print\\:hidden {
+            display: none !important;
           }
-          
-          .print-inputs-panel > div:nth-child(2) h2,
-          .print-inputs-panel > div:nth-child(3) h2,
-          .print-inputs-panel > div:nth-child(4) h2 {
-            font-size: 0.8rem !important;
-            margin-bottom: 0.3rem !important;
-          }
-          
-          /* Add page break before AP Process section (5th child) */
-          .print-inputs-panel > div:nth-child(5) {
-            page-break-before: always !important;
+
+          /* Ensure proper sizing for printing */
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
           }
         }
+
+        /* Slider styling */
+        .slider {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 6px;
+          border-radius: 3px;
+          outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #D64933;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #D64933;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
       `}</style>
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm print:hidden">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <img 
-                src="/240417_PTS_red_logo.png" 
-                alt="Prima Trade" 
-                className="h-8 sm:h-10"
-              />
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  SCF comparison calculator
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Traditional SCF vs PrimaTrade
-                </p>
-              </div>
-            </div>
-            {showSaved && (
-              <div className="flex items-center gap-2 text-green-600 text-sm">
-                <CheckCircle className="w-4 h-4" />
-                <span>Saved</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200 print:hidden">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-3 gap-4">
-            <button
-              onClick={() => setActiveView('inputs')}
-              className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
-                activeView === 'inputs'
-                  ? 'bg-gradient-to-r from-[#FBE4DD] via-white to-white border-[#D64933] text-[#8B1D12] shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Calculator className="w-4 h-4" />
-                Input parameters
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveView('comparison')}
-               className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
-                activeView === 'comparison'
-                  ? 'bg-gradient-to-r from-[#0F1B2C] via-[#1F2D3D] to-[#D64933] border-[#0F1B2C] text-white shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" />
-                Comparison results
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveView('simulation')}
-              className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
-                activeView === 'simulation'
-                  ? 'bg-gradient-to-r from-[#D64933] via-[#F08070] to-white border-[#D64933] text-white shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Financial simulation
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Explanatory Text Box */}
-        <div className="bg-gradient-to-r from-[#F08070]/10 to-[#D64933]/5 border-l-4 border-[#D64933] rounded-r-lg p-4 mb-6">
-          <p className="text-sm text-gray-700 leading-relaxed">
-            This app enables you to compare a PrimaTrade SCF programme with a traditional SCF programme. Adjust the input parameters to reflect your company's procurement profile and current (or potential) SCF arrangements and card payment program. The results will update automatically.
-            PrimaTrade offers the ability to reach all your suppliers supported by a high level of automation - even suppliers in the long tail and in difficult jurisdictions. 
-            You can also replace expensive card payment programs with more efficient SCF, collecting an early payment discount to bring in-house the fees that are currently paid externally. 
-            On top, PrimaTrade enables early payments to be approved before delivery (at shipment), delivering much earlier cash to suppliers and much more value to buyer and suppliers - monetising that value with automation into a P&L win for buyers.
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {/* Panel 1: Inputs */}
-          {(activeView === 'inputs' || isPrinting) && (
-            <>
-            <div data-panel="inputs" className={`space-y-4 sm:space-y-6 ${isPrinting ? 'print-inputs-panel' : ''} ${activeView !== 'inputs' && !isPrinting ? 'hidden' : ''}`}>
-               
-            {/* Company Profile */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <DollarSign className="w-6 h-6 text-[#F08070]" />
-                    Company profile
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Currency</label>
-                    <select
-                      value={currencySymbol}
-                      onChange={(e) => setCurrencySymbol(e.target.value)}
-                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
-                    >
-                      <option value="$">$ USD</option>
-                      <option value="€">€ EUR</option>
-                      <option value="£">£ GBP</option>
-                      <option value="¥">¥ JPY</option>
-                    </select>
-                  </div>
-                  </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-                  <div>
-                    {renderInput('Total spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
-                      formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
-                      parseInput: (input) => {
-                        const numeric = input.replace(/[^0-9.]/g, '');
-                        return parseFloat(numeric);
-                      },
-                      tooltip: 'All procurement expenditure of all kinds, goods and services from all suppliers, domestic and international.',
-                      labelClassName: 'text-[13px]'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('No. of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
-                      tooltip: 'The total number of suppliers across goods + services.'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true, false, 'w-full', {
-                      tooltip: 'How much of the spend is international (so cross-border) experiencing longer shipping times and so longer periods between shipment and invoice approval.',
-                      labelClassName: 'text-[13px]'
-                    })}
-                  </div>
-                  <div>
-                    {renderInput('SCF funding rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true, false, 'w-full', {
-                      tooltip: 'Average financing rate charged by SCF funders'
-                    })}
-                  </div>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b border-gray-200 print:hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-[#D64933] rounded-lg">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">PrimaTrade vs Traditional SCF</h1>
+                  <p className="text-sm text-gray-500">Supply Chain Finance Comparison Calculator</p>
                 </div>
               </div>
-
- <div className="max-w-[52rem] mx-auto">
- <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
-                <div className="bg-white/95 rounded-[0.95rem] p-5 sm:p-6">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <TrendingUp className="w-6 h-6 text-[#D64933]" />
-                        Highlights from results
-                      </h2>
-                      <p className="text-sm text-gray-600">Live view of the key outcomes while you adjust inputs.</p>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#0F1B2C] text-white px-3 py-2 rounded-lg shadow">
-                      <span className="text-xs uppercase tracking-wide text-orange-100">Snapshot</span>
-                      <BarChart3 className="w-5 h-5" />
-                    </div>
+              <div className="flex gap-2">
+                {showSaved && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Saved</span>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-5">
-                    {highlightStats.map((stat) => (
-                      <div
-                        key={stat.label}
-                        className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-4"
-                      >
-                        <p className="text-xs font-semibold text-[#8B1D12] uppercase tracking-wide">{stat.label}</p>
-                        <div className="flex items-end justify-between gap-2 mt-3">
-                          <div>
-                            <p className="text-[11px] font-semibold text-gray-600">Traditional</p>
-                            <p className="text-lg font-bold text-gray-900">{stat.trad}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[11px] font-semibold text-[#D64933]">PrimaTrade</p>
-                            <p className="text-lg font-bold text-[#D64933]">{stat.pt}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              </div>
-
-        {/* PrimaTrade benefits and differences explanation */}
-        <div className="bg-gradient-to-r from-[#F08070]/10 to-[#D64933]/5 border-l-4 border-[#D64933] rounded-r-lg p-4 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Users className="w-6 h-6 text-[#F08070]" />
-                  PrimaTrade: innovations and differences
-                </h2>
-          <p className="text-sm text-gray-700 leading-relaxed">
-            PrimaTrade's SCF platform is the first of the next generation of SCF solutions, already proven at scale. Key innovations include:
-            <li><strong>Universal supplier access:</strong> PrimaTrade's platform automates buyer processes (including early payment approvals before delivery), document handling and payments to enable all suppliers to participate; suppliers in difficult jurisdictions and the long tail of smaller suppliers can be included using PrimaTrade's onboarding and KYC/AML capabilities.</li>
-            <li><strong>Early payment at shipment:</strong> PrimaTrade enables buyers to approve early payments at shipment rather than delivery via supplier-driven PO matching and automation, bringing forward cash to suppliers by several weeks and increasing the value of the programme to both suppliers and buyers.</li>
-            <li><strong>Separation of discount and funding cost:</strong> PrimaTrade separates the early payment discount agreed with suppliers from the funding cost, routing the discount to the buyer P&L (net of funding costs) to maximise value for both parties.</li>  
-            <li><strong>Card programme replacement:</strong> PrimaTrade enables buyers to replace expensive card payment programmes with more efficient SCF funding, bringing the rebate in-house and reducing overall costs.
-            </li>
-          </p>
-        </div>
-
-              {/* Supplier Tiers */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Users className="w-6 h-6 text-[#F08070]" />
-                  Supplier tiers configuration
-                </h2>
-                
-                <div className="space-y-6">
-                  {/* Tier 1: Existing SCF */}
-                  <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 1: Existing SCF suppliers (or eligible for traditional SCF)</h3>
-                    <div className="space-y-4">
-                      {/* Basic Info */}
-                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
-                          <div className="w-full">
-                          {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full', {
-                            tooltip: 'Current number of suppliers in traditional SCF (or who might be included in a traditional SCF programme): - typically larger suppliers only, ignoring card programmes (handled separately lower down).'
-                          })}
-                        </div>
-                        <div className="w-full">
-                          {renderInput('Share of total spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full', {
-                            tooltip: 'Share of the total spend for the suppliers eligible for traditional SCF.'
-                          })}
-                        </div>
-                      </div>
-                      
-                      {/* Three Columns */}
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {/* Column 1: Participation Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
-                          {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend from these larger suppliers funded by traditional SCF, noting that larger suppliers typically benefit less from early payments and only value early payments that are truly early.'
-                          })}
-                          {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend funded from these larger suppliers by PrimaTrade SCF noting that participation is typically higher when early payments are available at shipment rather than later after delivery.'
-                          })}
-                        </div>
-                        
-                        {/* Column 2: Early Payment Discount */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early payment discount</h4>
-                          {renderInput('Traditional SCF', tier1TradDiscountPct, setTier1TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
-                          })}
-                          {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
-                          })}
-                        </div>
-                        
-                        {/* Column 3: Supplier Savings Rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier savings rate</h4>
-                          {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
-                          })}
-                          {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
-                          })}
-                        </div>
-                        
-                        {/* Column 4: Payment Terms */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Payment terms (days)</h4>
-                          {renderInput('Average payment term', tier1TradPaymentTerms, setTier1TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
-                          })}
-                          {renderInput('New payment term', tier1PtPaymentTerms, setTier1PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tier 2: Next Level */}
-                  <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level ({tier1Suppliers}-{tier2Suppliers}) suppliers</h3>
-                    <div className="space-y-4">
-                      {/* Basic Info */}
-                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
-                            <div className="w-full">
-                          {renderInput('Ideal further suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full', {
-                            tooltip: 'The number of regular suppliers that would benefit from SCF but which are typically not eligible to be included in traditional SCF programmes.'
-                          })}
-                        </div>
-                           <div className="w-full">
-                          {renderInput('Share of total spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full', {
-                            tooltip: 'The additional share of spend from these regular suppliers that would benefit from SCF'
-                          })}
-                        </div>
-                      </div>
-                      
-                       {/* Three Columns */}
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                          {/* Column 1: Participation rate */}
-                          <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
-                            <div className="space-y-2">
-                              {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend from these mid-sized suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than that of larger suppliers.'
-                              })}
-                              {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend funded from these mid-sized suppliers by PrimaTrade SCF noting that participation is likely to be higher than that of larger suppliers, especially if early payments are available at shipment rather than later after delivery.'
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Column 2: Early payment discount */}
-                          <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early payment discount</h4>
-                            {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                              tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
-                            })}
-                            {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                              tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
-                            })}
-                          </div>
-
-                          {/* Column 3: Supplier Savings Rate */}
-                          <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier savings rate</h4>
-                            {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
-                            })}
-                            {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
-                            })}
-                          </div>
-                          
-                          {/* Column 4: Payment Terms */}
-                          <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Payment terms (days)</h4>
-                            {renderInput('Average payment term', tier2TradPaymentTerms, setTier2TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                              tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
-                            })}
-                            {renderInput('New payment term', tier2PtPaymentTerms, setTier2PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                              tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-
-                  {/* Tier 3: Long Tail */}
-                  <div className="border-2 border-orange-200 rounded-lg p-4 bg-orange-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 3: Long tail suppliers</h3>
-                    <div className="space-y-4">
-                      {/* Basic Info */}
-                      <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-orange-200">
-                            <div className="w-full space-y-2">
-                          <div className="flex justify-between items-baseline">
-                            <label className="text-sm font-medium text-gray-700">Number of suppliers (auto-calc)</label>
-                            <span className="text-sm font-semibold text-gray-900">{formatNumber(tier3Suppliers)}</span>
-                          </div>
-                        </div>
-                          <div className="w-full space-y-2">
-                          <div className="flex justify-between items-baseline">
-                            <label className="text-sm font-medium text-gray-700">Share of total spend (auto-calc)</label>
-                            <span className={`text-sm font-semibold ${tier3SpendPct >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
-                              {tier3SpendPct.toFixed(1)}%
-                            </span>
-                          </div>
-                          {tier3SpendPct < 0 && (
-                            <p className="text-xs text-red-600">⚠️ Tier 1 + Tier 2 share of spend exceeds 100%, change the assumptions further up to reduce their combined share of spend</p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Three Columns */}
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-4 border-b border-orange-200">
-                        {/* Column 1: Participation rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation rate</h4>
-                          {renderInput('Traditional SCF', tier3TradPartPct, setTier3TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend from the long-tail of suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than other types of supplier.'
-                          })}
-                          {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend funded from the long-tail of suppliers by PrimaTrade SCF noting that participation is likely to be high especially if early payments are available at shipment rather than later after delivery.'
-                          })}
-                        </div>
-                        
-                        {/* Column 2: Early payment discount */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early payment discount</h4>
-                          {renderInput('Traditional SCF', tier3TradDiscountPct, setTier3TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
-                          })}
-                          {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments at shipment noting that such suppliers may well already be accepting significant discounts charged by card providers; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L, thereby also capturing the charges that otherwise card providers might take.'
-                          })}
-                        </div>
-                        
-                        {/* Column 3: Supplier savings rate */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier savings rate</h4>
-                          {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
-                          })}
-                          {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance, avoidance of card charges, and more efficient local financing.'
-                          })}
-                        </div>
-                        
-                        {/* Column 4: Payment Terms */}
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Payment terms (days)</h4>
-                          {renderInput('Average payment term', tier3TradPaymentTerms, setTier3TradPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
-                          })}
-                          {renderInput('New payment term', tier3PtPaymentTerms, setTier3PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
-                          })}
-                        </div>
-                      </div>
-                      
-                      {/* Card programme */}
-                      <div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                          <h4 className="text-sm font-semibold text-gray-700">Card programme (potentially replaced with PrimaTrade SCF)</h4>
-                          <div className="w-full lg:w-1/3">
-                            {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
-                              tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to PrimaTrade SCF.'
-                            })}
-                          </div>
-                        </div>
-                        <div className="grid md:grid-cols-4 gap-4">
-                          {renderInput('Card usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'Share of long-tail spend currently paid via payment cards (which PrimaTrade SCF can potentially replace)'
-                          })}
-                          {renderInput('Supplier cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'All-in cost to supplier - the charge deducted from the payment made to the supplier by the card issuer.'
-                          })}
-                          {renderInput('Buyer rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'Buyer rebate that the card issuer provides out of the fees it has charged to suppliers.'
-                          })}
-                          {renderInput('Buyer free period', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days', false, false, 'w-full', {
-                            tooltip: 'Additional credit period that the buyer enjoys with the card program between when the supplier is paid and when the buyer has to settle.'
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* AP process & payment timing */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Clock className="w-6 h-6 text-[#F08070]" />
-                  AP process & payment timing
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Days between handover and accepted delivery</h3>
-                    {renderInput('Domestic / services', delayDomestic, setDelayDomestic, 0, 30, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'Days between despatch and confirmed delivery (so that the approval process can start)'
-                    })}
-                    {renderInput('Cross-border', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'International (cross-border) supply chains involve more transit days as goods have to travel further (eg: from Asia) and also clear customs.'
-                    })}
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">Term and approval timing</h3>
-                    {renderInput('Delivery to invoice approval', processingTime, setProcessingTime, 0, 30, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'The typical number of days it takes for invoices to be approved once delivery has been confirmed.'
-                    })}
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700">SCF payment timing</h3>
-                    {renderInput('Traditional SCF: after approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'Traditional SCF: the number of days it takes after invoice approval until the supplier requests and is paid its early payment, typically generation / transmission and processing of the payment file, supplier request being received and then actioned.'
-                    })}
-                    {renderInput('PrimaTrade: days after handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'PrimaTrade SCF: the number of days after goods hand over / service delivery for suppliers to PO match, request early payment, for early payment approval to be given (which can be automated) and for the supplier to be paid. '
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
-              <button
-                onClick={handleReset}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-              >
-                Reset to Defaults
-              </button>
-              <button
-                onClick={handlePrint}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#D64933] to-[#F08070] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-              >
-                <Printer className="w-5 h-5" />
-                Print to PDF
-              </button>
-            </div>
-            </>
-          )}
-
-          {/* Panel 2: Comparison Results */}
-          {(activeView === 'comparison' || isPrinting) && (
-            <>
-            <div data-panel="comparison" className={`space-y-6 ${isPrinting ? 'print-comparison-panel' : ''} ${activeView !== 'comparison' && !isPrinting ? 'hidden' : ''}`}>
-              {/* Highlights Box */}
-                 <div className="max-w-5xl mx-auto">
-                 <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
-                <div className="bg-white/95 rounded-[0.95rem] p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Highlights</h2>
-                      <p className="text-sm text-gray-600">Core SCF metrics at a glance.</p>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#0F1B2C] text-white px-3 py-2 rounded-lg shadow">
-                      <TrendingUp className="w-5 h-5" />
-                      <span className="text-xs uppercase tracking-wide text-orange-100">Performance</span>
-                    </div>
-                  </div>
-                  <div className="overflow-hidden rounded-lg border border-[#E6ECF2] shadow-inner">
-                    <table className="w-full">
-                      <thead className="bg-[#0F1B2C] text-white">
-                        <tr className="">
-                          <th className="text-left py-3 px-4 text-sm font-semibold">Metric</th>
-                          <th className="text-right py-3 px-4 text-sm font-semibold">Traditional SCF</th>
-                          <th className="text-right py-3 px-4 text-sm font-semibold">PrimaTrade SCF</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {highlightStats.map((stat, index) => (
-                          <tr
-                            key={stat.label}
-                            className={`${index === highlightStats.length - 1 ? 'border-b-2 border-gray-200' : 'border-b border-gray-100'} bg-white hover:bg-[#FFF6F2] transition-colors`}
-                          >
-                            <td className="py-3 px-4 text-sm font-semibold text-gray-900">
-                              {stat.tooltip ? (
-                                <Tooltip text={stat.tooltip}>
-                                  <span>{stat.label}</span>
-                                </Tooltip>
-                              ) : (
-                                <span>{stat.label}</span>
-                              )}
-                            </td>
-                            <td className="py-3 px-4 text-sm text-right font-bold text-gray-800">{stat.trad}</td>
-                            <td className="py-3 px-4 text-sm text-right font-bold text-[#D64933]">{stat.pt}</td>
-                          </tr>
-                        ))}
-                        <tr>
-                          <td colSpan="3" className="py-3 px-3 text-sm font-bold text-gray-900 bg-gray-50">Breakdown of economic value</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Supplier benefit as a result of early payments, calculated using supplier savings rates">
-                              <span>Benefit of early payments to suppliers</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradSupplierTimeValue)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptSupplierTimeValue)}</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount if this is present) and separately any card costs">
-                              <span>Cost of early payments (incl card) to suppliers</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradTotalCosts)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptTotalCosts)}</td>
-                        </tr>
-                        <tr className="border-b-2 border-gray-300 bg-blue-50">
-                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">
-                            <Tooltip text="Time-value benefit at the SCF rate less larger of supplier discount and SCF cost (and card costs)">
-                              <span>Net supplier benefit</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right font-bold">{formatCurrency(tradSupplierNetBenefit)}</td>
-                          <td className="py-2 px-3 text-sm text-right font-bold text-[#D64933]">{formatCurrency(ptSupplierNetBenefit)}</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Buyer gets a funding benefit via the cash flow support provided to suppliers by the SCF programme, calculated at the SCF rate.">
-                              <span>Benefit of funding provided to the buyer</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardFreeFunding + tradScfFundingBenefit)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptScfFundingBenefit)}</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) the P&L benefit arising from early payment discounts.">
-                              <span>Benefit of discounts and rebates earned by the buyer</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardRebate + tradDiscountsPassedThrough)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptDiscountsPassedThrough)}</td>
-                        </tr>
-                        <tr className="bg-green-50">
-                          <td className="py-2 px-3 text-sm font-semibold text-gray-900">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) the P&L benefit arising from early payment discounts.">
-                              <span>Net buyer benefit</span>
-                            </Tooltip>
-                          </td>
-                          <td className="py-2 px-3 text-sm text-right font-bold">{formatCurrency(tradBuyerNetBenefit)}</td>
-                          <td className="py-2 px-3 text-sm text-right font-bold text-[#D64933]">{formatCurrency(ptBuyerNetBenefit)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                </div>
-              </div>
-              </div>
-
-              {/* Economics (annualised) */}
-              <div className="max-w-5xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Economics (annualised)</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Item</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Traditional SCF</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">PrimaTrade</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <TableRow 
-                        label="Supplier SCF financing cost: Tier 1"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradFinancingTier1}
-                        ptValue={ptFinancingTier1}
-                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
-                      />
-                      <TableRow 
-                        label="Supplier SCF financing cost: Tier 2"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradFinancingTier2}
-                        ptValue={ptFinancingTier2}
-                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
-                      />
-                      <TableRow 
-                        label="Supplier SCF financing cost: Tier 3"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradFinancingTier3}
-                        ptValue={ptFinancingTier3}
-                        note="Costs charged to suppliers by financiers (included in the early payment discount to avoid double-counting if this capability is supported eg: in a PrimaTrade programme)"
-                      />
-                      <TableRow 
-                        label="Actual discount accepted: Tier 1"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradActualDiscountTier1}
-                        ptValue={ptActualDiscountTier1}
-                        note="Higher of the SCF financing cost and the early payment discount (if any) agreed with the buyer"
-                      />
-                      <TableRow 
-                        label="Actual discount accepted: Tier 2"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradActualDiscountTier2}
-                        ptValue={ptActualDiscountTier2}
-                        note="Higher of the SCF financing cost and the  early payment discount (if any) agreed with the buyer"
-                      />
-                      <TableRow 
-                        label="Actual discount accepted: Tier 3"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradActualDiscountTier3}
-                        ptValue={ptActualDiscountTier3}
-                        note="Higher of the SCF financing and the  early payment discount (if any) agreed with the buyer (ignoring any card charges)"
-                      />
-                      <TableRow 
-                        label="Card costs (long tail)"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradCardCosts}
-                        ptValue={ptCardCosts}
-                        note="Rate charged by card providers to suppliers where supplier invoices are being settled by card (deducted from the supplier's receipt)"
-                      />
-                      <tr className="bg-gray-100 font-semibold">
-                        <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Early payment discounts (PrimaTrade only)">
-                            <span>Total supplier costs (gross)</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradTotalSupplierCosts)}</td>
-                        <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptTotalSupplierCosts)}</td>
-                      </tr>
-                      <TableRow 
-                        label="Supplier benefit: Tier 1"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradSupplierBenefitTier1}
-                        ptValue={ptSupplierBenefitTier1}
-                        note="Supplier benefit as a result of early payments, calculated using the relevant supplier savings rate"
-                      />
-                      <TableRow 
-                        label="Supplier benefit: Tier 2"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradSupplierBenefitTier2}
-                        ptValue={ptSupplierBenefitTier2}
-                        note="Supplier benefit as a result of early payments, calculatedusing the relevant supplier savings rate"
-                      />
-                      <TableRow 
-                        label="Supplier benefit: Tier 3"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradSupplierBenefitTier3}
-                        ptValue={ptSupplierBenefitTier3}
-                        note="Supplier benefit as a result of early payments, calculated using the relevant supplier savings rate"
-                      />
-                      <tr className="bg-gray-100 font-semibold">
-                        <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Total of the supplier savings">
-                            <span>Total supplier benefit at savings rates</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradTotalSupplierTimeValue)}</td>
-                        <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptTotalSupplierTimeValue)}</td>
-                      </tr>
-                      <tr className="bg-blue-100 font-bold">
-                        <td className="py-2 px-3 text-sm">
-                          <Tooltip text="The total supplier benefit of early payments less the costs incurred (larger of supplier discount and SCF cost and then additionally any card costs)">
-                            <span>Supplier net benefit</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradSupplierNetBenefit)}</td>
-                        <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptSupplierNetBenefit)}</td>
-                      </tr>
-                      <TableRow 
-                        label="Buyer rebate from cards"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradBuyerCardRebate}
-                        ptValue={ptBuyerCardRebate}
-                        note="Rebate returned to buyer by the card provider (out of the charge the card provider makes to suppliers)."
-                      />
-                      <TableRow 
-                        label="Buyer free funding from cards"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradBuyerCardFreeFunding}
-                        ptValue={ptBuyerCardFreeFunding}
-                        note="Average delay between supplier payment by the card provider and settlement by the buyer to the card provider times the SCF rate."
-                      />
-                      <TableRow 
-                        label="Benefit of SCF funding"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradScfFundingBenefit}
-                        ptValue={ptScfFundingBenefit}
-                        note="Value of the SCF working capital support to the supply chain that the buyer receives calculated at the SCF rate."
-                      />
-                      <TableRow 
-                        label="Early payment discounts less SCF costs"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradDiscountsPassedThrough}
-                        ptValue={ptDiscountsPassedThrough}
-                      />
-                      <tr className="bg-green-100 font-bold">
-                        <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Card rebates and funding benefit plus (PrimaTrade SCF only) early payment discounts less SCF financing costs">
-                            <span>Buyer net benefit</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerNetBenefit)}</td>
-                        <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptBuyerNetBenefit)}</td>
-                      </tr>
-                      <tr className="bg-[#F08070]/30 font-bold text-base">
-                        <td className="py-4 px-4">
-                          <Tooltip text="Total of buyer and supplier net benefits - so the total economic value created by the SCF programme">
-                            <span>Total value created (buyer + suppliers)</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-4 px-4 text-right">{formatCurrency(tradTotalValue)}</td>
-                        <td className="py-4 px-4 text-right text-[#D64933]">{formatCurrency(ptTotalValue)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              </div>
-
-             {/* Baseline AP Cost & Timing */}
-              <div className="max-w-5xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Baseline AP Cost & Timing</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Item</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text="As input">
-                            <span>Cross-border share of spend</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{crossBorderSharePct.toFixed(1)}%</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text="100% - cross-border">
-                            <span>Domestic and services share</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{(100 - crossBorderSharePct).toFixed(1)}%</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-4 text-sm">
-                          <Tooltip text="Invoice date lag + payment terms">
-                            <span>Average time taken to approve invoices</span>
-                          </Tooltip>
-                        </td>
-                        <td className="py-2 px-4 text-sm text-right font-medium">{avgApprovalTime.toFixed(1)} days</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              </div>
-
-              {/* Programme Scope & Volume */}
-              <div className="max-w-5xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Programme Scope & Volume</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Item</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Traditional SCF</th>
-                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">PrimaTrade</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <TableRow 
-                        label="Eligible suppliers (N)"
-                        currencySymbol={currencySymbol}
-                        tradValue={`${tier1Suppliers} suppliers`}
-                        ptValue={`${totalSuppliers} suppliers`}
-                        note="PrimaTrade can include the full supplier base as a result of automation, digitisation, PO Match and PrimaTrade on-boarding capabilities."
-                      />
-                      <TableRow 
-                        label={`Spend: Tier 1 suppliers`}
-                        currencySymbol={currencySymbol}
-                        tradValue={spendTier1}
-                        ptValue={spendTier1}
-                        note="Total spend × tier 1 share"
-                      />
-                      <TableRow 
-                        label={`Spend: Tier 2 suppliers`}
-                        currencySymbol={currencySymbol}
-                        tradValue={spendTier2}
-                        ptValue={spendTier2}
-                        note="Total spend × tier 2 share"
-                      />
-                      <TableRow 
-                        label="Spend: Long tail suppliers"
-                        currencySymbol={currencySymbol}
-                        tradValue={spendTier3}
-                        ptValue={spendTier3}
-                        note="Remaining total spend being the share of the long-tail supply chain."
-                      />
-                      <TableRow 
-                        label="% Tier 1 participating"
-                        currencySymbol={currencySymbol}
-                        tradValue={`${tier1TradPartPct}%`}
-                        ptValue={`${tier1PtPartPct}%`}
-                      />
-                      <TableRow 
-                        label="% Tier 2 participating"
-                        currencySymbol={currencySymbol}
-                        tradValue="0%"
-                        ptValue={`${tier2PtPartPct}%`}
-                      />
-                      <TableRow 
-                        label="% Tier 3 participating"
-                        currencySymbol={currencySymbol}
-                        tradValue="0%"
-                        ptValue={`${tier3PtPartPct}%`}
-                      />
-                      <TableRow 
-                        label="Participating spend funded"
-                        currencySymbol={currencySymbol}
-                        tradValue={tradParticipatingSpend}
-                        ptValue={ptParticipatingSpend}
-                        note="The total spend of participating suppliers that is funded early via the SCF programme."
-                      />
-                      <TableRow 
-                        label="Active suppliers: Tier 1"
-                        currencySymbol={currencySymbol}
-                        tradValue={`${formatNumber(tradActiveTier1, 0)} suppliers`}
-                        ptValue={`${formatNumber(ptActiveTier1, 0)} suppliers`}
-                        note="Larger suppliers should find PrimaTrade SCF more attractive because the payments come significantly earlier (early payments are truly early)."
-                      />
-                      <TableRow 
-                        label="Active suppliers: Tier 2"
-                        currencySymbol={currencySymbol}
-                        tradValue={`${formatNumber(tradActiveTier2, 0)} suppliers`}
-                        ptValue={`${formatNumber(ptActiveTier2, 0)} suppliers`}
-                        note="More suppliers included via automation supported by digitisation and PO Match. and PrimaTrade on-boarding capabilities."
-                      />
-                      <TableRow 
-                        label="Active suppliers: Tier 3"
-                        currencySymbol={currencySymbol}
-                        tradValue={`${formatNumber(tradActiveTier3, 0)} suppliers`}
-                        ptValue={`${formatNumber(ptActiveTier3, 0)} suppliers`}
-                        note="Significantly more suppliers included via automation supported by digitisation and PO Match, and PrimaTrade on-boarding capabilities."
-                      />
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
+                )}
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
                 >
                   Reset to Defaults
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#D64933] to-[#F08070] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#D64933] text-white rounded-lg hover:bg-[#C03823] transition-colors text-sm font-medium"
                 >
-                  <Printer className="w-5 h-5" />
-                  Print to PDF
+                  <Printer className="w-4 h-4" />
+                  Print
                 </button>
               </div>
             </div>
-            </>
-          )}
-          {/* Panel 3: Financial Simulation */}
-          {(activeView === 'simulation' || isPrinting) && (
-            <>
-            <div data-panel="simulation" className={`space-y-4 sm:space-y-6 ${isPrinting ? 'print-simulation-panel' : ''} ${activeView !== 'simulation' && !isPrinting ? 'hidden' : ''}`}>
-              
-              {/* Simulation Inputs */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Historic Financial Position (for comparison)</h2>
-                <p className="text-sm text-gray-600 mb-6">Enter your current financial figures in millions to see the impact of upgrading SCF to a PrimaTrade  SCF programme</p>
-                
-                <div className="flex flex-col lg:flex-row gap-8">
-                  {/* Input Fields - Two Columns */}
-                  <div className="flex-1 lg:max-w-3xl">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                      {/* Left Column - P&L Items */}
-                      <div className="space-y-4">
-                        <h3 className="text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-300">Key figures: P&L</h3>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Turnover / Revenue</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={turnover / 1000000}
-                              onChange={(e) => setTurnover(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Cost of Sales</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={costOfSales / 1000000}
-                              onChange={(e) => setCostOfSales(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Operating Profit</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={operatingProfit / 1000000}
-                              onChange={(e) => setOperatingProfit(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Net Interest Payable</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={netInterest / 1000000}
-                              onChange={(e) => setNetInterest(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                    
-                         <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Profit before tax</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={profitBeforeTax / 1000000}
-                              onChange={(e) => setProfitbeforetax(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                    
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">EBITDA</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={ebitda / 1000000}
-                              onChange={(e) => setEbitda(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                      </div>
+          </div>
+        </div>
 
-                      {/* Right Column - Balance Sheet Items */}
-                      <div className="space-y-4">
-                        <h3 className="text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-300">Balance sheet and cash flow</h3>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Trade Payables</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={tradePayables / 1000000}
-                              onChange={(e) => setTradePayables(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Net Debt</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={netDebt / 1000000}
-                              onChange={(e) => setNetDebt(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Equity</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={equity / 1000000}
-                              onChange={(e) => setEquity(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Free Cash Flow</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={freeCashFlow / 1000000}
-                              onChange={(e) => setFreeCashFlow(parseFloat(e.target.value || 0) * 1000000)}
-                              className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
-                            />
-                            <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                   {/* Right Side - Explanatory Text Box */}
-                    <div className="flex-1 lg:min-w-[300px]">
-                      <div className="bg-gradient-to-br from-white to-[#F08070]/5 rounded-lg border-2 border-[#F08070]/30 p-6 h-full">
-                        <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5 text-[#D64933]" />
-                          Enterprise-Wide Impact
-                        </h3>
-                        
-                        <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-                          <p>
-                            Upgrading your SCF offerings to a next generation solution can materially improve your financial ratios and your financial statements at enterprise level. PrimaTrade's platform is proven at scale and enables the support offereing SCF to be delivered to those suppliers that truly need it (mid-tier and long-tail suppliers) whilst monetising the benefits for your own P&L.
-                          </p>
-                          
-                          <p>
-                            This simulation compares a traditional SCF solution (assumed to be already in the historic numbers) with the impact that PrimaTrade's platform can deliver. The key differences are: more suppliers are included (using PO match, automation and digitisation) and the efficiencies are monetised to benefit the buyer via early payment discounts.
-                          </p>
-                          
-                          <p>
-                            Instead of suppliers using external funding (eg: factoring) or paying high fees to card providers, they are funded efficiently via the PrimaTrade platform with the buyer taking the P&L win of these costs for itself.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        {/* Navigation Tabs */}
+        <div className="bg-white border-b border-gray-200 print:hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveView('inputs')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeView === 'inputs'
+                    ? 'border-[#D64933] text-[#D64933]'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Calculator className="w-4 h-4" />
+                  Inputs
                 </div>
+              </button>
+              <button
+                onClick={() => setActiveView('comparison')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeView === 'comparison'
+                    ? 'border-[#D64933] text-[#D64933]'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Comparison
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveView('simulation')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeView === 'simulation'
+                    ? 'border-[#D64933] text-[#D64933]'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  Impact Simulation
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
 
-              {/* P&L Impact */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <DollarSign className="w-6 h-6 text-[#F08070]" />
-                  P&L Impact
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* INPUTS PANEL */}
+          <div className={`print-inputs-panel ${activeView === 'inputs' || isPrinting ? 'block' : 'hidden'}`}>
+            <div className="space-y-6">
+              {/* Company Profile */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#D64933]" />
+                  Company Profile
                 </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Currency</label>
+                    <select
+                      value={currencySymbol}
+                      onChange={(e) => setCurrencySymbol(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[#D64933] font-semibold"
+                    >
+                      <option value="$">$ USD</option>
+                      <option value="£">£ GBP</option>
+                      <option value="€">€ EUR</option>
+                    </select>
+                  </div>
+                  {renderInput(
+                    'Total Procurement Spend',
+                    totalProcurementSpend,
+                    setTotalProcurementSpend,
+                    1,
+                    10000,
+                    1,
+                    'M',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "All procurement expenditure of all kinds" }
+                  )}
+                  {renderInput(
+                    'Total Number of Suppliers',
+                    totalSuppliers,
+                    setTotalSuppliers,
+                    100,
+                    50000,
+                    100,
+                    '',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "All suppliers across goods + services" }
+                  )}
+                </div>
+              </div>
+
+              {/* Tier 1: Existing SCF Suppliers */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Tier 1: Existing SCF Suppliers (Larger)</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderInput(
+                    'Number of Suppliers',
+                    tier1Suppliers,
+                    setTier1Suppliers,
+                    0,
+                    1000,
+                    5,
+                    '',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Current number of suppliers in SCF (typically larger)" }
+                  )}
+                  {renderInput(
+                    'Share of Total Spend',
+                    tier1SpendPct,
+                    setTier1SpendPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    tier1Suppliers === 0,
+                    'w-full',
+                    { tooltip: "Approximate spend concentration for the suppliers in SCF" }
+                  )}
+                  {renderInput(
+                    'Participation % (Traditional)',
+                    tier1TradPartPct,
+                    setTier1TradPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate among suppliers currently in SCF" }
+                  )}
+                  {renderInput(
+                    'Participation % (PrimaTrade)',
+                    tier1PtPartPct,
+                    setTier1PtPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate among suppliers currently in SCF" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (Traditional)',
+                    tier1TradDiscountPct,
+                    setTier1TradDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (PrimaTrade)',
+                    tier1PtDiscountPct,
+                    setTier1PtDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (Traditional)',
+                    tier1TradSavingsPct,
+                    setTier1TradSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after delivery)" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (PrimaTrade)',
+                    tier1PtSavingsPct,
+                    setTier1PtSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after handover)" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (Traditional)',
+                    tier1TradPaymentTerms,
+                    setTier1TradPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (PrimaTrade)',
+                    tier1PtPaymentTerms,
+                    setTier1PtPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms (potentially lengthened once early payment available)" }
+                  )}
+                </div>
+              </div>
+
+              {/* Tier 2: Next Level Suppliers */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Tier 2: Next Level Suppliers (50-1000)</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderInput(
+                    'Number of Suppliers',
+                    tier2Suppliers,
+                    setTier2Suppliers,
+                    tier1Suppliers,
+                    5000,
+                    10,
+                    '',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "The number of regular suppliers that would benefit from SCF" }
+                  )}
+                  {renderInput(
+                    'Share of Total Spend',
+                    tier2SpendPct,
+                    setTier2SpendPct,
+                    0,
+                    100 - tier1SpendPct,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Additional share of spend that should be in SCF" }
+                  )}
+                  {renderInput(
+                    'Participation % (Traditional)',
+                    tier2TradPartPct,
+                    setTier2TradPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate for the next layer of suppliers if offered SCF" }
+                  )}
+                  {renderInput(
+                    'Participation % (PrimaTrade)',
+                    tier2PtPartPct,
+                    setTier2PtPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate for the next layer of suppliers if offered SCF" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (Traditional)',
+                    tier2TradDiscountPct,
+                    setTier2TradDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (PrimaTrade)',
+                    tier2PtDiscountPct,
+                    setTier2PtDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (Traditional)',
+                    tier2TradSavingsPct,
+                    setTier2TradSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after delivery)" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (PrimaTrade)',
+                    tier2PtSavingsPct,
+                    setTier2PtSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after handover)" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (Traditional)',
+                    tier2TradPaymentTerms,
+                    setTier2TradPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (PrimaTrade)',
+                    tier2PtPaymentTerms,
+                    setTier2PtPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms (potentially lengthened once early payment available)" }
+                  )}
+                </div>
+              </div>
+
+              {/* Tier 3: Long Tail Suppliers */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Tier 3: Long Tail Suppliers (SMEs)</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-400">Number of Suppliers</label>
+                    <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 font-semibold text-right">
+                      {formatNumber(tier3Suppliers, 0)}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-400">Share of Total Spend</label>
+                    <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 font-semibold text-right">
+                      {tier3SpendPct.toFixed(0)}%
+                    </div>
+                  </div>
+                  {renderInput(
+                    'Participation % (Traditional)',
+                    tier3TradPartPct,
+                    setTier3TradPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate among the long tail / SMEs" }
+                  )}
+                  {renderInput(
+                    'Participation % (PrimaTrade)',
+                    tier3PtPartPct,
+                    setTier3PtPartPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Participation rate among the long tail / SMEs" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (Traditional)',
+                    tier3TradDiscountPct,
+                    setTier3TradDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Early Payment Discount % (PrimaTrade)',
+                    tier3PtDiscountPct,
+                    setTier3PtDiscountPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Discount as % of invoice value" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (Traditional)',
+                    tier3TradSavingsPct,
+                    setTier3TradSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after delivery)" }
+                  )}
+                  {renderInput(
+                    'Supplier Savings Rate % (PrimaTrade)',
+                    tier3PtSavingsPct,
+                    setTier3PtSavingsPct,
+                    0,
+                    30,
+                    0.5,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Rate used to value supplier benefit of being paid earlier (after handover)" }
+                  )}
+                  {renderInput(
+                    'Payment Card Usage %',
+                    tier3CardUsagePct,
+                    setTier3CardUsagePct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Share of long-tail spend currently paid via cards (typical)" }
+                  )}
+                  {renderInput(
+                    '% Remaining on Cards (PrimaTrade)',
+                    tier3CardRemainPct,
+                    setTier3CardRemainPct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "% of suppliers currently paid by card that remain being paid by card and not switched to SCF" }
+                  )}
+                  {renderInput(
+                    'Card Program Cost Rate %',
+                    tier3CardCostPct,
+                    setTier3CardCostPct,
+                    0,
+                    10,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "All-in cost to supplier (set as needed)" }
+                  )}
+                  {renderInput(
+                    'Card Program Rebate %',
+                    tier3CardRebatePct,
+                    setTier3CardRebatePct,
+                    0,
+                    5,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Buyer rebate that the card issuer provides" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (Traditional)',
+                    tier3TradPaymentTerms,
+                    setTier3TradPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms" }
+                  )}
+                  {renderInput(
+                    'Payment Terms (PrimaTrade)',
+                    tier3PtPaymentTerms,
+                    setTier3PtPaymentTerms,
+                    0,
+                    180,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Contractual supplier payment terms (potentially lengthened once early payment available)" }
+                  )}
+                </div>
+              </div>
+
+              {/* AP Process & Payment Timing */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-[#D64933]" />
+                  AP Process & Payment Timing
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderInput(
+                    'Delay: Domestic & Services',
+                    delayDomestic,
+                    setDelayDomestic,
+                    0,
+                    30,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Days between despatch and confirmed delivery (so that approval can start)" }
+                  )}
+                  {renderInput(
+                    'Delay: Cross-border',
+                    delayCrossBorder,
+                    setDelayCrossBorder,
+                    0,
+                    90,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "More days when goods have to travel further (eg: from Asia)" }
+                  )}
+                  {renderInput(
+                    'Processing Time (Delivery to Approval)',
+                    processingTime,
+                    setProcessingTime,
+                    0,
+                    30,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "How long it takes for invoices to be approved once delivery has happened" }
+                  )}
+                  {renderInput(
+                    'Cross-border Share of Spend',
+                    crossBorderSharePct,
+                    setCrossBorderSharePct,
+                    0,
+                    100,
+                    1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "How much of the spend is cross-border with longer shipping times" }
+                  )}
+                  {renderInput(
+                    'Days After Approval (Traditional)',
+                    tradDaysAfterApproval,
+                    setTradDaysAfterApproval,
+                    0,
+                    10,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Traditional SCF and cards: supplier receives funds after approval" }
+                  )}
+                  {renderInput(
+                    'Days After Handover (PrimaTrade)',
+                    ptDaysAfterHandover,
+                    setPtDaysAfterHandover,
+                    0,
+                    10,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "PrimaTrade: supplier receives funds after handover" }
+                  )}
+                </div>
+              </div>
+
+              {/* Financing */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-[#D64933]" />
+                  Financing Parameters
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderInput(
+                    'SCF Funding Rate',
+                    scfRatePct,
+                    setScfRatePct,
+                    0,
+                    20,
+                    0.1,
+                    '',
+                    true,
+                    false,
+                    'w-full',
+                    { tooltip: "Approximate annual financing rate charged by SCF funders" }
+                  )}
+                  {renderInput(
+                    'Card Free Funding Period',
+                    cardFreeFundingDays,
+                    setCardFreeFundingDays,
+                    0,
+                    60,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Credit period that the buyer enjoys with the card program" }
+                  )}
+                  {renderInput(
+                    'Baseline Payment Term',
+                    baselinePaymentTerm,
+                    setBaselinePaymentTerm,
+                    0,
+                    90,
+                    1,
+                    'days',
+                    false,
+                    false,
+                    'w-full',
+                    { tooltip: "Anchor payment term used to calculate the impact of SCF on trade credit (benefit to buyer)" }
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* COMPARISON PANEL */}
+          <div className={`print-comparison-panel ${activeView === 'comparison' || isPrinting ? 'block' : 'hidden'}`}>
+            <div className="space-y-6">
+              {/* Highlights */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-[#D64933]" />
+                  Key Highlights
+                </h2>
+                <div className="grid grid-cols-5 gap-2">
+                  {highlightStats.map((stat, index) => (
+                    <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1">
+                        {stat.label}
+                        <Tooltip text={stat.tooltip}>
+                          <></>
+                        </Tooltip>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-sm font-semibold text-gray-700">
+                          {stat.trad}
+                        </div>
+                        <div className="text-sm font-semibold text-[#D64933]">
+                          {stat.pt}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Program Details */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Program Details</h2>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 w-64">Item</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 w-40">Before (with Traditional SCF)</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-[#D64933] w-40">After PrimaTrade</th>
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Notes</th>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Metric</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Traditional SCF</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">PrimaTrade</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Revenues</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(turnover)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(turnover)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">No change</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Cost of sales</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(costOfSales)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedCostOfSales)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reduced by supplier discounts which lower cost of goods</td>
-                      </tr>
-                      <tr className="bg-[#F08070]/10">
-                        <td className="py-3 px-4 text-sm font-semibold">Operating profit</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(operatingProfit)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedOperatingProfit)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Higher as supplier discounts reduce cost of goods</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Net interest</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(netInterest)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedNetInterest)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Lower as net debt reduced by working capital improvements</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 px-4 text-sm">Profit before tax</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(profitBeforeTax)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedProfitBeforeTax)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Higher as all benefits show (both discounts and financial benefits flow through)</td>
-                      </tr>
-                      <tr className="bg-[#F08070]/10">
-                        <td className="py-3 px-4 text-sm font-semibold">EBITDA</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(ebitda)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedEbitda)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Higher as cost of sales is lower</td>
-                      </tr>
+                    <tbody className="divide-y divide-gray-100">
+                      <TableRow 
+                        label="Eligible spend" 
+                        tradValue={tradEligibleSpend} 
+                        ptValue={ptEligibleSpend}
+                        note="Total spend that could be included in the SCF program"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Participating spend" 
+                        tradValue={tradParticipatingSpend} 
+                        ptValue={ptParticipatingSpend}
+                        note="Spend from suppliers actively using the SCF program"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Outstanding balance of SCF program" 
+                        tradValue={tradOutstandingBalance} 
+                        ptValue={ptOutstandingBalance}
+                        note="The funding programme is bigger with more suppliers and with longer funding periods"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Eligible suppliers" 
+                        tradValue={tier1Suppliers} 
+                        ptValue={totalSuppliers}
+                        note="PrimaTrade can include the full supplier base as a result of automation and PO matching"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Active suppliers using SCF" 
+                        tradValue={tradTotalActive} 
+                        ptValue={ptTotalActive}
+                        note="Smaller suppliers will more actively use the SCF program"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Suppliers switching from cards" 
+                        tradValue={0} 
+                        ptValue={ptSuppliersFromCards}
+                        note="Suppliers moving from cards to SCF for better economics"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Suppliers on cards" 
+                        tradValue={tradSuppliersOnCards} 
+                        ptValue={ptSuppliersOnCards}
+                        note="Suppliers who are paid by payment card rather than by SCF or regular bank payment"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Supplier cash receipt from handover" 
+                        tradValue={`${tradSupplierCashReceipt.toFixed(1)} days`} 
+                        ptValue={`${ptSupplierCashReceipt.toFixed(1)} days`}
+                        note="Average time taken from handover to payment"
+                        currencySymbol={currencySymbol}
+                      />
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Balance Sheet Impact */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-6 h-6 text-[#F08070]" />
-                  Balance Sheet & Cash Flow Impact
-                </h2>
+              {/* Economic Value */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Economic Value Created</h2>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 w-64">Item</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 w-40">Before (with Traditional SCF)</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-[#D64933] w-40">After PrimaTrade</th>
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Notes</th>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Metric</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Traditional SCF</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">PrimaTrade</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-100">
+                      <TableRow 
+                        label="Supplier time value of early payment" 
+                        tradValue={tradSupplierTimeValue} 
+                        ptValue={ptSupplierTimeValue}
+                        note="Time value to suppliers of receiving cash earlier"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Supplier costs (discounts + card fees)" 
+                        tradValue={tradTotalCosts} 
+                        ptValue={ptTotalCosts}
+                        note="Early payment discounts and card charges paid by suppliers"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Supplier net benefit" 
+                        tradValue={tradSupplierNetBenefit} 
+                        ptValue={ptSupplierNetBenefit}
+                        note="Net benefit to suppliers (time value less costs)"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Buyer net benefit" 
+                        tradValue={tradBuyerNetBenefit} 
+                        ptValue={ptBuyerNetBenefit}
+                        note="Buyer benefit from discounts, rebates, and additional working capital"
+                        currencySymbol={currencySymbol}
+                      />
+                      <TableRow 
+                        label="Total value created" 
+                        tradValue={tradTotalValue} 
+                        ptValue={ptTotalValue}
+                        note="Combined benefit to buyer and suppliers"
+                        currencySymbol={currencySymbol}
+                      />
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SIMULATION PANEL */}
+          <div className={`print-simulation-panel ${activeView === 'simulation' || isPrinting ? 'block' : 'hidden'}`}>
+            <div className="space-y-6">
+              {/* Instructions */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex gap-3">
+                  <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-sm font-semibold text-blue-900 mb-1">How to use this simulation</h3>
+                    <p className="text-sm text-blue-800">
+                      Enter your current financial metrics below. The calculator will show how PrimaTrade SCF would impact your P&L, balance sheet, and key financial ratios.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input Financials */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Financials</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* P&L Section */}
+                  <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Profit & Loss</h3>
+                    <div className="space-y-3">
+                      {renderInput(
+                        'Turnover / Revenue',
+                        turnover,
+                        setTurnover,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Cost of Sales',
+                        costOfSales,
+                        setCostOfSales,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Will be reduced by supplier discounts which lower cost of goods",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Operating Profit',
+                        operatingProfit,
+                        setOperatingProfit,
+                        -10000000000,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Lower cost of goods flows through to higher operating profits",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Net Interest Payable',
+                        netInterest,
+                        setNetInterest,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Lower because of working capital generated",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Profit before Tax',
+                        profitBeforeTax,
+                        setProfitBeforeTax,
+                        -10000000000,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Higher because both financial and operating benefits flow through",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'EBITDA',
+                        ebitda,
+                        setEbitda,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Supplier discounts flow through to EBITDA but not financial benefits",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Balance Sheet Section */}
+                  <div className="bg-sky-50 p-4 rounded-lg border border-sky-100">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Balance Sheet & Cash Flow</h3>
+                    <div className="space-y-3">
+                      {renderInput(
+                        'Trade Payables',
+                        tradePayables,
+                        setTradePayables,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Increased as suppliers provide more credit, adjusted for changes in the card programme",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Net Debt',
+                        netDebt,
+                        setNetDebt,
+                        -10000000000,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Reduced by the trade credit provided by suppliers",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Equity',
+                        equity,
+                        setEquity,
+                        0,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Higher because both financial and operating benefits flow through",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                      {renderInput(
+                        'Free Cash Flow',
+                        freeCashFlow,
+                        setFreeCashFlow,
+                        -10000000000,
+                        10000000000,
+                        1000000,
+                        '',
+                        false,
+                        false,
+                        'w-full',
+                        { 
+                          formatDisplay: (val) => (val / 1000000).toFixed(0),
+                          parseInput: (val) => parseFloat(val) * 1000000,
+                          tooltip: "Increased as a result of the increase in trade credit",
+                          labelClassName: 'text-xs'
+                        }
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Impact Summary */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Impact on Financials</h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Metric</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Existing</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">With PrimaTrade</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-blue-600">Change</th>
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
                       <tr>
-                        <td className="py-3 px-4 text-sm">Trade payables</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradePayables)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedTradePayables)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Goes up as suppliers are providing more credit</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Working capital provided via the supply chain (total trade credit provided by suppliers & cards)">
+                            <span>Total amount of trade credit</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(tradTotalTradeCredit)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(ptTotalTradeCredit)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(ptTotalTradeCredit - tradTotalTradeCredit)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Working capital provided via the supply chain (total trade credit provided by suppliers & cards)</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Net debt</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(netDebt)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedNetDebt)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reduced as lower borrowing (suppliers provide more credit, if card use reduces then buyer card credit reduces)</td>
+                        <td className="py-1.5 px-3 text-sm">Turnover / Revenue</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(turnover)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(turnover)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(0)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Unchanged</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Equity</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(equity)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedEquity)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Increased as earnings are higher over the period</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Reduced by supplier discounts which lower cost of goods">
+                            <span>Cost of Sales</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(costOfSales)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedCostOfSales)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedCostOfSales - costOfSales)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Reduced by supplier discounts which lower cost of goods</td>
                       </tr>
-                      <tr className="bg-[#F08070]/10">
-                        <td className="py-3 px-4 text-sm font-semibold">Free cash flow</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold">{formatCurrency(freeCashFlow)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-bold text-red-700">{formatCurrency(adjustedFCF)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Increased as working capital generated</td>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Lower cost of goods flows through to higher operating profits">
+                            <span>Operating Profit</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(operatingProfit)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedOperatingProfit)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedOperatingProfit - operatingProfit)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Lower cost of goods flows through to higher operating profits</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Lower because of working capital generated">
+                            <span>Net Interest Payable</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(netInterest)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedNetInterest)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedNetInterest - netInterest)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Lower because of working capital generated</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Higher because both financial and operating benefits flow through">
+                            <span>Profit before tax</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(profitBeforeTax)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedProfitBeforeTax)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedProfitBeforeTax - profitBeforeTax)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Higher because both financial and operating benefits flow through</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Supplier discounts flow through to EBITDA but not financial benefits">
+                            <span>EBITDA</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(ebitda)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedEbitda)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedEbitda - ebitda)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Supplier discounts flow through to EBITDA but not financial benefits</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Increased as suppliers provide more credit, adjusted for changes in the card programme">
+                            <span>Trade Payables</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(tradePayables)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedTradePayables)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedTradePayables - tradePayables)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Increased as suppliers provide more credit, adjusted for changes in the card programme</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Reduced by the trade credit provided by suppliers">
+                            <span>Net Debt</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(netDebt)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedNetDebt)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedNetDebt - netDebt)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Reduced by the trade credit provided by suppliers</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Higher because both financial and operating benefits flow through">
+                            <span>Equity</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(equity)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedEquity)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedEquity - equity)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Higher because both financial and operating benefits flow through</td>
+                      </tr>
+                      <tr>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Increased as a result of the increase in trade credit">
+                            <span>Free Cash Flow</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatCurrency(freeCashFlow)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedFCF)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatCurrency(adjustedFCF - freeCashFlow)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Increased as a result of the increase in trade credit</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1939,107 +2001,94 @@ export default function SCFComparison() {
               </div>
 
               {/* Key Ratios */}
-              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-6 h-6 text-[#F08070]" />
-                  Key Ratios
-                </h2>
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Key Financial Ratios</h2>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b-2 border-gray-300">
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 w-64">Ratio</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700 w-40">Before (with Traditional SCF)</th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-[#D64933] w-40">After PrimaTrade</th>
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Notes</th>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Ratio</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-gray-700">Existing</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-[#D64933]">With PrimaTrade</th>
+                        <th className="text-right py-2 px-3 text-sm font-semibold text-blue-600">Change</th>
+                        <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Notes</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-100">
                       <tr>
-                        <td className="py-3 px-4 text-sm">EBITDA margin</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatPercent(ebitdaMargin)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatPercent(adjustedEbitdaMargin)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Up because cost of sales is lower</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Up because cost of sales is lower">
+                            <span>EBITDA margin</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatPercent(ebitdaMargin)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatPercent(adjustedEbitdaMargin)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatPercent(adjustedEbitdaMargin - ebitdaMargin)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Up because cost of sales is lower</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Operating margin</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatPercent(operatingMargin)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatPercent(adjustedOperatingMargin)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Up because cost of sales is lower</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Up because cost of sales is lower">
+                            <span>Operating margin</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatPercent(operatingMargin)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatPercent(adjustedOperatingMargin)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatPercent(adjustedOperatingMargin - operatingMargin)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Up because cost of sales is lower</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Leverage (Net Debt / EBITDA)</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(leverage, 2)}x</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatNumber(adjustedLeverage, 2)}x</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Down because EBITDA is higher and net debt is lower</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Down because EBITDA is higher and net debt is lower">
+                            <span>Leverage (Net Debt / EBITDA)</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{leverage.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{adjustedLeverage.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{(adjustedLeverage - leverage).toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Down because EBITDA is higher and net debt is lower</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Solvency (Debt / Equity)</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(solvency, 2)}x</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatNumber(adjustedSolvency, 2)}x</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Down because net debt is lower and equity is higher</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Down because net debt is lower and equity is higher">
+                            <span>Solvency (Debt / Equity)</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{solvency.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{adjustedSolvency.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{(adjustedSolvency - solvency).toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Down because net debt is lower and equity is higher</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">FCF / Sales</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatPercent(fcfSales)}</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatPercent(adjustedFcfSales)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Up because working capital is generated</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Up because working capital is generated">
+                            <span>FCF / Sales</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{formatPercent(fcfSales)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{formatPercent(adjustedFcfSales)}</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{formatPercent(adjustedFcfSales - fcfSales)}</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Up because working capital is generated</td>
                       </tr>
                       <tr>
-                        <td className="py-3 px-4 text-sm">Interest cover</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(interestCover, 2)}x</td>
-                        <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatNumber(adjustedInterestCover, 2)}x</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Based on profit before tax - up because interest costs reduce and earnings increase</td>
+                        <td className="py-1.5 px-3 text-sm">
+                          <Tooltip text="Based on profit before tax; improved because interest costs reduce and earnings increase">
+                            <span>Interest cover</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium">{interestCover.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-[#D64933]">{adjustedInterestCover.toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-sm text-right font-medium text-blue-600">{(adjustedInterestCover - interestCover).toFixed(2)}x</td>
+                        <td className="py-1.5 px-3 text-xs text-gray-600">Based on profit before tax; improved because interest costs reduce and earnings increase</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-
-              {/* Summary Card */}
-              <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-8 text-white">
-                <h2 className="text-2xl font-bold mb-6">Impact Summary</h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">P&L Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(adjustedOperatingProfit - operatingProfit)}</div>
-                    <div className="text-red-100 text-sm">Operating profit increase</div>
-                  </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Working Capital Released</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(totalWCBenefit)}</div>
-                    <div className="text-red-100 text-sm">Additional cash available</div>
-                  </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Leverage Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatNumber(leverage - adjustedLeverage, 2)}x</div>
-                    <div className="text-red-100 text-sm">Net Debt / EBITDA reduction</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
-                <button
-                  onClick={handleReset}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                >
-                  Reset to Defaults
-                </button>
-                <button
-                  onClick={handlePrint}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#D64933] to-[#F08070] text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                >
-                  <Printer className="w-5 h-5" />
-                  Print to PDF
-                </button>
-              </div>
             </div>
-            </>
-          )}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
