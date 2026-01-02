@@ -397,7 +397,7 @@ export default function SCFComparison() {
 
   const highlightStats = [
     {
-      label: 'Programme size',
+      label: 'Working capital provided to suppliers',
       trad: formatCurrency(tradOutstandingBalance),
       pt: formatCurrency(ptOutstandingBalance),
       tooltip: "The funding program is bigger with more suppliers and with longer funding periods"
