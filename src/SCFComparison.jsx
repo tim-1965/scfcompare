@@ -95,6 +95,7 @@ const TableRow = ({ label, tradValue, ptValue, note, currencySymbol = '$' }) => 
 export default function SCFComparison() {
   const [activeView, setActiveView] = useState('inputs');
   const [showSaved, setShowSaved] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const loadSavedValue = (key, defaultValue) => {
     if (typeof window !== 'undefined') {
@@ -192,7 +193,11 @@ export default function SCFComparison() {
   }, [tier1Suppliers, tier1SpendPct]);
 
   const handlePrint = () => {
-    window.print();
+    setIsPrinting(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrinting(false);
+    }, 100);
   };
 
   const handleReset = () => {
@@ -549,6 +554,70 @@ export default function SCFComparison() {
   };
 
   return (
+    <>
+      <style>{`
+        @media print {
+          /* Show both panels on print */
+          .print-inputs-panel,
+          .print-comparison-panel {
+            display: block !important;
+          }
+          
+          /* Start comparison panel on new page */
+          .print-comparison-panel {
+            page-break-before: always !important;
+          }
+          
+          /* Reduce padding/margins for supplier boxes to fit all three on one page */
+          .print-inputs-panel .bg-white {
+            padding: 0.5rem !important;
+            margin-bottom: 0.4rem !important;
+          }
+          
+          .print-inputs-panel h2 {
+            font-size: 0.875rem !important;
+            margin-bottom: 0.4rem !important;
+          }
+          
+          .print-inputs-panel .space-y-2 {
+            margin-top: 0.25rem !important;
+            margin-bottom: 0.25rem !important;
+          }
+          
+          .print-inputs-panel label {
+            font-size: 0.7rem !important;
+          }
+          
+          .print-inputs-panel input {
+            padding: 0.125rem 0.25rem !important;
+            font-size: 0.7rem !important;
+          }
+          
+          .print-inputs-panel .text-sm {
+            font-size: 0.65rem !important;
+          }
+          
+          /* Make supplier sections more compact */
+          .print-inputs-panel > div:nth-child(2),
+          .print-inputs-panel > div:nth-child(3),
+          .print-inputs-panel > div:nth-child(4) {
+            padding: 0.4rem !important;
+            margin-bottom: 0.3rem !important;
+          }
+          
+          .print-inputs-panel > div:nth-child(2) h2,
+          .print-inputs-panel > div:nth-child(3) h2,
+          .print-inputs-panel > div:nth-child(4) h2 {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.3rem !important;
+          }
+          
+          /* Add page break before AP Process section (5th child) */
+          .print-inputs-panel > div:nth-child(5) {
+            page-break-before: always !important;
+          }
+        }
+      `}</style>
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <div className="bg-white shadow-sm print:hidden">
@@ -627,9 +696,9 @@ export default function SCFComparison() {
 
         <div className="space-y-6">
           {/* Panel 1: Inputs */}
-          {activeView === 'inputs' && (
+          {(activeView === 'inputs' || isPrinting) && (
             <>
-            <div data-panel="inputs" className="space-y-4 sm:space-y-6">
+            <div data-panel="inputs" className={`space-y-4 sm:space-y-6 ${isPrinting ? 'print-inputs-panel' : ''} ${activeView !== 'inputs' && !isPrinting ? 'hidden' : ''}`}>
                
             {/* Company Profile */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -1010,9 +1079,9 @@ export default function SCFComparison() {
           )}
 
           {/* Panel 2: Comparison Results */}
-          {activeView === 'comparison' && (
+          {(activeView === 'comparison' || isPrinting) && (
             <>
-            <div data-panel="comparison" className="space-y-6">
+            <div data-panel="comparison" className={`space-y-6 ${isPrinting ? 'print-comparison-panel' : ''} ${activeView !== 'comparison' && !isPrinting ? 'hidden' : ''}`}>
               {/* Highlights Box */}
                  <div className="max-w-5xl mx-auto">
                  <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
@@ -1441,5 +1510,6 @@ export default function SCFComparison() {
         </div>
       </div>
     </div>
+    </>
   );
 }
