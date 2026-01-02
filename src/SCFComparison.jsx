@@ -146,6 +146,7 @@ export default function SCFComparison() {
   const [tier3CardUsagePct, setTier3CardUsagePct] = useState(() => loadSavedValue('tier3CardUsagePct', 60));
   const [tier3CardCostPct, setTier3CardCostPct] = useState(() => loadSavedValue('tier3CardCostPct', 3.5));
   const [tier3CardRebatePct, setTier3CardRebatePct] = useState(() => loadSavedValue('tier3CardRebatePct', 1.0));
+  const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 100));
   
   // AP Process & Payment Timing
   const [delayDomestic, setDelayDomestic] = useState(() => loadSavedValue('delayDomestic', 4));
@@ -167,7 +168,7 @@ export default function SCFComparison() {
         currencySymbol, totalProcurementSpend, totalSuppliers,
         tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
         tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+        tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
         delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
         scfRatePct, cardFreeFundingDays
       };
@@ -180,7 +181,7 @@ export default function SCFComparison() {
   }, [currencySymbol, totalProcurementSpend, totalSuppliers,
       tier1Suppliers, tier1SpendPct, tier1TradPartPct, tier1PtPartPct, tier1TradDiscountPct, tier1PtDiscountPct, tier1TradSavingsPct, tier1PtSavingsPct,
       tier2Suppliers, tier2SpendPct, tier2TradPartPct, tier2PtPartPct, tier2TradDiscountPct, tier2PtDiscountPct, tier2TradSavingsPct, tier2PtSavingsPct,
-      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct,
+      tier3TradPartPct, tier3PtPartPct, tier3TradDiscountPct, tier3PtDiscountPct, tier3TradSavingsPct, tier3PtSavingsPct, tier3CardUsagePct, tier3CardCostPct, tier3CardRebatePct, tier3CardRemainPct,
       delayDomestic, delayCrossBorder, processingTime, paymentTerms, crossBorderSharePct, tradDaysAfterApproval, ptDaysAfterHandover,
       scfRatePct, cardFreeFundingDays]);
 
@@ -289,7 +290,7 @@ export default function SCFComparison() {
   const ptParticipatingTier1 = spendTier1 * (tier1PtPartPct / 100);
   const ptParticipatingTier2 = spendTier2 * (tier2PtPartPct / 100);
   const ptParticipatingTier3 = spendTier3 * (tier3PtPartPct / 100);
-  const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3;
+  const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3 - (spendTier3 * (tier3PtPartPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   
   const ptSupplierCashReceipt = ptDaysAfterHandover;
   const ptDaysAdvanced = Math.max(0, paymentTerms - ptSupplierCashReceipt);
@@ -298,7 +299,7 @@ export default function SCFComparison() {
   // Financing costs by tier (PrimaTrade)
   const ptFinancingTier1 = ptParticipatingTier1 * (scfRatePct / 100) * (ptDaysAdvanced / 365);
   const ptFinancingTier2 = ptParticipatingTier2 * (scfRatePct / 100) * (ptDaysAdvanced / 365);
-  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvanced / 365);
+  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvanced / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalFinancing = ptFinancingTier1 + ptFinancingTier2 + ptFinancingTier3;
   
   // Agreed discounts by tier
@@ -309,10 +310,10 @@ export default function SCFComparison() {
   // Actual discount (MAX of financing cost and agreed discount)
   const ptActualDiscountTier1 = Math.max(ptFinancingTier1, ptDiscountTier1);
   const ptActualDiscountTier2 = Math.max(ptFinancingTier2, ptDiscountTier2);
-  const ptActualDiscountTier3 = Math.max(ptFinancingTier3, ptDiscountTier3);
+  const ptActualDiscountTier3 = Math.max(ptFinancingTier3, ptDiscountTier3) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   
-  // No card costs for PrimaTrade
-  const ptCardCosts = 0;
+  // Card costs for PrimaTrade (cards that remain)
+  const ptCardCosts = spendTier3 * (tier3CardCostPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
   
   // Total supplier costs (PrimaTrade)
   const ptTotalSupplierCosts = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 + ptCardCosts;
@@ -320,15 +321,15 @@ export default function SCFComparison() {
   // Supplier time value benefits (PrimaTrade)
   const ptSupplierBenefitTier1 = ptParticipatingTier1 * (tier1PtSavingsPct / 100) * (ptDaysAdvanced / 365);
   const ptSupplierBenefitTier2 = ptParticipatingTier2 * (tier2PtSavingsPct / 100) * (ptDaysAdvanced / 365);
-  const ptSupplierBenefitTier3 = ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvanced / 365);
+  const ptSupplierBenefitTier3 = (ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvanced / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) + tradSupplierBenefitTier3;
   const ptTotalSupplierTimeValue = ptSupplierBenefitTier1 + ptSupplierBenefitTier2 + ptSupplierBenefitTier3;
   
   // Supplier net benefit (PrimaTrade)
   const ptSupplierNetBenefit = ptTotalSupplierTimeValue - ptTotalSupplierCosts;
   
-  // No card benefits for buyer with PrimaTrade
-  const ptBuyerCardRebate = 0;
-  const ptBuyerCardFreeFunding = 0;
+  // Card benefits for buyer with PrimaTrade (cards that remain)
+  const ptBuyerCardRebate = (tier3CardRebatePct / 100) * (tier3CardUsagePct / 100) * spendTier3 * (tier3CardRemainPct / 100);
+  const ptBuyerCardFreeFunding = (cardFreeFundingDays / 365) * (scfRatePct / 100) * (tier3CardUsagePct / 100) * spendTier3 * (tier3CardRemainPct / 100);
   
   // Outstanding balance (PrimaTrade)
   const ptOutstandingBalance = (ptDaysAdvanced / 365) * ptParticipatingSpend;
@@ -337,7 +338,7 @@ export default function SCFComparison() {
   const ptScfFundingBenefit = ptOutstandingBalance * (ptDaysAdvanced / 365) * (scfRatePct / 100);
   
   // Buyer net benefit (PrimaTrade)
-  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptScfFundingBenefit;
+  const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptBuyerCardFreeFunding + ptBuyerCardRebate + ptScfFundingBenefit;
   
   // Discounts passed through to buyer (PrimaTrade)
   const ptDiscountsPassedThrough = (ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3) - ptTotalFinancing;
@@ -352,11 +353,15 @@ export default function SCFComparison() {
   // Active suppliers (PrimaTrade)
   const ptActiveTier1 = tier1Suppliers * (tier1PtPartPct / 100);
   const ptActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2PtPartPct / 100);
-  const ptActiveTier3 = tier3Suppliers * (tier3PtPartPct / 100);
+  const ptActiveTier3 = tier3Suppliers * (tier3PtPartPct / 100) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalActive = ptActiveTier1 + ptActiveTier2 + ptActiveTier3;
   
   // Suppliers switching from cards
   const ptSuppliersFromCards = ptActiveTier3;
+  
+  // Suppliers on cards (Traditional and PrimaTrade)
+  const tradSuppliersOnCards = tier3Suppliers * (tier3CardUsagePct / 100);
+  const ptSuppliersOnCards = tier3Suppliers * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
   
   const tradEligibleSuppliers = tier1Suppliers + (tier2Suppliers - tier1Suppliers) + tier3Suppliers;
 
@@ -413,6 +418,18 @@ export default function SCFComparison() {
       trad: formatNumber(tradTotalActive, 0),
       pt: formatNumber(ptTotalActive, 0),
       tooltip: "Smaller suppliers will more actively use the SCF program"
+    },
+    {
+      label: 'Number of suppliers using SCF instead of cards',
+      trad: formatNumber(0, 0),
+      pt: formatNumber(ptSuppliersFromCards, 0),
+      tooltip: "Suppliers on cards should switch to save the card fees"
+    },
+    {
+      label: 'Number of suppliers paid via payment cards',
+      trad: formatNumber(tradSuppliersOnCards, 0),
+      pt: formatNumber(ptSuppliersOnCards, 0),
+      tooltip: "Number of suppliers remaining on cards"
     },
     {
       label: 'Total economic value of the SCF program',
@@ -827,7 +844,7 @@ export default function SCFComparison() {
                             tooltip: 'Participation rate among the long tail / SMEs'
                           })}
                           {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'Participation rate among the long tail / SMEs'
+                            tooltip: 'The percentage of those suppliers not still being paid by card that participate in SCF'
                           })}
                         </div>
                         
@@ -859,7 +876,10 @@ export default function SCFComparison() {
                         <h4 className="text-sm font-semibold text-gray-700 mb-3">Card programme (potentially replaced with PrimaTrade SCF)</h4>
                         <div className="grid md:grid-cols-4 gap-4">
                           {renderInput('Card usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'Share of long-tail spend currently paid via cards (typical)'
+                            tooltip: 'Share of long-tail spend currently paid via cards (typical) and not switched to SCF'
+                          })}
+                          {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
+                            tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to SCF'
                           })}
                           {renderInput('Supplier cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true, false, 'w-full', {
                             tooltip: 'All-in cost to supplier (set as needed)'
@@ -993,21 +1013,21 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Buyer gets funding as it still pays invoices on 60 days even though suppliers are paid earlier">
+                            <Tooltip text="Value of the additional trade credit the buyer receives which SCF supports">
                               <span>Benefit of funding provided to the buyer</span>
                             </Tooltip>
                           </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardFreeFunding + tradScfFundingBenefit)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptScfFundingBenefit)}</td>
+                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptBuyerCardFreeFunding + ptScfFundingBenefit)}</td>
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost">
+                            <Tooltip text="The buyer benefits from early payment discounts (including diversion of card charges to itself)">
                               <span>Benefit of discounts and rebates earned by the buyer</span>
                             </Tooltip>
                           </td>
                           <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradBuyerCardRebate + tradDiscountsPassedThrough)}</td>
-                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptDiscountsPassedThrough)}</td>
+                          <td className="py-2 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptBuyerCardRebate + ptDiscountsPassedThrough)}</td>
                         </tr>
                         <tr className="bg-green-50">
                           <td className="py-2 px-3 text-sm font-semibold text-gray-900">
@@ -1080,14 +1100,14 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier3}
                         ptValue={ptActualDiscountTier3}
-                        note="Higher of the financing and the discount agreed with the buyer"
+                        note="Higher of the financing and the discount agreed with the buyer (ignoring any card charges)"
                       />
                       <TableRow 
                         label="Card costs (long tail)"
                         currencySymbol={currencySymbol}
                         tradValue={tradCardCosts}
-                        ptValue={0}
-                        note="Rate charged by card providers to suppliers (deducted from their receipt)"
+                        ptValue={ptCardCosts}
+                        note="Rate charged by card providers to suppliers (deducted from the supplier's receipt)"
                       />
                       <tr className="bg-gray-100 font-semibold">
                         <td className="py-2 px-3 text-sm">
@@ -1141,28 +1161,29 @@ export default function SCFComparison() {
                         label="Buyer rebate from cards"
                         currencySymbol={currencySymbol}
                         tradValue={tradBuyerCardRebate}
-                        ptValue={0}
+                        ptValue={ptBuyerCardRebate}
                         note="Rebate returned to buyer by the card provider (out of the charge they make to suppliers)"
                       />
                       <TableRow 
                         label="Buyer free funding from cards"
                         currencySymbol={currencySymbol}
                         tradValue={tradBuyerCardFreeFunding}
-                        ptValue={0}
-                        note="The average delay between payment to the supplier and settlement by the buyer"
+                        ptValue={ptBuyerCardFreeFunding}
+                        note="Average delay between supplier payment and settlement by the buyer times the SCF rate"
                       />
                       <TableRow 
-                        label="Benefit of SCF funding"
+                        label="Funding benefit provided by SCF (paid for by suppliers)"
                         currencySymbol={currencySymbol}
                         tradValue={tradScfFundingBenefit}
                         ptValue={ptScfFundingBenefit}
-                        note="Buyer gets funding as it still pays invoices on 60 days even though suppliers are paid earlier"
+                        note="Value of the additional trade credit the buyer receives which SCF supports"
                       />
                       <TableRow 
-                        label="Early payment discounts less SCF costs"
+                        label="Buyer benefit: early payment discounts less SCF costs (buyer P&L)"
                         currencySymbol={currencySymbol}
                         tradValue={tradDiscountsPassedThrough}
                         ptValue={ptDiscountsPassedThrough}
+                        note="Buyer's P&L win; PrimaTrade this amount reduces the cost of goods/services purchased"
                       />
                       <tr className="bg-green-100 font-bold">
                         <td className="py-2 px-3 text-sm">
