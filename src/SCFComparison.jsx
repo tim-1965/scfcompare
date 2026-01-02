@@ -508,7 +508,7 @@ export default function SCFComparison() {
   const adjustedNetInterest = netInterest - (totalWCBenefit * (scfRatePct / 100));
   const adjustedTradePayables = tradePayables + totalWCBenefit;
   const adjustedNetDebt = netDebt - totalWCBenefit;
-  const adjustedEquity = equity + deltaEarlyPaymentDiscounts;
+  const adjustedEquity = equity + deltaBuyerBenefit; // Both discounts and funding benefits
   const adjustedFCF = freeCashFlow + totalWCBenefit;
   
   // Calculate ratios
@@ -523,7 +523,7 @@ export default function SCFComparison() {
   const fcfSales = (freeCashFlow / turnover) * 100;
   const adjustedFcfSales = (adjustedFCF / turnover) * 100;
   const interestCover = ebitda / netInterest;
-  const adjustedInterestCover = adjustedEbitda / adjustedNetInterest;
+  const adjustedInterestCover = adjustedProfitBeforeTax / adjustedNetInterest;
 
   // Formatting helpers
   const formatCurrency = (value) => {
@@ -1919,7 +1919,7 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm">Net debt</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(netDebt)}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatCurrency(adjustedNetDebt)}</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Reduced as lower borrowing because of working capital benefits</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Reduced as lower borrowing (suppliers provide more credit, if card use reduces then buyer card credit reduces)</td>
                       </tr>
                       <tr>
                         <td className="py-3 px-4 text-sm">Equity</td>
@@ -1989,7 +1989,7 @@ export default function SCFComparison() {
                         <td className="py-3 px-4 text-sm">Interest cover</td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatNumber(interestCover, 2)}x</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-red-700">{formatNumber(adjustedInterestCover, 2)}x</td>
-                        <td className="py-3 px-4 text-xs text-gray-600">Up because interest costs reduce and earnings increase</td>
+                        <td className="py-3 px-4 text-xs text-gray-600">Based on profit before tax - up because interest costs reduce and earnings increase</td>
                       </tr>
                     </tbody>
                   </table>
