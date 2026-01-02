@@ -1198,6 +1198,9 @@ export default function SCFComparison() {
                     {renderInput('Delivery to invoice approval', processingTime, setProcessingTime, 0, 30, 1, 'days', false, false, 'w-full', {
                       tooltip: 'The typical number of days it takes for invoices to be approved once delivery has been confirmed.'
                     })}
+                    {renderInput('Baseline payment term', baselinePaymentTerm, setBaselinePaymentTerm, 0, 90, 1, 'days', false, false, 'w-full', {
+                      tooltip: 'This payment term is used to determine the amount of benefit received by the buyer as a result of the SCF programme when payment terms by suppliers are generally extended'
+                    })}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">SCF payment timing</h3>
@@ -1236,7 +1239,7 @@ export default function SCFComparison() {
             <>
             <div data-panel="comparison" className={`space-y-6 ${isPrinting ? 'print-comparison-panel' : ''} ${activeView !== 'comparison' && !isPrinting ? 'hidden' : ''}`}>
               {/* Highlights Box */}
-                 <div className="max-w-5xl mx-auto">
+                 <div className="mx-auto" style={{ maxWidth: 'fit-content', minWidth: '80%' }}>
                  <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -1249,9 +1252,9 @@ export default function SCFComparison() {
                       <span className="text-xs uppercase tracking-wide text-orange-100">Performance</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-5 gap-2 mb-6">
+                  <div className="flex gap-2 mb-6 flex-nowrap">
                     {highlightStats.map((stat, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex-shrink-0" style={{ minWidth: '160px' }}>
                         <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1">
                           {stat.label}
                           <Tooltip text={stat.tooltip}>
@@ -1497,6 +1500,15 @@ export default function SCFComparison() {
                         <td className="py-4 px-4 text-right">{formatCurrency(tradTotalValue)}</td>
                         <td className="py-4 px-4 text-right text-[#D64933]">{formatCurrency(ptTotalValue)}</td>
                       </tr>
+                      <tr className="bg-gray-100 font-semibold">
+                        <td className="py-3 px-3 text-sm">
+                          <Tooltip text="Working capital provided via the supply chain (total trade credit provided by suppliers & cards)">
+                            <span>Total amount of trade credit</span>
+                          </Tooltip>
+                        </td>
+                        <td className="py-3 px-3 text-sm text-right">{formatCurrency(tradTotalTradeCredit)}</td>
+                        <td className="py-3 px-3 text-sm text-right text-[#D64933]">{formatCurrency(ptTotalTradeCredit)}</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -1641,6 +1653,7 @@ export default function SCFComparison() {
               </div>
               
               {/* Action Buttons */}
+              <div className="max-w-5xl mx-auto">
               <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
                 <button
                   onClick={handleReset}
@@ -1655,6 +1668,7 @@ export default function SCFComparison() {
                   <Printer className="w-5 h-5" />
                   Print to PDF
                 </button>
+              </div>
               </div>
             </div>
             </>
@@ -1761,7 +1775,11 @@ export default function SCFComparison() {
                         <h3 className="text-base font-bold text-gray-900 mb-3 pb-2 border-b-2 border-gray-300">Balance sheet and cash flow</h3>
                         
                         <div className="flex items-center justify-between gap-3">
-                          <label className="text-sm text-gray-700 flex-1">Trade Payables</label>
+                          <label className="text-sm text-gray-700 flex-1">
+                            <Tooltip text={`The expected value for trade payables based on the inputs on panel 1 is ${formatCurrency(tradTotalTradeCredit)}`}>
+                              <span>Trade Payables</span>
+                            </Tooltip>
+                          </label>
                           <div className="flex items-center gap-2">
                             <input
                               type="number"
@@ -1917,7 +1935,11 @@ export default function SCFComparison() {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       <tr>
-                        <td className="py-3 px-4 text-sm">Trade payables</td>
+                        <td className="py-3 px-4 text-sm">
+                          <Tooltip text={`The expected value for trade payables based on the inputs on panel 1 is ${formatCurrency(tradTotalTradeCredit)}`}>
+                            <span>Trade payables</span>
+                          </Tooltip>
+                        </td>
                         <td className="py-3 px-4 text-sm text-right font-medium">{formatCurrency(tradePayables)}</td>
                         <td className="py-3 px-4 text-sm text-right font-medium text-[#D64933]">{formatCurrency(adjustedTradePayables)}</td>
                         <td className="py-3 px-4 text-xs text-gray-600">Goes up as suppliers are providing more credit</td>
