@@ -1239,7 +1239,7 @@ export default function SCFComparison() {
             <>
             <div data-panel="comparison" className={`space-y-6 ${isPrinting ? 'print-comparison-panel' : ''} ${activeView !== 'comparison' && !isPrinting ? 'hidden' : ''}`}>
               {/* Highlights Box */}
-                 <div className="mx-auto" style={{ maxWidth: 'fit-content', minWidth: '80%' }}>
+                 <div className="flex justify-center">
                  <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -1252,9 +1252,9 @@ export default function SCFComparison() {
                       <span className="text-xs uppercase tracking-wide text-orange-100">Performance</span>
                     </div>
                   </div>
-                  <div className="flex gap-2 mb-6 flex-nowrap">
+                  <div className="flex gap-2 mb-6">
                     {highlightStats.map((stat, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex-shrink-0" style={{ minWidth: '160px' }}>
+                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex-shrink-0 w-[180px]">
                         <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1">
                           {stat.label}
                           <Tooltip text={stat.tooltip}>
