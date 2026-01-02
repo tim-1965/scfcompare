@@ -621,7 +621,7 @@ export default function SCFComparison() {
             This app enables you to compare a PrimaTrade SCF programme with a traditional SCF programme. Adjust the input parameters to reflect your company's procurement profile and current (or potential) SCF arrangements and card payment program. The results will update automatically.
             PrimaTrade offers the ability to reach all your suppliers supported by a high level of automation - even suppliers in the long tail and in difficult jurisdictions. 
             You can also replace expensive card payment programs with more efficient SCF, collecting an early payment discount to bring in-house the fees that are currently paid externally. 
-            On top, PrimaTrade enables early payments to be approved before delivery (at shipment), delivering much earlier cash to suppliers and much more value.
+            On top, PrimaTrade enables early payments to be approved before delivery (at shipment), delivering much earlier cash to suppliers and much more value to buyer and suppliers - monetising that value with automation into a P&L win for buyers.
           </p>
         </div>
 
