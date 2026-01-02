@@ -113,7 +113,7 @@ export default function SCFComparison() {
 
   // Company Profile
   const [currencySymbol, setCurrencySymbol] = useState(() => loadSavedValue('currencySymbol', '$'));
-  const [totalProcurementSpend, setTotalProcurementSpend] = useState(() => loadSavedValue('totalProcurementSpend', 1800));
+  const [totalProcurementSpend, setTotalProcurementSpend] = useState(() => loadSavedValue('totalProcurementSpend', 500));
   const [totalSuppliers, setTotalSuppliers] = useState(() => loadSavedValue('totalSuppliers', 8000));
   
   // Tier 1: Existing SCF
@@ -128,25 +128,25 @@ export default function SCFComparison() {
   
   // Tier 2: Next Level (50-1000)
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
-  const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 30));
+  const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 25));
   const [tier2TradPartPct, setTier2TradPartPct] = useState(() => loadSavedValue('tier2TradPartPct', 0));
-  const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
+  const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 65));
   const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
-  const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.5));
-  const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 12));
-  const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 15));
+  const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.0));
+  const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 10));
+  const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 12));
   
   // Tier 3: Long Tail (auto-calculated)
   const [tier3TradPartPct, setTier3TradPartPct] = useState(() => loadSavedValue('tier3TradPartPct', 0));
-  const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 60));
+  const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 80));
   const [tier3TradDiscountPct, setTier3TradDiscountPct] = useState(() => loadSavedValue('tier3TradDiscountPct', 0));
-  const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.5));
-  const [tier3TradSavingsPct, setTier3TradSavingsPct] = useState(() => loadSavedValue('tier3TradSavingsPct', 15));
-  const [tier3PtSavingsPct, setTier3PtSavingsPct] = useState(() => loadSavedValue('tier3PtSavingsPct', 20));
+  const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.0));
+  const [tier3TradSavingsPct, setTier3TradSavingsPct] = useState(() => loadSavedValue('tier3TradSavingsPct', 14));
+  const [tier3PtSavingsPct, setTier3PtSavingsPct] = useState(() => loadSavedValue('tier3PtSavingsPct', 18));
   const [tier3CardUsagePct, setTier3CardUsagePct] = useState(() => loadSavedValue('tier3CardUsagePct', 60));
   const [tier3CardCostPct, setTier3CardCostPct] = useState(() => loadSavedValue('tier3CardCostPct', 3.5));
   const [tier3CardRebatePct, setTier3CardRebatePct] = useState(() => loadSavedValue('tier3CardRebatePct', 1.0));
-  const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 100));
+  const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 25));
   
   // AP Process & Payment Timing
   const [delayDomestic, setDelayDomestic] = useState(() => loadSavedValue('delayDomestic', 4));
@@ -418,18 +418,6 @@ export default function SCFComparison() {
       trad: formatNumber(tradTotalActive, 0),
       pt: formatNumber(ptTotalActive, 0),
       tooltip: "Smaller suppliers will more actively use the SCF program"
-    },
-    {
-      label: 'Number of suppliers using SCF instead of cards',
-      trad: formatNumber(0, 0),
-      pt: formatNumber(ptSuppliersFromCards, 0),
-      tooltip: "Suppliers on cards should switch to save the card fees"
-    },
-    {
-      label: 'Number of suppliers paid via payment cards',
-      trad: formatNumber(tradSuppliersOnCards, 0),
-      pt: formatNumber(ptSuppliersOnCards, 0),
-      tooltip: "Number of suppliers remaining on cards"
     },
     {
       label: 'Total economic value of the SCF program',
@@ -873,13 +861,17 @@ export default function SCFComparison() {
                       
                       {/* Card programme */}
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Card programme (potentially replaced with PrimaTrade SCF)</h4>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                          <h4 className="text-sm font-semibold text-gray-700">Card programme (potentially replaced with PrimaTrade SCF)</h4>
+                          <div className="sm:w-64">
+                            {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
+                              tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to SCF'
+                            })}
+                          </div>
+                        </div>
                         <div className="grid md:grid-cols-4 gap-4">
                           {renderInput('Card usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true, false, 'w-full', {
                             tooltip: 'Share of long-tail spend currently paid via cards (typical) and not switched to SCF'
-                          })}
-                          {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to SCF'
                           })}
                           {renderInput('Supplier cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true, false, 'w-full', {
                             tooltip: 'All-in cost to supplier (set as needed)'
