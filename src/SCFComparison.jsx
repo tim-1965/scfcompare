@@ -120,7 +120,7 @@ export default function SCFComparison() {
   const [tier1Suppliers, setTier1Suppliers] = useState(() => loadSavedValue('tier1Suppliers', 50));
   const [tier1SpendPct, setTier1SpendPct] = useState(() => loadSavedValue('tier1SpendPct', 65));
   const [tier1TradPartPct, setTier1TradPartPct] = useState(() => loadSavedValue('tier1TradPartPct', 40));
-  const [tier1PtPartPct, setTier1PtPartPct] = useState(() => loadSavedValue('tier1PtPartPct', 40));
+  const [tier1PtPartPct, setTier1PtPartPct] = useState(() => loadSavedValue('tier1PtPartPct', 55));
   const [tier1TradDiscountPct, setTier1TradDiscountPct] = useState(() => loadSavedValue('tier1TradDiscountPct', 0));
   const [tier1PtDiscountPct, setTier1PtDiscountPct] = useState(() => loadSavedValue('tier1PtDiscountPct', 0));
   const [tier1TradSavingsPct, setTier1TradSavingsPct] = useState(() => loadSavedValue('tier1TradSavingsPct', 8));
@@ -130,7 +130,7 @@ export default function SCFComparison() {
   const [tier2Suppliers, setTier2Suppliers] = useState(() => loadSavedValue('tier2Suppliers', 1000));
   const [tier2SpendPct, setTier2SpendPct] = useState(() => loadSavedValue('tier2SpendPct', 25));
   const [tier2TradPartPct, setTier2TradPartPct] = useState(() => loadSavedValue('tier2TradPartPct', 0));
-  const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 65));
+  const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
   const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
   const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.0));
   const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 10));
@@ -654,30 +654,30 @@ export default function SCFComparison() {
                   </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
                   <div>
-                    {renderInput('Total procurement spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
+                    {renderInput('Total  spend', totalProcurementSpend, setTotalProcurementSpend, 10, 10000, 10, 'MM', false, false, 'w-full', {
                       formatDisplay: (val) => `${currencySymbol}${formatNumber(val, 0)}`,
                       parseInput: (input) => {
                         const numeric = input.replace(/[^0-9.]/g, '');
                         return parseFloat(numeric);
                       },
-                      tooltip: 'All procurement expenditure of all kinds, goods and services, domestic and international.',
+                      tooltip: 'All procurement expenditure of all kinds, goods and services from all suppliers, domestic and international.',
                       labelClassName: 'text-[13px]'
                     })}
                   </div>
                   <div>
                     {renderInput('Number of suppliers', totalSuppliers, setTotalSuppliers, 100, 50000, 100, '', false, false, 'w-full', {
-                      tooltip: 'All suppliers across goods + services.'
+                      tooltip: 'The total number of suppliers across goods + services.'
                     })}
                   </div>
                   <div>
                     {renderInput('International share', crossBorderSharePct, setCrossBorderSharePct, 0, 100, 5, '', true, false, 'w-full', {
-                      tooltip: 'How much of the spend is cross-border with longer shipping times',
+                      tooltip: 'How much of the spend is international (so cross-border) experiencing longer shipping times and so longer periods between shipment and invoice approval.',
                       labelClassName: 'text-[13px]'
                     })}
                   </div>
                   <div>
                     {renderInput('SCF funding rate', scfRatePct, setScfRatePct, 0, 20, 0.1, '', true, false, 'w-full', {
-                      tooltip: 'Approximate annual financing rate charged by SCF funders'
+                      tooltip: 'Average financing rate charged by SCF funders'
                     })}
                   </div>
                 </div>
@@ -755,12 +755,12 @@ export default function SCFComparison() {
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
                           <div className="w-full">
                           {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full', {
-                            tooltip: 'Current number of suppliers in SCF (typically larger)'
+                            tooltip: 'Current number of suppliers in traditional SCF (or who might be included in a traditional SCF programme): - typically larger suppliers only, ignoring card programmes (handled separately lower down).'
                           })}
                         </div>
                         <div className="w-full">
                           {renderInput('Share of total spend', tier1SpendPct, setTier1SpendPct, 0, 100, 1, '', true, false, 'w-full', {
-                            tooltip: 'Approximate spend concentration for the suppliers in SCF'
+                            tooltip: 'Share of the total spend for the suppliers eligible for traditional SCF.'
                           })}
                         </div>
                       </div>
@@ -771,10 +771,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
                           {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                            tooltip: 'The proportion of eligible spend from these larger suppliers funded by traditional SCF, noting that larger suppliers typically benefit less from early payments and only value early payments that are truly early.'
                           })}
                           {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                            tooltip: 'The proportion of eligible spend funded from these larger suppliers by PrimaTrade SCF noting that participation is typically higher when early payments are available at shipment rather than later after delivery.'
                           })}
                         </div>
                         
@@ -782,10 +782,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Early payment discount</h4>
                           {renderInput('Traditional SCF', tier1TradDiscountPct, setTier1TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                            tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                           })}
                           {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                            tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
                           })}
                         </div>
                         
@@ -793,10 +793,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier savings rate</h4>
                           {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                           })}
                           {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
                           })}
                         </div>
                       </div>
@@ -811,12 +811,12 @@ export default function SCFComparison() {
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
                             <div className="w-full">
                           {renderInput('Ideal further suppliers for SCF', tier2Suppliers, setTier2Suppliers, 100, 5000, 50, '', false, false, 'w-full', {
-                            tooltip: 'The number of regular suppliers that would benefit from SCF'
+                            tooltip: 'The number of regular suppliers that would benefit from SCF but which are typically not eligible to be included in traditional SCF programmes.'
                           })}
                         </div>
                            <div className="w-full">
                           {renderInput('Share of total spend', tier2SpendPct, setTier2SpendPct, 0, 100, 1, '', true, false, 'w-full', {
-                            tooltip: 'Additional share of spend that should be in SCF'
+                            tooltip: 'The additional share of spend from these regular suppliers that would benefit from SCF'
                           })}
                         </div>
                       </div>
@@ -828,10 +828,10 @@ export default function SCFComparison() {
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
                             <div className="space-y-2">
                               {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                                tooltip: 'The proportion of eligible spend from these mid-sized suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than that of larger suppliers.'
                               })}
                               {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                                tooltip: 'The proportion of eligible spend funded from these mid-sized suppliers by PrimaTrade SCF noting that participation is likely to be higher than that of larger suppliers, especially if early payments are available at shipment rather than later after delivery.'
                               })}
                             </div>
                           </div>
@@ -840,10 +840,10 @@ export default function SCFComparison() {
                           <div className="space-y-3">
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Early payment discount</h4>
                             {renderInput('Traditional SCF', tier2TradDiscountPct, setTier2TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                              tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                              tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                             })}
                             {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                              tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                              tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
                             })}
                           </div>
 
@@ -851,10 +851,10 @@ export default function SCFComparison() {
                           <div className="space-y-3">
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier savings rate</h4>
                             {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                             })}
                             {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
                             })}
                           </div>
                         </div>
@@ -881,7 +881,7 @@ export default function SCFComparison() {
                             </span>
                           </div>
                           {tier3SpendPct < 0 && (
-                            <p className="text-xs text-red-600">⚠️ Tier 1 + Tier 2 exceed 100%</p>
+                            <p className="text-xs text-red-600">⚠️ Tier 1 + Tier 2 share of spend exceeds 100%, change the assumptions further up to reduce their combined share of spend</p>
                           )}
                         </div>
                       </div>
@@ -892,10 +892,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Participation rate</h4>
                           {renderInput('Traditional SCF', tier3TradPartPct, setTier3TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                            tooltip: 'The proportion of eligible spend from the long-tail of suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than other types of supplier.'
                           })}
                           {renderInput('PrimaTrade', tier3PtPartPct, setTier3PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend that is actually funded by SCF, typically much higher when payments are made at shipment rather than delivery.'
+                            tooltip: 'The proportion of eligible spend funded from the long-tail of suppliers by PrimaTrade SCF noting that participation is likely to be high especially if early payments are available at shipment rather than later after delivery.'
                           })}
                         </div>
                         
@@ -903,10 +903,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Early payment discount</h4>
                           {renderInput('Traditional SCF', tier3TradDiscountPct, setTier3TradDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                            tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                           })}
                           {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount suppliers agree to get early payment, which PrimaTrade separates from the funding cost and routes to the buyer P&L (net of funding costs).'
+                            tooltip: 'The discount on the invoice agreed for early payments at shipment noting that such suppliers may well already be accepting significant discounts charged by card providers; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L, thereby also capturing the charges that otherwise card providers might take.'
                           })}
                         </div>
                         
@@ -914,10 +914,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier savings rate</h4>
                           {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                           })}
                           {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When payments are made at shipment, this includes savings on credit insurance and removal of their collateral gap when goods are shipped without payment.'
+                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance, avoidance of card charges, and more efficient local financing.'
                           })}
                         </div>
                       </div>
@@ -928,22 +928,22 @@ export default function SCFComparison() {
                           <h4 className="text-sm font-semibold text-gray-700">Card programme (potentially replaced with PrimaTrade SCF)</h4>
                           <div className="w-full lg:w-1/3">
                             {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
-                              tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to SCF'
+                              tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to PrimaTrade SCF.'
                             })}
                           </div>
                         </div>
                         <div className="grid md:grid-cols-4 gap-4">
                           {renderInput('Card usage %', tier3CardUsagePct, setTier3CardUsagePct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'Share of long-tail spend currently paid via cards (typical) and not switched to SCF'
+                            tooltip: 'Share of long-tail spend currently paid via payment cards (which PrimaTrade SCF can potentially replace)'
                           })}
                           {renderInput('Supplier cost %', tier3CardCostPct, setTier3CardCostPct, 0, 10, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'All-in cost to supplier (set as needed)'
+                            tooltip: 'All-in cost to supplier - the charge deducted from the payment made to the supplier by the card issuer.'
                           })}
                           {renderInput('Buyer rebate %', tier3CardRebatePct, setTier3CardRebatePct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'Buyer rebate that the card issuer provides'
+                            tooltip: 'Buyer rebate that the card issuer provides out of the fees it has charged to suppliers.'
                           })}
                           {renderInput('Buyer free period', cardFreeFundingDays, setCardFreeFundingDays, 0, 60, 1, 'days', false, false, 'w-full', {
-                            tooltip: 'Credit period that the buyer enjoys with the card program'
+                            tooltip: 'Additional credit period that the buyer enjoys with the card program between when the supplier is paid and when the buyer has to settle.'
                           })}
                         </div>
                       </div>
@@ -962,28 +962,28 @@ export default function SCFComparison() {
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Days between handover and accepted delivery</h3>
                     {renderInput('Domestic / services', delayDomestic, setDelayDomestic, 0, 30, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'Days between despatch and confirmed delivery (so that approval can start)'
+                      tooltip: 'Days between despatch and confirmed delivery (so that the approval process can start)'
                     })}
                     {renderInput('Cross-border', delayCrossBorder, setDelayCrossBorder, 0, 60, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'More days when goods have to travel further (eg: from Asia)'
+                      tooltip: 'International (cross-border) supply chains involve more transit days as goods have to travel further (eg: from Asia) and also clear customs.'
                     })}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">Term and approval timing</h3>
                     {renderInput('Delivery to invoice approval', processingTime, setProcessingTime, 0, 30, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'How long it takes for invoices to be approved once delivery has happened'
+                      tooltip: 'The typical number of days it takes for invoices to be approved once delivery has been confirmed.'
                     })}
                     {renderInput('Standard invoice payment terms', paymentTerms, setPaymentTerms, 0, 120, 5, 'days', false, false, 'w-full', {
-                      tooltip: 'Contractual supplier payment terms.'
+                      tooltip: 'The standard term for invoices (days between issue date and payment due date) - typically measured from the date when services are delivered or goods handed over.'
                     })}
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-700">SCF payment timing</h3>
-                    {renderInput('Traditional SCF: days after approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'Traditional SCF and cards: supplier receives funds after approval'
+                    {renderInput('Traditional SCF: after approval', tradDaysAfterApproval, setTradDaysAfterApproval, 0, 10, 1, 'days', false, false, 'w-full', {
+                      tooltip: 'Traditional SCF: the number of days it takes after invoice approval until the supplier receives funds, typically generation / transmission and processing of the payment file.'
                     })}
                     {renderInput('PrimaTrade: days after handover', ptDaysAfterHandover, setPtDaysAfterHandover, 0, 10, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'PrimaTrade: supplier receives funds after handover'
+                      tooltip: 'PrimaTrade SCF: the number of days after goods hand over / service delivery for suppliers to PO match, automated early payment approval to be provided and the supplier receives funds.'
                     })}
                   </div>
                 </div>
