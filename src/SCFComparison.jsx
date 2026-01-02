@@ -1069,7 +1069,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount) and card costs">
+                            <Tooltip text="Costs charged to suppliers by financiers (included in early payment discount if this is present) and separately any card costs">
                               <span>Cost of early payments (incl card) to suppliers</span>
                             </Tooltip>
                           </td>
@@ -1078,7 +1078,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b-2 border-gray-300 bg-blue-50">
                           <td className="py-2 px-3 text-sm font-semibold text-gray-900">
-                            <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost (and card costs)">
+                            <Tooltip text="Time-value benefit at the SCF rate less larger of supplier discount and SCF cost (and card costs)">
                               <span>Net supplier benefit</span>
                             </Tooltip>
                           </td>
@@ -1096,7 +1096,7 @@ export default function SCFComparison() {
                         </tr>
                         <tr className="border-b border-gray-200">
                           <td className="py-2 px-3 pl-6 text-sm text-gray-700">
-                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) discounts less SCF financing cost.">
+                            <Tooltip text="Card rebates and funding benefit plus (PrimaTrade only) the P&L benefit arising from early payment discounts.">
                               <span>Benefit of discounts and rebates earned by the buyer</span>
                             </Tooltip>
                           </td>
@@ -1160,21 +1160,21 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier1}
                         ptValue={ptActualDiscountTier1}
-                        note="Higher of the SCF financing cost and the discount agreed with the buyer"
+                        note="Higher of the SCF financing cost and the early payment discount (if any) agreed with the buyer"
                       />
                       <TableRow 
                         label="Actual discount accepted: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier2}
                         ptValue={ptActualDiscountTier2}
-                        note="Higher of the SCF financing cost and the discount agreed with the buyer"
+                        note="Higher of the SCF financing cost and the  early payment discount (if any) agreed with the buyer"
                       />
                       <TableRow 
                         label="Actual discount accepted: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={tradActualDiscountTier3}
                         ptValue={ptActualDiscountTier3}
-                        note="Higher of the SCF financing and the discount agreed with the buyer (ignoring any card charges)"
+                        note="Higher of the SCF financing and the  early payment discount (if any) agreed with the buyer (ignoring any card charges)"
                       />
                       <TableRow 
                         label="Card costs (long tail)"
@@ -1197,26 +1197,26 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier1}
                         ptValue={ptSupplierBenefitTier1}
-                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
+                        note="Supplier benefit as a result of early payments, calculated using the relevant supplier savings rate"
                       />
                       <TableRow 
                         label="Supplier benefit: Tier 2"
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier2}
                         ptValue={ptSupplierBenefitTier2}
-                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
+                        note="Supplier benefit as a result of early payments, calculatedusing the relevant supplier savings rate"
                       />
                       <TableRow 
                         label="Supplier benefit: Tier 3"
                         currencySymbol={currencySymbol}
                         tradValue={tradSupplierBenefitTier3}
                         ptValue={ptSupplierBenefitTier3}
-                        note="Supplier benefit as a result of early payments, calculated using supplier savings rates"
+                        note="Supplier benefit as a result of early payments, calculated using the relevant supplier savings rate"
                       />
                       <tr className="bg-gray-100 font-semibold">
                         <td className="py-2 px-3 text-sm">
                           <Tooltip text="Total of the supplier savings">
-                            <span>Total supplier time value benefit</span>
+                            <span>Total supplier benefit at savings rates</span>
                           </Tooltip>
                         </td>
                         <td className="py-2 px-3 text-sm text-right">{formatCurrency(tradTotalSupplierTimeValue)}</td>
@@ -1224,7 +1224,7 @@ export default function SCFComparison() {
                       </tr>
                       <tr className="bg-blue-100 font-bold">
                         <td className="py-2 px-3 text-sm">
-                          <Tooltip text="Time-value benefit less larger of supplier discount and SCF cost and card costs">
+                          <Tooltip text="The total supplier benefit of early payments less the costs incurred (larger of supplier discount and SCF cost and then additionally any card costs)">
                             <span>Supplier net benefit</span>
                           </Tooltip>
                         </td>
@@ -1236,7 +1236,7 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradBuyerCardRebate}
                         ptValue={ptBuyerCardRebate}
-                        note="Rebate returned to buyer by the card provider (out of the charge they make to suppliers)."
+                        note="Rebate returned to buyer by the card provider (out of the charge the card provider makes to suppliers)."
                       />
                       <TableRow 
                         label="Buyer free funding from cards"
@@ -1250,7 +1250,7 @@ export default function SCFComparison() {
                         currencySymbol={currencySymbol}
                         tradValue={tradScfFundingBenefit}
                         ptValue={ptScfFundingBenefit}
-                        note="Value of the SCF working capital support to the supply chain that  the buyer receives calculated at the SCF rate."
+                        note="Value of the SCF working capital support to the supply chain that the buyer receives calculated at the SCF rate."
                       />
                       <TableRow 
                         label="Early payment discounts less SCF costs"
@@ -1269,7 +1269,7 @@ export default function SCFComparison() {
                       </tr>
                       <tr className="bg-[#F08070]/30 font-bold text-base">
                         <td className="py-4 px-4">
-                          <Tooltip text="Total of buyer and supplier net benefits - so the economic value created by the SCF programme">
+                          <Tooltip text="Total of buyer and supplier net benefits - so the total economic value created by the SCF programme">
                             <span>Total value created (buyer + suppliers)</span>
                           </Tooltip>
                         </td>
