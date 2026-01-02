@@ -628,6 +628,7 @@ export default function SCFComparison() {
         <div className="space-y-6">
           {/* Panel 1: Inputs */}
           {activeView === 'inputs' && (
+            <>
             <div data-panel="inputs" className="space-y-4 sm:space-y-6">
                
             {/* Company Profile */}
@@ -989,10 +990,12 @@ export default function SCFComparison() {
                 Print to PDF
               </button>
             </div>
+            </>
           )}
 
           {/* Panel 2: Comparison Results */}
           {activeView === 'comparison' && (
+            <>
             <div data-panel="comparison" className="space-y-6">
               {/* Highlights Box */}
                  <div className="max-w-5xl mx-auto">
@@ -1417,6 +1420,7 @@ export default function SCFComparison() {
                 </button>
               </div>
             </div>
+            </>
           )}
         </div>
       </div>
