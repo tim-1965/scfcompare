@@ -392,7 +392,7 @@ export default function SCFComparison() {
   const ptParticipatingTier1 = spendTier1 * (tier1PtPartPct / 100);
   const ptParticipatingTier2 = spendTier2 * (tier2PtPartPct / 100);
   const ptParticipatingTier3 = spendTier3 * (tier3PtPartPct / 100)* (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
-  const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3 - (spendTier3 * (tier3PtPartPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
+  const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3;
   
   const ptSupplierCashReceipt = ptDaysAfterHandover;
   
