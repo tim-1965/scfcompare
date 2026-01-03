@@ -275,7 +275,7 @@ export default function SCFComparison() {
       setProfitBeforeTax(10000000);
       setNetInterest(40000000);
       setEbitda(90000000);
-      setTradePayables(105000000);
+      setTradePayables(82000000);
       setNetDebt(400000000);
       setEquity(160000000);
       setFreeCashFlow(22000000);
@@ -383,7 +383,7 @@ export default function SCFComparison() {
   
   // Active suppliers (Traditional)
   const tradActiveTier1 = tier1Suppliers * (tier1TradPartPct / 100);
-  const tradActiveTier2 = tier2Suppliers * (tier2TradPartPct / 100);
+  const tradActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2TradPartPct / 100);
   const tradActiveTier3 = tier3Suppliers * (tier3TradPartPct / 100);
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
   
@@ -476,7 +476,7 @@ export default function SCFComparison() {
   
   // Active suppliers (PrimaTrade)
   const ptActiveTier1 = tier1Suppliers * (tier1PtPartPct / 100);
-  const ptActiveTier2 = tier2Suppliers * (tier2PtPartPct / 100);
+  const ptActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2PtPartPct / 100);
   const ptActiveTier3 = tier3Suppliers * (tier3PtPartPct / 100) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalActive = ptActiveTier1 + ptActiveTier2 + ptActiveTier3;
   
@@ -2062,6 +2062,178 @@ export default function SCFComparison() {
                     <div className="text-red-100 text-sm mb-2">Leverage Improvement</div>
                     <div className="text-4xl font-bold mb-1">{formatNumber(leverage - adjustedLeverage, 2)}x</div>
                     <div className="text-red-100 text-sm">Net Debt / EBITDA reduction</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Calculation Workings */}
+              <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Calculator className="w-6 h-6 text-[#F08070]" />
+                  Detailed Calculation Workings
+                </h2>
+                
+                <div className="space-y-6">
+                  {/* Financing Costs by Tier */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">SCF Financing Costs by Tier</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-700">Tier</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-gray-700">Traditional SCF</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-[#D64933]">PrimaTrade SCF</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 1</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradFinancingTier1)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptFinancingTier1)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 2</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradFinancingTier2)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptFinancingTier2)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 3</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradFinancingTier3)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptFinancingTier3)}</td>
+                          </tr>
+                          <tr className="bg-gray-50 font-semibold">
+                            <td className="py-2 px-3 text-xs text-gray-900">Total</td>
+                            <td className="py-2 px-3 text-xs text-right">{formatCurrency(tradTotalFinancing)}</td>
+                            <td className="py-2 px-3 text-xs text-right text-[#D64933]">{formatCurrency(ptTotalFinancing)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Actual Discounts Accepted by Tier */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">Actual Discounts Accepted by Tier</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-700">Tier</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-gray-700">Traditional SCF</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-[#D64933]">PrimaTrade SCF</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 1</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradActualDiscountTier1)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptActualDiscountTier1)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 2</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradActualDiscountTier2)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptActualDiscountTier2)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 3</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradActualDiscountTier3)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptActualDiscountTier3)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Card costs</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradCardCosts)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptCardCosts)}</td>
+                          </tr>
+                          <tr className="bg-gray-50 font-semibold">
+                            <td className="py-2 px-3 text-xs text-gray-900">Total supplier costs</td>
+                            <td className="py-2 px-3 text-xs text-right">{formatCurrency(tradTotalSupplierCosts)}</td>
+                            <td className="py-2 px-3 text-xs text-right text-[#D64933]">{formatCurrency(ptTotalSupplierCosts)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Supplier Benefits by Tier */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">Supplier Time Value Benefits by Tier</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-700">Tier</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-gray-700">Traditional SCF</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-[#D64933]">PrimaTrade SCF</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 1</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradSupplierBenefitTier1)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptSupplierBenefitTier1)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 2</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradSupplierBenefitTier2)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptSupplierBenefitTier2)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Tier 3</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradSupplierBenefitTier3)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptSupplierBenefitTier3)}</td>
+                          </tr>
+                          <tr className="bg-gray-50 font-semibold">
+                            <td className="py-2 px-3 text-xs text-gray-900">Total supplier benefits</td>
+                            <td className="py-2 px-3 text-xs text-right">{formatCurrency(tradTotalSupplierTimeValue)}</td>
+                            <td className="py-2 px-3 text-xs text-right text-[#D64933]">{formatCurrency(ptTotalSupplierTimeValue)}</td>
+                          </tr>
+                          <tr className="bg-blue-50 font-semibold">
+                            <td className="py-2 px-3 text-xs text-gray-900">Net supplier benefit</td>
+                            <td className="py-2 px-3 text-xs text-right">{formatCurrency(tradSupplierNetBenefit)}</td>
+                            <td className="py-2 px-3 text-xs text-right text-[#D64933]">{formatCurrency(ptSupplierNetBenefit)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Buyer Benefits Components */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">Buyer Benefits Components</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-700">Component</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-gray-700">Traditional SCF</th>
+                            <th className="text-right py-2 px-3 text-xs font-semibold text-[#D64933]">PrimaTrade SCF</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Discounts passed through (net of financing costs)</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradDiscountsPassedThrough)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptDiscountsPassedThrough)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">Card rebates</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradBuyerCardRebate)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptBuyerCardRebate)}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 px-3 text-xs text-gray-700">SCF funding benefit</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium">{formatCurrency(tradScfFundingBenefit)}</td>
+                            <td className="py-2 px-3 text-xs text-right font-medium text-[#D64933]">{formatCurrency(ptScfFundingBenefit)}</td>
+                          </tr>
+                          <tr className="bg-gray-50 font-semibold">
+                            <td className="py-2 px-3 text-xs text-gray-900">Total buyer benefit</td>
+                            <td className="py-2 px-3 text-xs text-right">{formatCurrency(tradBuyerNetBenefit)}</td>
+                            <td className="py-2 px-3 text-xs text-right text-[#D64933]">{formatCurrency(ptBuyerNetBenefit)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
