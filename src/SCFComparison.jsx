@@ -453,7 +453,7 @@ export default function SCFComparison() {
   // Outstanding balance (PrimaTrade) - tier-specific calculation
   const ptOutstandingBalance = (ptParticipatingTier1 * ptDaysAdvancedTier1 +
                                  ptParticipatingTier2 * ptDaysAdvancedTier2 +
-                                 ptParticipatingTier3 * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100)) * ptDaysAdvancedTier3) / 365;
+                                 ptParticipatingTier3 * ptDaysAdvancedTier3) / 365;
 
   // Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
   const ptScfFundingBenefit = ((tier1PtPaymentTerms - baselinePaymentTerm) * spendTier1 +
