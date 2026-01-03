@@ -537,7 +537,7 @@ export default function SCFComparison() {
   const fcfSales = (freeCashFlow / turnover) * 100;
   const adjustedFcfSales = (adjustedFCF / turnover) * 100;
   const interestCover = ebitda / netInterest;
-  const adjustedInterestCover = adjustedProfitBeforeTax / adjustedNetInterest;
+  const adjustedInterestCover = adjustedEbitda / adjustedNetInterest;
 
 // ===== END OF SECTION TO SHOW FOR DEBUG =====
 
@@ -2377,7 +2377,7 @@ const adjustedSolvency = adjustedNetDebt / adjustedEquity;
 const fcfSales = (freeCashFlow / turnover) * 100;
 const adjustedFcfSales = (adjustedFCF / turnover) * 100;
 const interestCover = ebitda / netInterest;
-const adjustedInterestCover = adjustedProfitBeforeTax / adjustedNetInterest;`}
+const adjustedInterestCover = adjustedEbitda / adjustedNetInterest;`}
                         </pre>
                       </div>
 
