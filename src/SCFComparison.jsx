@@ -903,7 +903,12 @@ export default function SCFComparison() {
                         //className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-4"
                         className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-5"
                       >
-                        <p className="text-xs font-semibold text-[#8B1D12] uppercase tracking-wide">{stat.label}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-xs font-semibold text-[#8B1D12] uppercase tracking-wide">{stat.label}</p>
+                          <Tooltip text={stat.tooltip}>
+                            <></>
+                          </Tooltip>
+                        </div>
                         <div className="flex items-end justify-between gap-2 mt-3">
                           <div>
                             <p className="text-[11px] font-semibold text-gray-600">Traditional SCF</p>
@@ -1269,11 +1274,17 @@ export default function SCFComparison() {
                           </Tooltip>
                         </div>
                         <div className="space-y-1.5">
-                          <div className="text-sm font-semibold text-gray-700">
-                            {stat.trad}
+                          <div>
+                            <div className="text-[10px] font-medium text-gray-500 mb-0.5">Traditional SCF</div>
+                            <div className="text-sm font-semibold text-gray-700">
+                              {stat.trad}
+                            </div>
                           </div>
-                          <div className="text-sm font-semibold text-[#D64933]">
-                            {stat.pt}
+                          <div>
+                            <div className="text-[10px] font-medium text-[#D64933]/70 mb-0.5">PrimaTrade SCF</div>
+                            <div className="text-sm font-semibold text-[#D64933]">
+                              {stat.pt}
+                            </div>
                           </div>
                         </div>
                       </div>
