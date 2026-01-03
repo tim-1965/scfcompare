@@ -1700,6 +1700,28 @@ export default function SCFComparison() {
             <>
             <div data-panel="simulation" className={`space-y-4 sm:space-y-6 ${isPrinting ? 'print-simulation-panel' : ''} ${activeView !== 'simulation' && !isPrinting ? 'hidden' : ''}`}>
               
+              {/* Impact Summary */}
+              <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-8 text-white">
+                <h2 className="text-2xl font-bold mb-6">Impact Summary</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div>
+                    <div className="text-red-100 text-sm mb-2">P&L Improvement</div>
+                    <div className="text-4xl font-bold mb-1">{formatCurrency(adjustedOperatingProfit - operatingProfit)}</div>
+                    <div className="text-red-100 text-sm">Operating profit increase</div>
+                  </div>
+                  <div>
+                    <div className="text-red-100 text-sm mb-2">Working Capital Released</div>
+                    <div className="text-4xl font-bold mb-1">{formatCurrency(totalWCBenefit)}</div>
+                    <div className="text-red-100 text-sm">Additional cash available</div>
+                  </div>
+                  <div>
+                    <div className="text-red-100 text-sm mb-2">Leverage Improvement</div>
+                    <div className="text-4xl font-bold mb-1">{formatNumber(leverage - adjustedLeverage, 2)}x</div>
+                    <div className="text-red-100 text-sm">Net Debt / EBITDA reduction</div>
+                  </div>
+                </div>
+              </div>
+
               {/* Simulation Inputs */}
               <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Historic Financial Position (for comparison)</h2>
@@ -2047,28 +2069,6 @@ export default function SCFComparison() {
                 </div>
               </div>
 
-              {/* Summary Card */}
-              <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-8 text-white">
-                <h2 className="text-2xl font-bold mb-6">Impact Summary</h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">P&L Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(adjustedOperatingProfit - operatingProfit)}</div>
-                    <div className="text-red-100 text-sm">Operating profit increase</div>
-                  </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Working Capital Released</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(totalWCBenefit)}</div>
-                    <div className="text-red-100 text-sm">Additional cash available</div>
-                  </div>
-                  <div>
-                    <div className="text-red-100 text-sm mb-2">Leverage Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatNumber(leverage - adjustedLeverage, 2)}x</div>
-                    <div className="text-red-100 text-sm">Net Debt / EBITDA reduction</div>
-                  </div>
-                </div>
-              </div>
-
               {/* Action Buttons */}
               <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
                 <button
@@ -2101,11 +2101,12 @@ export default function SCFComparison() {
                     Calculations
                   </h2>
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Left Column: Code */}
-                    <div className="bg-gray-50 rounded p-4 overflow-auto max-h-[600px]">
-                      <h3 className="text-sm font-bold text-gray-700 mb-3 sticky top-0 bg-gray-50 pb-2">Code</h3>
-                      <pre className="text-xs font-mono whitespace-pre overflow-x-auto">
+                  <div className="overflow-auto max-h-[600px]">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-fit">
+                      {/* Left Column: Code */}
+                      <div className="bg-gray-50 rounded p-4">
+                        <h3 className="text-sm font-bold text-gray-700 mb-3 sticky top-0 bg-gray-50 pb-2">Code</h3>
+                        <pre className="text-xs font-mono whitespace-pre">
 {`const totalSpend = totalProcurementSpend * 1000000;
 const domesticSharePct = 100 - crossBorderSharePct;
 
@@ -2351,190 +2352,191 @@ const fcfSales = (freeCashFlow / turnover) * 100;
 const adjustedFcfSales = (adjustedFCF / turnover) * 100;
 const interestCover = ebitda / netInterest;
 const adjustedInterestCover = adjustedProfitBeforeTax / adjustedNetInterest;`}
-                      </pre>
-                    </div>
+                        </pre>
+                      </div>
 
-                    {/* Right Column: Values */}
-                    <div className="bg-blue-50 rounded p-4 overflow-auto max-h-[600px]">
-                      <h3 className="text-sm font-bold text-gray-700 mb-3 sticky top-0 bg-blue-50 pb-2">Values</h3>
-                      <div className="text-xs font-mono space-y-1">
-                        <div><strong>totalSpend:</strong> {formatCurrency(totalSpend)}</div>
-                        <div><strong>domesticSharePct:</strong> {domesticSharePct.toFixed(2)}%</div>
-                        <div className="pt-2 text-gray-500">// Auto-calculated Tier 3 values</div>
-                        <div><strong>tier3Suppliers:</strong> {tier3Suppliers.toLocaleString()}</div>
-                        <div><strong>tier3SpendPct:</strong> {tier3SpendPct.toFixed(2)}%</div>
-                        <div className="pt-2 text-gray-500">// Spend by tier</div>
-                        <div><strong>spendTier1:</strong> {formatCurrency(spendTier1)}</div>
-                        <div><strong>spendTier2:</strong> {formatCurrency(spendTier2)}</div>
-                        <div><strong>spendTier3:</strong> {formatCurrency(spendTier3)}</div>
-                        <div className="pt-2 text-gray-500">// Average time to approve invoices</div>
-                        <div><strong>avgApprovalTime:</strong> {avgApprovalTime.toFixed(2)} days</div>
-                        <div className="pt-3 font-bold text-gray-700">TRADITIONAL SCF CALCULATIONS</div>
-                        <div><strong>tradEligibleSpend:</strong> {formatCurrency(tradEligibleSpend)}</div>
-                        <div><strong>tradParticipatingTier1:</strong> {formatCurrency(tradParticipatingTier1)}</div>
-                        <div><strong>tradParticipatingTier2:</strong> {formatCurrency(tradParticipatingTier2)}</div>
-                        <div><strong>tradParticipatingTier3:</strong> {formatCurrency(tradParticipatingTier3)}</div>
-                        <div><strong>tradParticipatingSpend:</strong> {formatCurrency(tradParticipatingSpend)}</div>
-                        <div><strong>tradSupplierCashReceipt:</strong> {tradSupplierCashReceipt.toFixed(2)} days</div>
-                        <div className="pt-2 text-gray-500">// Days advanced by tier</div>
-                        <div><strong>tradDaysAdvancedTier1:</strong> {tradDaysAdvancedTier1.toFixed(2)} days</div>
-                        <div><strong>tradDaysAdvancedTier2:</strong> {tradDaysAdvancedTier2.toFixed(2)} days</div>
-                        <div><strong>tradDaysAdvancedTier3:</strong> {tradDaysAdvancedTier3.toFixed(2)} days</div>
-                        <div className="pt-2 text-gray-500">// Financing costs by tier (Traditional)</div>
-                        <div><strong>tradFinancingTier1:</strong> {formatCurrency(tradFinancingTier1)}</div>
-                        <div><strong>tradFinancingTier2:</strong> {formatCurrency(tradFinancingTier2)}</div>
-                        <div><strong>tradFinancingTier3:</strong> {formatCurrency(tradFinancingTier3)}</div>
-                        <div><strong>tradTotalFinancing:</strong> {formatCurrency(tradTotalFinancing)}</div>
-                        <div className="pt-2 text-gray-500">// Discounts by tier (Traditional)</div>
-                        <div><strong>tradDiscountTier1:</strong> {formatCurrency(tradDiscountTier1)}</div>
-                        <div><strong>tradDiscountTier2:</strong> {formatCurrency(tradDiscountTier2)}</div>
-                        <div><strong>tradDiscountTier3:</strong> {formatCurrency(tradDiscountTier3)}</div>
-                        <div className="pt-2 text-gray-500">// Actual discount (MAX)</div>
-                        <div><strong>tradActualDiscountTier1:</strong> {formatCurrency(tradActualDiscountTier1)}</div>
-                        <div><strong>tradActualDiscountTier2:</strong> {formatCurrency(tradActualDiscountTier2)}</div>
-                        <div><strong>tradActualDiscountTier3:</strong> {formatCurrency(tradActualDiscountTier3)}</div>
-                        <div className="pt-2 text-gray-500">// Card costs</div>
-                        <div><strong>tradCardCosts:</strong> {formatCurrency(tradCardCosts)}</div>
-                        <div className="pt-2 text-gray-500">// Total supplier costs</div>
-                        <div><strong>tradTotalSupplierCosts:</strong> {formatCurrency(tradTotalSupplierCosts)}</div>
-                        <div className="pt-2 text-gray-500">// Supplier time value benefits</div>
-                        <div><strong>tradSupplierBenefitTier1:</strong> {formatCurrency(tradSupplierBenefitTier1)}</div>
-                        <div><strong>tradSupplierBenefitTier2:</strong> {formatCurrency(tradSupplierBenefitTier2)}</div>
-                        <div><strong>tradTier3Participating:</strong> {formatCurrency(tradTier3Participating)}</div>
-                        <div><strong>tradTier3OnCards:</strong> {formatCurrency(tradTier3OnCards)}</div>
-                        <div><strong>tradSupplierBenefitTier3:</strong> {formatCurrency(tradSupplierBenefitTier3)}</div>
-                        <div><strong>tradTotalSupplierTimeValue:</strong> {formatCurrency(tradTotalSupplierTimeValue)}</div>
-                        <div className="pt-2 text-gray-500">// Supplier net benefit</div>
-                        <div><strong>tradSupplierNetBenefit:</strong> {formatCurrency(tradSupplierNetBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Buyer card benefits</div>
-                        <div><strong>tradBuyerCardRebate:</strong> {formatCurrency(tradBuyerCardRebate)}</div>
-                        <div><strong>tradBuyerCardFreeFunding:</strong> {formatCurrency(tradBuyerCardFreeFunding)}</div>
-                        <div className="pt-2 text-gray-500">// Trade credit and working capital</div>
-                        <div><strong>tradCardSpend:</strong> {formatCurrency(tradCardSpend)}</div>
-                        <div><strong>tradCardFreeFundingBalance:</strong> {formatCurrency(tradCardFreeFundingBalance)}</div>
-                        <div><strong>tradTotalTradeCredit:</strong> {formatCurrency(tradTotalTradeCredit)}</div>
-                        <div className="pt-2 text-gray-500">// Outstanding balance</div>
-                        <div><strong>tradOutstandingBalance:</strong> {formatCurrency(tradOutstandingBalance)}</div>
-                        <div className="pt-2 text-gray-500">// Funding benefit</div>
-                        <div><strong>tradScfFundingBenefit:</strong> {formatCurrency(tradScfFundingBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Buyer net benefit</div>
-                        <div><strong>tradBuyerNetBenefit:</strong> {formatCurrency(tradBuyerNetBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Discounts passed through</div>
-                        <div><strong>tradDiscountsPassedThrough:</strong> {formatCurrency(tradDiscountsPassedThrough)}</div>
-                        <div className="pt-2 text-gray-500">// Total value created</div>
-                        <div><strong>tradTotalValue:</strong> {formatCurrency(tradTotalValue)}</div>
-                        <div className="pt-2 text-gray-500">// Active suppliers</div>
-                        <div><strong>tradActiveTier1:</strong> {tradActiveTier1.toFixed(2)}</div>
-                        <div><strong>tradActiveTier2:</strong> {tradActiveTier2.toFixed(2)}</div>
-                        <div><strong>tradActiveTier3:</strong> {tradActiveTier3.toFixed(2)}</div>
-                        <div><strong>tradTotalActive:</strong> {tradTotalActive.toFixed(2)}</div>
-                        <div className="pt-3 font-bold text-gray-700">PRIMATRADE CALCULATIONS</div>
-                        <div><strong>ptEligibleSpend:</strong> {formatCurrency(ptEligibleSpend)}</div>
-                        <div><strong>ptParticipatingTier1:</strong> {formatCurrency(ptParticipatingTier1)}</div>
-                        <div><strong>ptParticipatingTier2:</strong> {formatCurrency(ptParticipatingTier2)}</div>
-                        <div><strong>ptParticipatingTier3:</strong> {formatCurrency(ptParticipatingTier3)}</div>
-                        <div><strong>ptParticipatingSpend:</strong> {formatCurrency(ptParticipatingSpend)}</div>
-                        <div><strong>ptSupplierCashReceipt:</strong> {ptSupplierCashReceipt.toFixed(2)} days</div>
-                        <div className="pt-2 text-gray-500">// Days advanced by tier</div>
-                        <div><strong>ptDaysAdvancedTier1:</strong> {ptDaysAdvancedTier1.toFixed(2)} days</div>
-                        <div><strong>ptDaysAdvancedTier2:</strong> {ptDaysAdvancedTier2.toFixed(2)} days</div>
-                        <div><strong>ptDaysAdvancedTier3:</strong> {ptDaysAdvancedTier3.toFixed(2)} days</div>
-                        <div><strong>ptDaysFaster:</strong> {ptDaysFaster.toFixed(2)} days</div>
-                        <div className="pt-2 text-gray-500">// Financing costs by tier (PrimaTrade)</div>
-                        <div><strong>ptFinancingTier1:</strong> {formatCurrency(ptFinancingTier1)}</div>
-                        <div><strong>ptFinancingTier2:</strong> {formatCurrency(ptFinancingTier2)}</div>
-                        <div><strong>ptFinancingTier3:</strong> {formatCurrency(ptFinancingTier3)}</div>
-                        <div><strong>ptTotalFinancing:</strong> {formatCurrency(ptTotalFinancing)}</div>
-                        <div className="pt-2 text-gray-500">// Agreed discounts by tier</div>
-                        <div><strong>ptDiscountTier1:</strong> {formatCurrency(ptDiscountTier1)}</div>
-                        <div><strong>ptDiscountTier2:</strong> {formatCurrency(ptDiscountTier2)}</div>
-                        <div><strong>ptDiscountTier3:</strong> {formatCurrency(ptDiscountTier3)}</div>
-                        <div className="pt-2 text-gray-500">// Actual discount (MAX)</div>
-                        <div><strong>ptActualDiscountTier1:</strong> {formatCurrency(ptActualDiscountTier1)}</div>
-                        <div><strong>ptActualDiscountTier2:</strong> {formatCurrency(ptActualDiscountTier2)}</div>
-                        <div><strong>ptActualDiscountTier3:</strong> {formatCurrency(ptActualDiscountTier3)}</div>
-                        <div className="pt-2 text-gray-500">// Card costs</div>
-                        <div><strong>ptCardCosts:</strong> {formatCurrency(ptCardCosts)}</div>
-                        <div className="pt-2 text-gray-500">// Total supplier costs</div>
-                        <div><strong>ptTotalSupplierCosts:</strong> {formatCurrency(ptTotalSupplierCosts)}</div>
-                        <div className="pt-2 text-gray-500">// Supplier time value benefits</div>
-                        <div><strong>ptSupplierBenefitTier1:</strong> {formatCurrency(ptSupplierBenefitTier1)}</div>
-                        <div><strong>ptSupplierBenefitTier2:</strong> {formatCurrency(ptSupplierBenefitTier2)}</div>
-                        <div><strong>ptSupplierBenefitTier3:</strong> {formatCurrency(ptSupplierBenefitTier3)}</div>
-                        <div><strong>ptTotalSupplierTimeValue:</strong> {formatCurrency(ptTotalSupplierTimeValue)}</div>
-                        <div className="pt-2 text-gray-500">// Supplier net benefit</div>
-                        <div><strong>ptSupplierNetBenefit:</strong> {formatCurrency(ptSupplierNetBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Card benefits for buyer</div>
-                        <div><strong>ptBuyerCardRebate:</strong> {formatCurrency(ptBuyerCardRebate)}</div>
-                        <div><strong>ptBuyerCardFreeFunding:</strong> {formatCurrency(ptBuyerCardFreeFunding)}</div>
-                        <div className="pt-2 text-gray-500">// Trade credit and working capital</div>
-                        <div><strong>ptCardSpend:</strong> {formatCurrency(ptCardSpend)}</div>
-                        <div><strong>ptCardFreeFundingBalance:</strong> {formatCurrency(ptCardFreeFundingBalance)}</div>
-                        <div><strong>ptTotalTradeCredit:</strong> {formatCurrency(ptTotalTradeCredit)}</div>
-                        <div className="pt-2 text-gray-500">// Additional working capital</div>
-                        <div><strong>additionalWorkingCapital:</strong> {formatCurrency(additionalWorkingCapital)}</div>
-                        <div className="pt-2 text-gray-500">// Trade credit generated</div>
-                        <div><strong>baselineTradeCredit:</strong> {formatCurrency(baselineTradeCredit)}</div>
-                        <div><strong>tradTradeCreditGenerated:</strong> {formatCurrency(tradTradeCreditGenerated)}</div>
-                        <div><strong>ptTradeCreditGenerated:</strong> {formatCurrency(ptTradeCreditGenerated)}</div>
-                        <div className="pt-2 text-gray-500">// Outstanding balance</div>
-                        <div><strong>ptOutstandingBalance:</strong> {formatCurrency(ptOutstandingBalance)}</div>
-                        <div className="pt-2 text-gray-500">// Funding benefit</div>
-                        <div><strong>ptScfFundingBenefit:</strong> {formatCurrency(ptScfFundingBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Buyer net benefit</div>
-                        <div><strong>ptBuyerNetBenefit:</strong> {formatCurrency(ptBuyerNetBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Discounts passed through</div>
-                        <div><strong>ptDiscountsPassedThrough:</strong> {formatCurrency(ptDiscountsPassedThrough)}</div>
-                        <div className="pt-2 text-gray-500">// Total value created</div>
-                        <div><strong>ptTotalValue:</strong> {formatCurrency(ptTotalValue)}</div>
-                        <div className="pt-2 text-gray-500">// Active suppliers</div>
-                        <div><strong>ptActiveTier1:</strong> {ptActiveTier1.toFixed(2)}</div>
-                        <div><strong>ptActiveTier2:</strong> {ptActiveTier2.toFixed(2)}</div>
-                        <div><strong>ptActiveTier3:</strong> {ptActiveTier3.toFixed(2)}</div>
-                        <div><strong>ptTotalActive:</strong> {ptTotalActive.toFixed(2)}</div>
-                        <div><strong>ptSuppliersFromCards:</strong> {ptSuppliersFromCards.toFixed(2)}</div>
-                        <div className="pt-2 text-gray-500">// Suppliers on cards</div>
-                        <div><strong>tradSuppliersOnCards:</strong> {tradSuppliersOnCards.toFixed(2)}</div>
-                        <div><strong>ptSuppliersOnCards:</strong> {ptSuppliersOnCards.toFixed(2)}</div>
-                        <div><strong>tradEligibleSuppliers:</strong> {tradEligibleSuppliers.toFixed(2)}</div>
-                        <div className="pt-3 font-bold text-gray-700">DELTAS</div>
-                        <div><strong>deltaEligibleSpend:</strong> {formatCurrency(deltaEligibleSpend)}</div>
-                        <div><strong>deltaParticipatingSpend:</strong> {formatCurrency(deltaParticipatingSpend)}</div>
-                        <div><strong>deltaOutstandingBalance:</strong> {formatCurrency(deltaOutstandingBalance)}</div>
-                        <div><strong>deltaEligibleSuppliers:</strong> {deltaEligibleSuppliers.toFixed(2)}</div>
-                        <div><strong>deltaActiveSuppliers:</strong> {deltaActiveSuppliers.toFixed(2)}</div>
-                        <div><strong>deltaSuppliersFromCards:</strong> {deltaSuppliersFromCards.toFixed(2)}</div>
-                        <div><strong>deltaCashReceipt:</strong> {deltaCashReceipt.toFixed(2)} days</div>
-                        <div><strong>deltaBuyerBenefit:</strong> {formatCurrency(deltaBuyerBenefit)}</div>
-                        <div><strong>deltaSupplierBenefit:</strong> {formatCurrency(deltaSupplierBenefit)}</div>
-                        <div><strong>deltaTotalValue:</strong> {formatCurrency(deltaTotalValue)}</div>
-                        <div className="pt-3 font-bold text-gray-700">SIMULATION CALCULATIONS</div>
-                        <div><strong>deltaEarlyPaymentDiscounts:</strong> {formatCurrency(deltaEarlyPaymentDiscounts)}</div>
-                        <div><strong>deltaFundingBenefits:</strong> {formatCurrency(deltaFundingBenefits)}</div>
-                        <div><strong>totalWCBenefit:</strong> {formatCurrency(totalWCBenefit)}</div>
-                        <div className="pt-2 text-gray-500">// Adjusted financials</div>
-                        <div><strong>adjustedCostOfSales:</strong> {formatCurrency(adjustedCostOfSales)}</div>
-                        <div><strong>adjustedOperatingProfit:</strong> {formatCurrency(adjustedOperatingProfit)}</div>
-                        <div><strong>adjustedProfitBeforeTax:</strong> {formatCurrency(adjustedProfitBeforeTax)}</div>
-                        <div><strong>adjustedEbitda:</strong> {formatCurrency(adjustedEbitda)}</div>
-                        <div><strong>adjustedNetInterest:</strong> {formatCurrency(adjustedNetInterest)}</div>
-                        <div><strong>adjustedTradePayables:</strong> {formatCurrency(adjustedTradePayables)}</div>
-                        <div><strong>adjustedNetDebt:</strong> {formatCurrency(adjustedNetDebt)}</div>
-                        <div><strong>adjustedEquity:</strong> {formatCurrency(adjustedEquity)}</div>
-                        <div><strong>adjustedFCF:</strong> {formatCurrency(adjustedFCF)}</div>
-                        <div className="pt-2 text-gray-500">// Calculate ratios</div>
-                        <div><strong>ebitdaMargin:</strong> {ebitdaMargin.toFixed(2)}%</div>
-                        <div><strong>adjustedEbitdaMargin:</strong> {adjustedEbitdaMargin.toFixed(2)}%</div>
-                        <div><strong>operatingMargin:</strong> {operatingMargin.toFixed(2)}%</div>
-                        <div><strong>adjustedOperatingMargin:</strong> {adjustedOperatingMargin.toFixed(2)}%</div>
-                        <div><strong>leverage:</strong> {leverage.toFixed(2)}</div>
-                        <div><strong>adjustedLeverage:</strong> {adjustedLeverage.toFixed(2)}</div>
-                        <div><strong>solvency:</strong> {solvency.toFixed(2)}</div>
-                        <div><strong>adjustedSolvency:</strong> {adjustedSolvency.toFixed(2)}</div>
-                        <div><strong>fcfSales:</strong> {fcfSales.toFixed(2)}%</div>
-                        <div><strong>adjustedFcfSales:</strong> {adjustedFcfSales.toFixed(2)}%</div>
-                        <div><strong>interestCover:</strong> {interestCover.toFixed(2)}</div>
-                        <div><strong>adjustedInterestCover:</strong> {adjustedInterestCover.toFixed(2)}</div>
+                      {/* Right Column: Values */}
+                      <div className="bg-blue-50 rounded p-4">
+                        <h3 className="text-sm font-bold text-gray-700 mb-3 sticky top-0 bg-blue-50 pb-2">Values</h3>
+                        <div className="text-xs font-mono space-y-1">
+                          <div><strong>totalSpend:</strong> {formatCurrency(totalSpend)}</div>
+                          <div><strong>domesticSharePct:</strong> {domesticSharePct.toFixed(2)}%</div>
+                          <div className="pt-2 text-gray-500">// Auto-calculated Tier 3 values</div>
+                          <div><strong>tier3Suppliers:</strong> {tier3Suppliers.toLocaleString()}</div>
+                          <div><strong>tier3SpendPct:</strong> {tier3SpendPct.toFixed(2)}%</div>
+                          <div className="pt-2 text-gray-500">// Spend by tier</div>
+                          <div><strong>spendTier1:</strong> {formatCurrency(spendTier1)}</div>
+                          <div><strong>spendTier2:</strong> {formatCurrency(spendTier2)}</div>
+                          <div><strong>spendTier3:</strong> {formatCurrency(spendTier3)}</div>
+                          <div className="pt-2 text-gray-500">// Average time to approve invoices</div>
+                          <div><strong>avgApprovalTime:</strong> {avgApprovalTime.toFixed(2)} days</div>
+                          <div className="pt-3 font-bold text-gray-700">TRADITIONAL SCF CALCULATIONS</div>
+                          <div><strong>tradEligibleSpend:</strong> {formatCurrency(tradEligibleSpend)}</div>
+                          <div><strong>tradParticipatingTier1:</strong> {formatCurrency(tradParticipatingTier1)}</div>
+                          <div><strong>tradParticipatingTier2:</strong> {formatCurrency(tradParticipatingTier2)}</div>
+                          <div><strong>tradParticipatingTier3:</strong> {formatCurrency(tradParticipatingTier3)}</div>
+                          <div><strong>tradParticipatingSpend:</strong> {formatCurrency(tradParticipatingSpend)}</div>
+                          <div><strong>tradSupplierCashReceipt:</strong> {tradSupplierCashReceipt.toFixed(2)} days</div>
+                          <div className="pt-2 text-gray-500">// Days advanced by tier</div>
+                          <div><strong>tradDaysAdvancedTier1:</strong> {tradDaysAdvancedTier1.toFixed(2)} days</div>
+                          <div><strong>tradDaysAdvancedTier2:</strong> {tradDaysAdvancedTier2.toFixed(2)} days</div>
+                          <div><strong>tradDaysAdvancedTier3:</strong> {tradDaysAdvancedTier3.toFixed(2)} days</div>
+                          <div className="pt-2 text-gray-500">// Financing costs by tier (Traditional)</div>
+                          <div><strong>tradFinancingTier1:</strong> {formatCurrency(tradFinancingTier1)}</div>
+                          <div><strong>tradFinancingTier2:</strong> {formatCurrency(tradFinancingTier2)}</div>
+                          <div><strong>tradFinancingTier3:</strong> {formatCurrency(tradFinancingTier3)}</div>
+                          <div><strong>tradTotalFinancing:</strong> {formatCurrency(tradTotalFinancing)}</div>
+                          <div className="pt-2 text-gray-500">// Discounts by tier (Traditional)</div>
+                          <div><strong>tradDiscountTier1:</strong> {formatCurrency(tradDiscountTier1)}</div>
+                          <div><strong>tradDiscountTier2:</strong> {formatCurrency(tradDiscountTier2)}</div>
+                          <div><strong>tradDiscountTier3:</strong> {formatCurrency(tradDiscountTier3)}</div>
+                          <div className="pt-2 text-gray-500">// Actual discount (MAX)</div>
+                          <div><strong>tradActualDiscountTier1:</strong> {formatCurrency(tradActualDiscountTier1)}</div>
+                          <div><strong>tradActualDiscountTier2:</strong> {formatCurrency(tradActualDiscountTier2)}</div>
+                          <div><strong>tradActualDiscountTier3:</strong> {formatCurrency(tradActualDiscountTier3)}</div>
+                          <div className="pt-2 text-gray-500">// Card costs</div>
+                          <div><strong>tradCardCosts:</strong> {formatCurrency(tradCardCosts)}</div>
+                          <div className="pt-2 text-gray-500">// Total supplier costs</div>
+                          <div><strong>tradTotalSupplierCosts:</strong> {formatCurrency(tradTotalSupplierCosts)}</div>
+                          <div className="pt-2 text-gray-500">// Supplier time value benefits</div>
+                          <div><strong>tradSupplierBenefitTier1:</strong> {formatCurrency(tradSupplierBenefitTier1)}</div>
+                          <div><strong>tradSupplierBenefitTier2:</strong> {formatCurrency(tradSupplierBenefitTier2)}</div>
+                          <div><strong>tradTier3Participating:</strong> {formatCurrency(tradTier3Participating)}</div>
+                          <div><strong>tradTier3OnCards:</strong> {formatCurrency(tradTier3OnCards)}</div>
+                          <div><strong>tradSupplierBenefitTier3:</strong> {formatCurrency(tradSupplierBenefitTier3)}</div>
+                          <div><strong>tradTotalSupplierTimeValue:</strong> {formatCurrency(tradTotalSupplierTimeValue)}</div>
+                          <div className="pt-2 text-gray-500">// Supplier net benefit</div>
+                          <div><strong>tradSupplierNetBenefit:</strong> {formatCurrency(tradSupplierNetBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Buyer card benefits</div>
+                          <div><strong>tradBuyerCardRebate:</strong> {formatCurrency(tradBuyerCardRebate)}</div>
+                          <div><strong>tradBuyerCardFreeFunding:</strong> {formatCurrency(tradBuyerCardFreeFunding)}</div>
+                          <div className="pt-2 text-gray-500">// Trade credit and working capital</div>
+                          <div><strong>tradCardSpend:</strong> {formatCurrency(tradCardSpend)}</div>
+                          <div><strong>tradCardFreeFundingBalance:</strong> {formatCurrency(tradCardFreeFundingBalance)}</div>
+                          <div><strong>tradTotalTradeCredit:</strong> {formatCurrency(tradTotalTradeCredit)}</div>
+                          <div className="pt-2 text-gray-500">// Outstanding balance</div>
+                          <div><strong>tradOutstandingBalance:</strong> {formatCurrency(tradOutstandingBalance)}</div>
+                          <div className="pt-2 text-gray-500">// Funding benefit</div>
+                          <div><strong>tradScfFundingBenefit:</strong> {formatCurrency(tradScfFundingBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Buyer net benefit</div>
+                          <div><strong>tradBuyerNetBenefit:</strong> {formatCurrency(tradBuyerNetBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Discounts passed through</div>
+                          <div><strong>tradDiscountsPassedThrough:</strong> {formatCurrency(tradDiscountsPassedThrough)}</div>
+                          <div className="pt-2 text-gray-500">// Total value created</div>
+                          <div><strong>tradTotalValue:</strong> {formatCurrency(tradTotalValue)}</div>
+                          <div className="pt-2 text-gray-500">// Active suppliers</div>
+                          <div><strong>tradActiveTier1:</strong> {tradActiveTier1.toFixed(2)}</div>
+                          <div><strong>tradActiveTier2:</strong> {tradActiveTier2.toFixed(2)}</div>
+                          <div><strong>tradActiveTier3:</strong> {tradActiveTier3.toFixed(2)}</div>
+                          <div><strong>tradTotalActive:</strong> {tradTotalActive.toFixed(2)}</div>
+                          <div className="pt-3 font-bold text-gray-700">PRIMATRADE CALCULATIONS</div>
+                          <div><strong>ptEligibleSpend:</strong> {formatCurrency(ptEligibleSpend)}</div>
+                          <div><strong>ptParticipatingTier1:</strong> {formatCurrency(ptParticipatingTier1)}</div>
+                          <div><strong>ptParticipatingTier2:</strong> {formatCurrency(ptParticipatingTier2)}</div>
+                          <div><strong>ptParticipatingTier3:</strong> {formatCurrency(ptParticipatingTier3)}</div>
+                          <div><strong>ptParticipatingSpend:</strong> {formatCurrency(ptParticipatingSpend)}</div>
+                          <div><strong>ptSupplierCashReceipt:</strong> {ptSupplierCashReceipt.toFixed(2)} days</div>
+                          <div className="pt-2 text-gray-500">// Days advanced by tier</div>
+                          <div><strong>ptDaysAdvancedTier1:</strong> {ptDaysAdvancedTier1.toFixed(2)} days</div>
+                          <div><strong>ptDaysAdvancedTier2:</strong> {ptDaysAdvancedTier2.toFixed(2)} days</div>
+                          <div><strong>ptDaysAdvancedTier3:</strong> {ptDaysAdvancedTier3.toFixed(2)} days</div>
+                          <div><strong>ptDaysFaster:</strong> {ptDaysFaster.toFixed(2)} days</div>
+                          <div className="pt-2 text-gray-500">// Financing costs by tier (PrimaTrade)</div>
+                          <div><strong>ptFinancingTier1:</strong> {formatCurrency(ptFinancingTier1)}</div>
+                          <div><strong>ptFinancingTier2:</strong> {formatCurrency(ptFinancingTier2)}</div>
+                          <div><strong>ptFinancingTier3:</strong> {formatCurrency(ptFinancingTier3)}</div>
+                          <div><strong>ptTotalFinancing:</strong> {formatCurrency(ptTotalFinancing)}</div>
+                          <div className="pt-2 text-gray-500">// Agreed discounts by tier</div>
+                          <div><strong>ptDiscountTier1:</strong> {formatCurrency(ptDiscountTier1)}</div>
+                          <div><strong>ptDiscountTier2:</strong> {formatCurrency(ptDiscountTier2)}</div>
+                          <div><strong>ptDiscountTier3:</strong> {formatCurrency(ptDiscountTier3)}</div>
+                          <div className="pt-2 text-gray-500">// Actual discount (MAX)</div>
+                          <div><strong>ptActualDiscountTier1:</strong> {formatCurrency(ptActualDiscountTier1)}</div>
+                          <div><strong>ptActualDiscountTier2:</strong> {formatCurrency(ptActualDiscountTier2)}</div>
+                          <div><strong>ptActualDiscountTier3:</strong> {formatCurrency(ptActualDiscountTier3)}</div>
+                          <div className="pt-2 text-gray-500">// Card costs</div>
+                          <div><strong>ptCardCosts:</strong> {formatCurrency(ptCardCosts)}</div>
+                          <div className="pt-2 text-gray-500">// Total supplier costs</div>
+                          <div><strong>ptTotalSupplierCosts:</strong> {formatCurrency(ptTotalSupplierCosts)}</div>
+                          <div className="pt-2 text-gray-500">// Supplier time value benefits</div>
+                          <div><strong>ptSupplierBenefitTier1:</strong> {formatCurrency(ptSupplierBenefitTier1)}</div>
+                          <div><strong>ptSupplierBenefitTier2:</strong> {formatCurrency(ptSupplierBenefitTier2)}</div>
+                          <div><strong>ptSupplierBenefitTier3:</strong> {formatCurrency(ptSupplierBenefitTier3)}</div>
+                          <div><strong>ptTotalSupplierTimeValue:</strong> {formatCurrency(ptTotalSupplierTimeValue)}</div>
+                          <div className="pt-2 text-gray-500">// Supplier net benefit</div>
+                          <div><strong>ptSupplierNetBenefit:</strong> {formatCurrency(ptSupplierNetBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Card benefits for buyer</div>
+                          <div><strong>ptBuyerCardRebate:</strong> {formatCurrency(ptBuyerCardRebate)}</div>
+                          <div><strong>ptBuyerCardFreeFunding:</strong> {formatCurrency(ptBuyerCardFreeFunding)}</div>
+                          <div className="pt-2 text-gray-500">// Trade credit and working capital</div>
+                          <div><strong>ptCardSpend:</strong> {formatCurrency(ptCardSpend)}</div>
+                          <div><strong>ptCardFreeFundingBalance:</strong> {formatCurrency(ptCardFreeFundingBalance)}</div>
+                          <div><strong>ptTotalTradeCredit:</strong> {formatCurrency(ptTotalTradeCredit)}</div>
+                          <div className="pt-2 text-gray-500">// Additional working capital</div>
+                          <div><strong>additionalWorkingCapital:</strong> {formatCurrency(additionalWorkingCapital)}</div>
+                          <div className="pt-2 text-gray-500">// Trade credit generated</div>
+                          <div><strong>baselineTradeCredit:</strong> {formatCurrency(baselineTradeCredit)}</div>
+                          <div><strong>tradTradeCreditGenerated:</strong> {formatCurrency(tradTradeCreditGenerated)}</div>
+                          <div><strong>ptTradeCreditGenerated:</strong> {formatCurrency(ptTradeCreditGenerated)}</div>
+                          <div className="pt-2 text-gray-500">// Outstanding balance</div>
+                          <div><strong>ptOutstandingBalance:</strong> {formatCurrency(ptOutstandingBalance)}</div>
+                          <div className="pt-2 text-gray-500">// Funding benefit</div>
+                          <div><strong>ptScfFundingBenefit:</strong> {formatCurrency(ptScfFundingBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Buyer net benefit</div>
+                          <div><strong>ptBuyerNetBenefit:</strong> {formatCurrency(ptBuyerNetBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Discounts passed through</div>
+                          <div><strong>ptDiscountsPassedThrough:</strong> {formatCurrency(ptDiscountsPassedThrough)}</div>
+                          <div className="pt-2 text-gray-500">// Total value created</div>
+                          <div><strong>ptTotalValue:</strong> {formatCurrency(ptTotalValue)}</div>
+                          <div className="pt-2 text-gray-500">// Active suppliers</div>
+                          <div><strong>ptActiveTier1:</strong> {ptActiveTier1.toFixed(2)}</div>
+                          <div><strong>ptActiveTier2:</strong> {ptActiveTier2.toFixed(2)}</div>
+                          <div><strong>ptActiveTier3:</strong> {ptActiveTier3.toFixed(2)}</div>
+                          <div><strong>ptTotalActive:</strong> {ptTotalActive.toFixed(2)}</div>
+                          <div><strong>ptSuppliersFromCards:</strong> {ptSuppliersFromCards.toFixed(2)}</div>
+                          <div className="pt-2 text-gray-500">// Suppliers on cards</div>
+                          <div><strong>tradSuppliersOnCards:</strong> {tradSuppliersOnCards.toFixed(2)}</div>
+                          <div><strong>ptSuppliersOnCards:</strong> {ptSuppliersOnCards.toFixed(2)}</div>
+                          <div><strong>tradEligibleSuppliers:</strong> {tradEligibleSuppliers.toFixed(2)}</div>
+                          <div className="pt-3 font-bold text-gray-700">DELTAS</div>
+                          <div><strong>deltaEligibleSpend:</strong> {formatCurrency(deltaEligibleSpend)}</div>
+                          <div><strong>deltaParticipatingSpend:</strong> {formatCurrency(deltaParticipatingSpend)}</div>
+                          <div><strong>deltaOutstandingBalance:</strong> {formatCurrency(deltaOutstandingBalance)}</div>
+                          <div><strong>deltaEligibleSuppliers:</strong> {deltaEligibleSuppliers.toFixed(2)}</div>
+                          <div><strong>deltaActiveSuppliers:</strong> {deltaActiveSuppliers.toFixed(2)}</div>
+                          <div><strong>deltaSuppliersFromCards:</strong> {deltaSuppliersFromCards.toFixed(2)}</div>
+                          <div><strong>deltaCashReceipt:</strong> {deltaCashReceipt.toFixed(2)} days</div>
+                          <div><strong>deltaBuyerBenefit:</strong> {formatCurrency(deltaBuyerBenefit)}</div>
+                          <div><strong>deltaSupplierBenefit:</strong> {formatCurrency(deltaSupplierBenefit)}</div>
+                          <div><strong>deltaTotalValue:</strong> {formatCurrency(deltaTotalValue)}</div>
+                          <div className="pt-3 font-bold text-gray-700">SIMULATION CALCULATIONS</div>
+                          <div><strong>deltaEarlyPaymentDiscounts:</strong> {formatCurrency(deltaEarlyPaymentDiscounts)}</div>
+                          <div><strong>deltaFundingBenefits:</strong> {formatCurrency(deltaFundingBenefits)}</div>
+                          <div><strong>totalWCBenefit:</strong> {formatCurrency(totalWCBenefit)}</div>
+                          <div className="pt-2 text-gray-500">// Adjusted financials</div>
+                          <div><strong>adjustedCostOfSales:</strong> {formatCurrency(adjustedCostOfSales)}</div>
+                          <div><strong>adjustedOperatingProfit:</strong> {formatCurrency(adjustedOperatingProfit)}</div>
+                          <div><strong>adjustedProfitBeforeTax:</strong> {formatCurrency(adjustedProfitBeforeTax)}</div>
+                          <div><strong>adjustedEbitda:</strong> {formatCurrency(adjustedEbitda)}</div>
+                          <div><strong>adjustedNetInterest:</strong> {formatCurrency(adjustedNetInterest)}</div>
+                          <div><strong>adjustedTradePayables:</strong> {formatCurrency(adjustedTradePayables)}</div>
+                          <div><strong>adjustedNetDebt:</strong> {formatCurrency(adjustedNetDebt)}</div>
+                          <div><strong>adjustedEquity:</strong> {formatCurrency(adjustedEquity)}</div>
+                          <div><strong>adjustedFCF:</strong> {formatCurrency(adjustedFCF)}</div>
+                          <div className="pt-2 text-gray-500">// Calculate ratios</div>
+                          <div><strong>ebitdaMargin:</strong> {ebitdaMargin.toFixed(2)}%</div>
+                          <div><strong>adjustedEbitdaMargin:</strong> {adjustedEbitdaMargin.toFixed(2)}%</div>
+                          <div><strong>operatingMargin:</strong> {operatingMargin.toFixed(2)}%</div>
+                          <div><strong>adjustedOperatingMargin:</strong> {adjustedOperatingMargin.toFixed(2)}%</div>
+                          <div><strong>leverage:</strong> {leverage.toFixed(2)}</div>
+                          <div><strong>adjustedLeverage:</strong> {adjustedLeverage.toFixed(2)}</div>
+                          <div><strong>solvency:</strong> {solvency.toFixed(2)}</div>
+                          <div><strong>adjustedSolvency:</strong> {adjustedSolvency.toFixed(2)}</div>
+                          <div><strong>fcfSales:</strong> {fcfSales.toFixed(2)}%</div>
+                          <div><strong>adjustedFcfSales:</strong> {adjustedFcfSales.toFixed(2)}%</div>
+                          <div><strong>interestCover:</strong> {interestCover.toFixed(2)}</div>
+                          <div><strong>adjustedInterestCover:</strong> {adjustedInterestCover.toFixed(2)}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
