@@ -1702,22 +1702,48 @@ export default function SCFComparison() {
               
               {/* Impact Summary */}
               <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-lg shadow-xl p-8 text-white">
-                <h2 className="text-2xl font-bold mb-6">Impact Summary</h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <h2 className="text-2xl font-bold mb-2">Impact Summary</h2>
+                <p className="text-sm text-red-100 mb-6">Highlights of the impact when a traditional SCF programme is upgraded to a PrimaTrade SCF programme based on the inputs (including any adjustments to the card payment programme).</p>
+                <div className="grid md:grid-cols-5 gap-4">
                   <div>
-                    <div className="text-red-100 text-sm mb-2">P&L Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(adjustedOperatingProfit - operatingProfit)}</div>
-                    <div className="text-red-100 text-sm">Operating profit increase</div>
+                    <div className="text-red-100 text-xs mb-2">Profit Before Tax</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg font-bold">{formatCurrency(profitBeforeTax)}</div>
+                      <div className="text-red-100">→</div>
+                      <div className="text-lg font-bold">{formatCurrency(adjustedProfitBeforeTax)}</div>
+                    </div>
                   </div>
                   <div>
-                    <div className="text-red-100 text-sm mb-2">Working Capital Released</div>
-                    <div className="text-4xl font-bold mb-1">{formatCurrency(totalWCBenefit)}</div>
-                    <div className="text-red-100 text-sm">Additional cash available</div>
+                    <div className="text-red-100 text-xs mb-2">EBITDA</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg font-bold">{formatCurrency(ebitda)}</div>
+                      <div className="text-red-100">→</div>
+                      <div className="text-lg font-bold">{formatCurrency(adjustedEbitda)}</div>
+                    </div>
                   </div>
                   <div>
-                    <div className="text-red-100 text-sm mb-2">Leverage Improvement</div>
-                    <div className="text-4xl font-bold mb-1">{formatNumber(leverage - adjustedLeverage, 2)}x</div>
-                    <div className="text-red-100 text-sm">Net Debt / EBITDA reduction</div>
+                    <div className="text-red-100 text-xs mb-2">Total Trade Credit</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg font-bold">{formatCurrency(tradTotalTradeCredit)}</div>
+                      <div className="text-red-100">→</div>
+                      <div className="text-lg font-bold">{formatCurrency(ptTotalTradeCredit)}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-red-100 text-xs mb-2">Leverage Ratio</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg font-bold">{formatNumber(leverage, 2)}x</div>
+                      <div className="text-red-100">→</div>
+                      <div className="text-lg font-bold">{formatNumber(adjustedLeverage, 2)}x</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-red-100 text-xs mb-2">Interest Cover</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg font-bold">{formatNumber(interestCover, 2)}x</div>
+                      <div className="text-red-100">→</div>
+                      <div className="text-lg font-bold">{formatNumber(adjustedInterestCover, 2)}x</div>
+                    </div>
                   </div>
                 </div>
               </div>
