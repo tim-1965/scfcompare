@@ -391,7 +391,7 @@ export default function SCFComparison() {
   const ptEligibleSpend = spendTier1 + spendTier2 + spendTier3;
   const ptParticipatingTier1 = spendTier1 * (tier1PtPartPct / 100);
   const ptParticipatingTier2 = spendTier2 * (tier2PtPartPct / 100);
-  const ptParticipatingTier3 = spendTier3 * (tier3PtPartPct / 100);
+  const ptParticipatingTier3 = spendTier3 * (tier3PtPartPct / 100)* (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptParticipatingSpend = ptParticipatingTier1 + ptParticipatingTier2 + ptParticipatingTier3 - (spendTier3 * (tier3PtPartPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   
   const ptSupplierCashReceipt = ptDaysAfterHandover;
@@ -405,7 +405,7 @@ export default function SCFComparison() {
   // Financing costs by tier (PrimaTrade)
   const ptFinancingTier1 = ptParticipatingTier1 * (scfRatePct / 100) * (ptDaysAdvancedTier1 / 365);
   const ptFinancingTier2 = ptParticipatingTier2 * (scfRatePct / 100) * (ptDaysAdvancedTier2 / 365);
-  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvancedTier3 / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
+  const ptFinancingTier3 = ptParticipatingTier3 * (scfRatePct / 100) * (ptDaysAdvancedTier3 / 365);
   const ptTotalFinancing = ptFinancingTier1 + ptFinancingTier2 + ptFinancingTier3;
   
   // Agreed discounts by tier
@@ -416,7 +416,7 @@ export default function SCFComparison() {
   // Actual discount (MAX of financing cost and agreed discount)
   const ptActualDiscountTier1 = Math.max(ptFinancingTier1, ptDiscountTier1);
   const ptActualDiscountTier2 = Math.max(ptFinancingTier2, ptDiscountTier2);
-  const ptActualDiscountTier3 = Math.max(ptFinancingTier3, ptDiscountTier3) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
+  const ptActualDiscountTier3 = Math.max(ptFinancingTier3, ptDiscountTier3);
   
   // Card costs for PrimaTrade (cards that remain)
   const ptCardCosts = spendTier3 * (tier3CardCostPct / 100) * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
@@ -427,7 +427,7 @@ export default function SCFComparison() {
   // Supplier time value benefits (PrimaTrade)
   const ptSupplierBenefitTier1 = ptParticipatingTier1 * (tier1PtSavingsPct / 100) * (ptDaysAdvancedTier1 / 365);
   const ptSupplierBenefitTier2 = ptParticipatingTier2 * (tier2PtSavingsPct / 100) * (ptDaysAdvancedTier2 / 365);
-  const ptSupplierBenefitTier3 = (ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvancedTier3 / 365) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) + tradSupplierBenefitTier3;
+  const ptSupplierBenefitTier3 = ptParticipatingTier3 * (tier3PtSavingsPct / 100) * (ptDaysAdvancedTier3 / 365);
   const ptTotalSupplierTimeValue = ptSupplierBenefitTier1 + ptSupplierBenefitTier2 + ptSupplierBenefitTier3;
   
   // Supplier net benefit (PrimaTrade)
