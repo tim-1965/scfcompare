@@ -767,47 +767,103 @@ export default function SCFComparison() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200 print:hidden">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-3 gap-4">
+      <div className="bg-gradient-to-b from-gray-50 to-white border-b-2 border-gray-300 print:hidden shadow-sm">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <button
               onClick={() => setActiveView('inputs')}
-              className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
+              className={`group relative w-full px-3 sm:px-6 py-4 sm:py-5 font-bold text-sm sm:text-base rounded-xl border-2 transition-all duration-300 transform ${
                 activeView === 'inputs'
-                  ? 'bg-gradient-to-r from-[#FBE4DD] via-white to-white border-[#D64933] text-[#8B1D12] shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
+                  ? 'bg-gradient-to-br from-[#D64933] to-[#F08070] border-[#D64933] text-white shadow-lg scale-105 ring-2 ring-[#D64933] ring-offset-2'
+                  : 'bg-white border-gray-300 text-gray-700 hover:border-[#F08070] hover:shadow-md hover:scale-102'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Calculator className="w-4 h-4" />
-                Input parameters
+              <div className="flex flex-col items-center gap-2">
+                <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full ${
+                  activeView === 'inputs' 
+                    ? 'bg-white/20 backdrop-blur' 
+                    : 'bg-gray-100 group-hover:bg-[#FBE4DD]'
+                }`}>
+                  <Calculator className={`w-5 h-5 sm:w-6 sm:h-6 ${activeView === 'inputs' ? 'text-white' : 'text-[#D64933]'}`} />
+                </div>
+                <div className="text-center">
+                  <div className={`text-[10px] sm:text-xs font-semibold mb-1 ${
+                    activeView === 'inputs' ? 'text-white/80' : 'text-gray-500'
+                  }`}>
+                    STEP 1
+                  </div>
+                  <div className="leading-tight">
+                    Input parameters
+                  </div>
+                </div>
               </div>
+              {activeView === 'inputs' && (
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-[#D64933]"></div>
+              )}
             </button>
+            
             <button
               onClick={() => setActiveView('comparison')}
-               className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
+              className={`group relative w-full px-3 sm:px-6 py-4 sm:py-5 font-bold text-sm sm:text-base rounded-xl border-2 transition-all duration-300 transform ${
                 activeView === 'comparison'
-                  ? 'bg-gradient-to-r from-[#0F1B2C] via-[#1F2D3D] to-[#D64933] border-[#0F1B2C] text-white shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
+                  ? 'bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] border-[#0F1B2C] text-white shadow-lg scale-105 ring-2 ring-[#0F1B2C] ring-offset-2'
+                  : 'bg-white border-gray-300 text-gray-700 hover:border-[#1F3A56] hover:shadow-md hover:scale-102'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" />
-                Comparison results
+              <div className="flex flex-col items-center gap-2">
+                <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full ${
+                  activeView === 'comparison' 
+                    ? 'bg-white/20 backdrop-blur' 
+                    : 'bg-gray-100 group-hover:bg-blue-50'
+                }`}>
+                  <BarChart3 className={`w-5 h-5 sm:w-6 sm:h-6 ${activeView === 'comparison' ? 'text-white' : 'text-[#0F1B2C]'}`} />
+                </div>
+                <div className="text-center">
+                  <div className={`text-[10px] sm:text-xs font-semibold mb-1 ${
+                    activeView === 'comparison' ? 'text-white/80' : 'text-gray-500'
+                  }`}>
+                    STEP 2
+                  </div>
+                  <div className="leading-tight">
+                    Comparison results
+                  </div>
+                </div>
               </div>
+              {activeView === 'comparison' && (
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-[#0F1B2C]"></div>
+              )}
             </button>
+            
             <button
               onClick={() => setActiveView('simulation')}
-              className={`w-full px-4 py-3 font-semibold text-sm rounded-t-lg border-b-4 transition ${
+              className={`group relative w-full px-3 sm:px-6 py-4 sm:py-5 font-bold text-sm sm:text-base rounded-xl border-2 transition-all duration-300 transform ${
                 activeView === 'simulation'
-                  ? 'bg-gradient-to-r from-[#D64933] via-[#F08070] to-white border-[#D64933] text-white shadow'
-                  : 'bg-gray-50 border-transparent text-gray-700 hover:text-gray-900 hover:bg-white'
+                  ? 'bg-gradient-to-br from-[#D64933] via-[#F08070] to-[#FBE4DD] border-[#D64933] text-white shadow-lg scale-105 ring-2 ring-[#D64933] ring-offset-2'
+                  : 'bg-white border-gray-300 text-gray-700 hover:border-[#F08070] hover:shadow-md hover:scale-102'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Financial simulation
+              <div className="flex flex-col items-center gap-2">
+                <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full ${
+                  activeView === 'simulation' 
+                    ? 'bg-white/20 backdrop-blur' 
+                    : 'bg-gray-100 group-hover:bg-orange-50'
+                }`}>
+                  <TrendingUp className={`w-5 h-5 sm:w-6 sm:h-6 ${activeView === 'simulation' ? 'text-white' : 'text-[#D64933]'}`} />
+                </div>
+                <div className="text-center">
+                  <div className={`text-[10px] sm:text-xs font-semibold mb-1 ${
+                    activeView === 'simulation' ? 'text-white/80' : 'text-gray-500'
+                  }`}>
+                    STEP 3
+                  </div>
+                  <div className="leading-tight">
+                    Financial simulation
+                  </div>
+                </div>
               </div>
+              {activeView === 'simulation' && (
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-[#D64933]"></div>
+              )}
             </button>
           </div>
         </div>
