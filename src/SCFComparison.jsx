@@ -880,7 +880,7 @@ export default function SCFComparison() {
                 </div>
               </div>
 
- <div className="max-w-[52rem] mx-auto">
+ <div className="w-full max-w-[95%] min-[1100px]:max-w-[1100px] mx-auto">
  <div className="bg-gradient-to-r from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-5 sm:p-6">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -896,7 +896,7 @@ export default function SCFComparison() {
                       <BarChart3 className="w-5 h-5" />
                     </div>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-5">
+                  <div className="grid gap-4 sm:grid-cols-2 min-[1100px]:grid-cols-5 mt-5">
                     {highlightStats.map((stat) => (
                       <div
                         key={stat.label}
