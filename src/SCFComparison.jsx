@@ -176,7 +176,7 @@ export default function SCFComparison() {
   const [profitBeforeTax, setProfitBeforeTax] = useState(() => loadSavedValue('profitBeforeTax', 10000000));
   const [netInterest, setNetInterest] = useState(() => loadSavedValue('netInterest', 40000000));
   const [ebitda, setEbitda] = useState(() => loadSavedValue('ebitda', 90000000));
-  const [tradePayables, setTradePayables] = useState(() => loadSavedValue('tradePayables', 82000000));
+  const [tradePayables, setTradePayables] = useState(() => loadSavedValue('tradePayables',105000000));
   const [netDebt, setNetDebt] = useState(() => loadSavedValue('netDebt', 400000000));
   const [equity, setEquity] = useState(() => loadSavedValue('equity', 160000000));
   const [freeCashFlow, setFreeCashFlow] = useState(() => loadSavedValue('freeCashFlow', 22000000));
