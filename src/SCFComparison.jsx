@@ -135,7 +135,7 @@ export default function SCFComparison() {
   const [tier2TradPartPct, setTier2TradPartPct] = useState(() => loadSavedValue('tier2TradPartPct', 0));
   const [tier2PtPartPct, setTier2PtPartPct] = useState(() => loadSavedValue('tier2PtPartPct', 70));
   const [tier2TradDiscountPct, setTier2TradDiscountPct] = useState(() => loadSavedValue('tier2TradDiscountPct', 0));
-  const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.0));
+  const [tier2PtDiscountPct, setTier2PtDiscountPct] = useState(() => loadSavedValue('tier2PtDiscountPct', 2.5));
   const [tier2TradSavingsPct, setTier2TradSavingsPct] = useState(() => loadSavedValue('tier2TradSavingsPct', 10));
   const [tier2PtSavingsPct, setTier2PtSavingsPct] = useState(() => loadSavedValue('tier2PtSavingsPct', 12));
   const [tier2TradPaymentTerms, setTier2TradPaymentTerms] = useState(() => loadSavedValue('tier2TradPaymentTerms', 45));
@@ -145,13 +145,13 @@ export default function SCFComparison() {
   const [tier3TradPartPct, setTier3TradPartPct] = useState(() => loadSavedValue('tier3TradPartPct', 0));
   const [tier3PtPartPct, setTier3PtPartPct] = useState(() => loadSavedValue('tier3PtPartPct', 80));
   const [tier3TradDiscountPct, setTier3TradDiscountPct] = useState(() => loadSavedValue('tier3TradDiscountPct', 0));
-  const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.0));
+  const [tier3PtDiscountPct, setTier3PtDiscountPct] = useState(() => loadSavedValue('tier3PtDiscountPct', 3.5));
   const [tier3TradSavingsPct, setTier3TradSavingsPct] = useState(() => loadSavedValue('tier3TradSavingsPct', 14));
   const [tier3PtSavingsPct, setTier3PtSavingsPct] = useState(() => loadSavedValue('tier3PtSavingsPct', 18));
   const [tier3CardUsagePct, setTier3CardUsagePct] = useState(() => loadSavedValue('tier3CardUsagePct', 60));
   const [tier3CardCostPct, setTier3CardCostPct] = useState(() => loadSavedValue('tier3CardCostPct', 3.5));
   const [tier3CardRebatePct, setTier3CardRebatePct] = useState(() => loadSavedValue('tier3CardRebatePct', 1.0));
-  const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 25));
+  const [tier3CardRemainPct, setTier3CardRemainPct] = useState(() => loadSavedValue('tier3CardRemainPct', 15));
   const [tier3TradPaymentTerms, setTier3TradPaymentTerms] = useState(() => loadSavedValue('tier3TradPaymentTerms', 45));
   const [tier3PtPaymentTerms, setTier3PtPaymentTerms] = useState(() => loadSavedValue('tier3PtPaymentTerms', 90));
   
@@ -275,7 +275,7 @@ export default function SCFComparison() {
       setProfitBeforeTax(10000000);
       setNetInterest(40000000);
       setEbitda(90000000);
-      setTradePayables(82000000);
+      setTradePayables(105000000);
       setNetDebt(400000000);
       setEquity(160000000);
       setFreeCashFlow(22000000);
@@ -383,7 +383,7 @@ export default function SCFComparison() {
   
   // Active suppliers (Traditional)
   const tradActiveTier1 = tier1Suppliers * (tier1TradPartPct / 100);
-  const tradActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2TradPartPct / 100);
+  const tradActiveTier2 = tier2Suppliers * (tier2TradPartPct / 100);
   const tradActiveTier3 = tier3Suppliers * (tier3TradPartPct / 100);
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
   
@@ -476,7 +476,7 @@ export default function SCFComparison() {
   
   // Active suppliers (PrimaTrade)
   const ptActiveTier1 = tier1Suppliers * (tier1PtPartPct / 100);
-  const ptActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2PtPartPct / 100);
+  const ptActiveTier2 = tier2Suppliers * (tier2PtPartPct / 100);
   const ptActiveTier3 = tier3Suppliers * (tier3PtPartPct / 100) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalActive = ptActiveTier1 + ptActiveTier2 + ptActiveTier3;
   
