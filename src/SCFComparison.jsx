@@ -357,9 +357,9 @@ export default function SCFComparison() {
   const tradTotalTradeCredit = (spendTier1 * tier1TradPaymentTerms + spendTier2 * tier2TradPaymentTerms + spendTier3 * tier3TradPaymentTerms) / 365 + tradCardFreeFundingBalance;
   
   // Outstanding balance (Traditional) - tier-specific calculation
-  const tradOutstandingBalance = (tradParticipatingTier1 * (tier1TradPartPct / 100) * tradDaysAdvancedTier1 +
-                                   tradParticipatingTier2 * (tier2TradPartPct / 100) * tradDaysAdvancedTier2 +
-                                   tradParticipatingTier3 * (tier3TradPartPct / 100) * tradDaysAdvancedTier3) / 365;
+  const tradOutstandingBalance = (tradParticipatingTier1 * tradDaysAdvancedTier1 +
+                                   tradParticipatingTier2 * tradDaysAdvancedTier2 +
+                                   tradParticipatingTier3 * tradDaysAdvancedTier3) / 365;
 
   // Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
   const tradScfFundingBenefit = ((tier1TradPaymentTerms - baselinePaymentTerm) * spendTier1 +
@@ -451,9 +451,9 @@ export default function SCFComparison() {
   const ptTradeCreditGenerated = ptTotalTradeCredit - baselineTradeCredit;
   
   // Outstanding balance (PrimaTrade) - tier-specific calculation
-  const ptOutstandingBalance = (ptParticipatingTier1 * (tier1PtPartPct / 100) * ptDaysAdvancedTier1 +
-                                 ptParticipatingTier2 * (tier2PtPartPct / 100) * ptDaysAdvancedTier2 +
-                                 ptParticipatingTier3 * (tier3PtPartPct / 100) * ptDaysAdvancedTier3 * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100))) / 365;
+  const ptOutstandingBalance = (ptParticipatingTier1 * ptDaysAdvancedTier1 +
+                                 ptParticipatingTier2 * ptDaysAdvancedTier2 +
+                                 ptParticipatingTier3 * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100)) * ptDaysAdvancedTier3) / 365;
 
   // Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
   const ptScfFundingBenefit = ((tier1PtPaymentTerms - baselinePaymentTerm) * spendTier1 +
@@ -1246,7 +1246,7 @@ export default function SCFComparison() {
             <div data-panel="comparison" className={`space-y-6 ${isPrinting ? 'print-comparison-panel' : ''} ${activeView !== 'comparison' && !isPrinting ? 'hidden' : ''}`}>
               {/* Highlights Box */}
                  <div className="w-full flex justify-center">
-                 <div className="inline-block max-w-[920px]">
+                 <div className="w-full max-w-[95%] min-[920px]:w-[920px]">
                  <div className="bg-gradient-to-br from-[#0F1B2C] via-[#1F3A56] to-[#D64933] rounded-xl shadow-xl p-[1px]">
                 <div className="bg-white/95 rounded-[0.95rem] p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -1259,7 +1259,7 @@ export default function SCFComparison() {
                       <span className="text-xs uppercase tracking-wide text-orange-100">Performance</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+                  <div className="grid grid-cols-2 min-[920px]:grid-cols-5 gap-3 mb-6">
                     {highlightStats.map((stat, index) => (
                       <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                         <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1 whitespace-normal" style={{ minHeight: '32px' }}>
