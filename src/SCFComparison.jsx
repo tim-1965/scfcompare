@@ -353,7 +353,7 @@ export default function SCFComparison() {
   
   // Trade credit and working capital calculations (Traditional)
   const tradCardSpend = spendTier3 * (tier3CardUsagePct / 100);
-  const tradCardFreeFundingBalance = tradCardSpend * ((cardFreeFundingDays + avgApprovalTime) / 365);
+  const tradCardFreeFundingBalance = tradCardSpend * ((cardFreeFundingDays) / 365);
   const tradTotalTradeCredit = (spendTier1 * tier1TradPaymentTerms + spendTier2 * tier2TradPaymentTerms + spendTier3 * tier3TradPaymentTerms) / 365 + tradCardFreeFundingBalance;
   
   // Outstanding balance (Traditional) - tier-specific calculation
@@ -364,8 +364,7 @@ export default function SCFComparison() {
   // Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
   const tradScfFundingBenefit = ((tier1TradPaymentTerms - baselinePaymentTerm) * spendTier1 +
                                    (tier2TradPaymentTerms - baselinePaymentTerm) * spendTier2 +
-                                   (tier3TradPaymentTerms - baselinePaymentTerm) * spendTier3) * (scfRatePct / 100) / 365 + 
-                                   tradBuyerCardFreeFunding;
+                                   (tier3TradPaymentTerms - baselinePaymentTerm) * spendTier3 + tradBuyerCardFreeFunding) * (scfRatePct / 100) / 365;
   
   // Buyer net benefit (Traditional)
   const tradBuyerNetBenefit = tradActualDiscountTier1 + tradActualDiscountTier2 + tradActualDiscountTier3 - 
@@ -458,8 +457,8 @@ export default function SCFComparison() {
   // Funding benefit enabled by SCF & cards (paid for by suppliers) - based on baseline payment term
   const ptScfFundingBenefit = ((tier1PtPaymentTerms - baselinePaymentTerm) * spendTier1 +
                                  (tier2PtPaymentTerms - baselinePaymentTerm) * spendTier2 +
-                                 (tier3PtPaymentTerms - baselinePaymentTerm) * spendTier3) * (scfRatePct / 100) / 365 + 
-                                 ptBuyerCardFreeFunding;
+                                 (tier3PtPaymentTerms - baselinePaymentTerm) * spendTier3 + 
+                                 ptBuyerCardFreeFunding) * (scfRatePct / 100) / 365;
   
   // Buyer net benefit (PrimaTrade)
   const ptBuyerNetBenefit = ptActualDiscountTier1 + ptActualDiscountTier2 + ptActualDiscountTier3 - ptTotalFinancing + ptBuyerCardRebate + ptScfFundingBenefit;
