@@ -565,7 +565,7 @@ export default function SCFComparison() {
 
   const highlightStats = [
     {
-      label: 'Recurring annual economic value of SCF',
+      label: 'Recurring annual economic value',
       trad: formatCurrency(tradTotalValue),
       pt: formatCurrency(ptTotalValue),
       tooltip: "Total annual recurring economicvalue created by the SCF programme increases when it reaches those who really need it"
