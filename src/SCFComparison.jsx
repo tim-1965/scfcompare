@@ -582,8 +582,8 @@ export default function SCFComparison() {
     },
     {
       label: 'Buyer net benefit from SCF',
-      trad: formatCurrency(tradBuyerNetBenefit/1000000, 0),
-      pt: formatCurrency(ptBuyerNetBenefit/1000000, 0),
+      trad: formatCurrency(tradBuyerNetBenefit, 0),
+      pt: formatCurrency(ptBuyerNetBenefit, 0),
       tooltip: "The economic benefit to the buyer of the SCF programme, higher with PrimaTrade SCF"
     },
     {
