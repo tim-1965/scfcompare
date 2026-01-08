@@ -978,21 +978,7 @@ export default function SCFComparison() {
                             <></>
                           </Tooltip>
                         </div>
-                        //<div className="flex items-end justify-between gap-2 mt-3">
-                        //  <div>
-                        //    <p className="text-[11px] font-semibold text-gray-600">Traditional SCF</p>
-                        //    <p className="text-lg font-bold text-gray-900">
-                        //      {index === 1 ? formatCurrencyWholeNumber(tradTradeCreditGenerated) : stat.trad}
-                        //    </p>
-                        //  </div>
-                        //  <div className="text-right">
-                        //    <p className="text-[11px] font-semibold text-[#D64933]">PrimaTrade SCF</p>
-                        //    <p className="text-lg font-bold text-[#D64933]">
-                        //      {index === 1 ? formatCurrencyWholeNumber(ptTradeCreditGenerated) : stat.pt}
-                        //    </p>
-                        //  </div>
-                        //</div>
-                      </div>
+                     </div>
                     ))}
                   </div>
                 </div>
