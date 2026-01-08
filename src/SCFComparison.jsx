@@ -969,30 +969,29 @@ export default function SCFComparison() {
                     {highlightStats.map((stat, index) => (
                       <div
                         key={stat.label}
-                        //className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-4"
-                        className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-5"
+                        className="rounded-lg bg-gradient-to-br from-[#FBE4DD] via-white to-white border border-[#F6BFB0] shadow-sm p-4 flex flex-col"
                       >
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 mb-4">
                           <p className="text-xs font-semibold text-[#8B1D12] uppercase tracking-wide">{stat.label}</p>
-                           <Tooltip text={stat.tooltip}>
+                          <Tooltip text={stat.tooltip}>
                             <></>
                           </Tooltip>
-                           <div className="flex items-end justify-between gap-2 mt-3">
+                        </div>
+                        <div className="mt-auto space-y-3">
                           <div>
-                            <p className="text-[11px] font-semibold text-gray-600">Traditional SCF</p>
+                            <p className="text-[11px] font-semibold text-gray-600 mb-1">Traditional SCF</p>
                             <p className="text-lg font-bold text-gray-900">
-                              {index === 1 ? formatCurrencyWholeNumber(tradTotalValue) : stat.trad}
+                              {stat.trad}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <p className="text-[11px] font-semibold text-[#D64933]">PrimaTrade SCF</p>
+                          <div>
+                            <p className="text-[11px] font-semibold text-[#D64933] mb-1">PrimaTrade SCF</p>
                             <p className="text-lg font-bold text-[#D64933]">
-                              {index === 1 ? formatCurrencyWholeNumber(ptTotalValue) : stat.pt}
+                              {stat.pt}
                             </p>
                           </div>
                         </div>
-                        </div>
-                     </div>
+                      </div>
                     ))}
                   </div>
                 </div>
