@@ -1046,7 +1046,7 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Participation rate</h4>
                           {renderInput('Traditional SCF', tier1TradPartPct, setTier1TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                            tooltip: 'The proportion of eligible spend from these larger suppliers funded by traditional SCF, noting that larger suppliers typically benefit less from early payments and only value early payments that are truly early.'
+                            tooltip: 'The proportion of eligible spend from these larger suppliers funded by traditional SCF.'
                           })}
                           {renderInput('PrimaTrade', tier1PtPartPct, setTier1PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
                             tooltip: 'The proportion of eligible spend funded from these larger suppliers by PrimaTrade SCF noting that participation is typically higher when early payments are available at shipment rather than later after delivery.'
@@ -1060,7 +1060,7 @@ export default function SCFComparison() {
                             tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                           })}
                           {renderInput('PrimaTrade', tier1PtDiscountPct, setTier1PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
+                            tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs because they can avoid credit insurance and their local funding costs can go down when they are paid earlier, routing this benefit to the buyer P&L.'
                           })}
                         </div>
                         
@@ -1068,10 +1068,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-blue-200 pb-2">Supplier savings rate</h4>
                           {renderInput('Traditional SCF', tier1TradSavingsPct, setTier1TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
+                            tooltip: 'The comparison rate that suppliers use to evaluate the benefit of early payment (typically the marginal interest rate they pay for funding include base rate). Note, when early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                           })}
                           {renderInput('PrimaTrade', tier1PtSavingsPct, setTier1PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
+                            tooltip: 'The comparison rate that suppliers use to evaluate the benefit of early payment (typically the marginal interest rate they pay for funding include base rate). Note, when early payments are made at shipment, the benefit includes savings on credit insurance and overall better credit standing with their local funders.'
                           })}
                         </div>
                         
@@ -1082,7 +1082,7 @@ export default function SCFComparison() {
                             tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
                           })}
                           {renderInput('New payment term', tier1PtPaymentTerms, setTier1PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
+                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade, which can include additional periods (beyond local legal limits) using digital bills of exchange.'
                           })}
                         </div>
                       </div>
@@ -1114,10 +1114,10 @@ export default function SCFComparison() {
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Participation rate</h4>
                             <div className="space-y-2">
                               {renderInput('Traditional SCF', tier2TradPartPct, setTier2TradPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend from these mid-sized suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than that of larger suppliers.'
+                                tooltip: 'The proportion of eligible spend from these mid-sized suppliers that would be funded by traditional SCF if they were to be included, likely higher participation than that of larger suppliers as they are smaller and likely to value the funding benefit.'
                               })}
                               {renderInput('PrimaTrade', tier2PtPartPct, setTier2PtPartPct, 0, 100, 5, '', true, false, 'w-full', {
-                                tooltip: 'The proportion of eligible spend funded from these mid-sized suppliers by PrimaTrade SCF noting that participation is likely to be higher than that of larger suppliers, especially if early payments are available at shipment rather than later after delivery.'
+                                tooltip: 'The proportion of eligible spend funded from these mid-sized suppliers by PrimaTrade SCF noting that participation is likely to be higher than traditional SCF if early payments are available at shipment rather than later after delivery.'
                               })}
                             </div>
                           </div>
@@ -1129,7 +1129,7 @@ export default function SCFComparison() {
                               tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                             })}
                             {renderInput('PrimaTrade', tier2PtDiscountPct, setTier2PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                              tooltip: 'The discount on the invoice agreed for early payments at shipment; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L.'
+                              tooltip: 'The discount on the invoice agreed by the supplier for early payments at shipment; the buyer can set higher discounts for early payments than the pure SCF funding costs, routing this benefit to the buyer P&L; With PrimaTrade, buyers control the allocation of benefits between themselves and suppliers.'
                             })}
                           </div>
 
@@ -1137,10 +1137,10 @@ export default function SCFComparison() {
                           <div className="space-y-3">
                             <h4 className="text-sm font-semibold text-gray-700 border-b border-green-200 pb-2">Supplier savings rate</h4>
                             {renderInput('Traditional SCF', tier2TradSavingsPct, setTier2TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
+                              tooltip: 'The comparison rate that suppliers use to evaluate early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                             })}
                             {renderInput('PrimaTrade', tier2PtSavingsPct, setTier2PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                              tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
+                              tooltip: 'The comparison rate that suppliers use to evaluate early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance and more efficient local financing.'
                             })}
                           </div>
                           
@@ -1151,7 +1151,7 @@ export default function SCFComparison() {
                               tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
                             })}
                             {renderInput('New payment term', tier2PtPaymentTerms, setTier2PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                              tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
+                              tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade, which can include additional periods (beyond local legal limits) using digital bills of exchange.'
                             })}
                           </div>
                         </div>
@@ -1203,7 +1203,7 @@ export default function SCFComparison() {
                             tooltip: 'The discount on the invoice agreed for early payments (ignoring any funding charge). Traditional SCF does not usually support a separate charge here (set this to zero).'
                           })}
                           {renderInput('PrimaTrade', tier3PtDiscountPct, setTier3PtDiscountPct, 0, 5, 0.1, '', true, false, 'w-full', {
-                            tooltip: 'The discount on the invoice agreed for early payments at shipment noting that such suppliers may well already be accepting significant discounts charged by card providers; PrimaTrade enables suppliers to agree higher discounts on their invoices than the SCF funding costs, routing this benefit to the buyer P&L, thereby also capturing the charges that otherwise card providers might take.'
+                            tooltip: 'The discount on the invoice agreed for early payments at shipment; smaller suppliers get bigger benefits from early payments and so can agree higher discounts, noting the costs many suppliers already accept with payment card programmes.'
                           })}
                         </div>
                         
@@ -1211,10 +1211,10 @@ export default function SCFComparison() {
                         <div className="space-y-3">
                           <h4 className="text-sm font-semibold text-gray-700 border-b border-orange-200 pb-2">Supplier savings rate</h4>
                           {renderInput('Traditional SCF', tier3TradSavingsPct, setTier3TradSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
+                            tooltip: 'The comparison rate that suppliers use to evaluate early payment. When early payments are made after delivery, the benefit is usually only the interest cost saving at the suppliers marginal funding cost.'
                           })}
                           {renderInput('PrimaTrade', tier3PtSavingsPct, setTier3PtSavingsPct, 0, 30, 0.5, '', true, false, 'w-full', {
-                            tooltip: 'The comparison rate that suppliers use to decide whether or not to take early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance, avoidance of card charges, and more efficient local financing.'
+                            tooltip: 'The comparison rate that suppliers use to decide evaluate early payment. When early payments are made before delivery, supplier benefits include interest cost savings, avoidance of credit insurance, avoidance of card charges, and more efficient local financing.'
                           })}
                         </div>
                         
@@ -1225,7 +1225,7 @@ export default function SCFComparison() {
                             tooltip: 'Standard contractual payment terms from invoice date for this tier of suppliers in the traditional scenario.'
                           })}
                           {renderInput('New payment term', tier3PtPaymentTerms, setTier3PtPaymentTerms, 0, 180, 5, ' days', false, false, 'w-full', {
-                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade.'
+                            tooltip: 'Potentially extended payment terms from invoice date when early payment is available via PrimaTrade, which can include additional periods (beyond local legal limits) using digital bills of exchange.'
                           })}
                         </div>
                       </div>
@@ -1233,7 +1233,7 @@ export default function SCFComparison() {
                       {/* Card programme */}
                       <div>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                          <h4 className="text-sm font-semibold text-gray-700">Card programme (potentially replaced with PrimaTrade SCF)</h4>
+                          <h4 className="text-sm font-semibold text-gray-700">Card programme (potentially replaced with PrimaTrade SCF to capture more P&L whilst giving suppliers earlier payments)</h4>
                           <div className="w-full lg:w-1/3">
                             {renderInput('% remaining on cards', tier3CardRemainPct, setTier3CardRemainPct, 0, 100, 5, '', true, false, 'w-full', {
                               tooltip: '% of suppliers currently paid by card that remain being paid by card and not switched to PrimaTrade SCF.'
