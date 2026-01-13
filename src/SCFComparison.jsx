@@ -1091,7 +1091,7 @@ export default function SCFComparison() {
 
                   {/* Tier 2: Next Level */}
                   <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level: a further ({tier2Suppliers}) suppliers</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level: a further {tier2Suppliers} suppliers</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
