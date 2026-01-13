@@ -1888,7 +1888,7 @@ export default function SCFComparison() {
                             <input
                               type="number"
                               value={profitBeforeTax / 1000000}
-                              onChange={(e) => setProfitBeforetax(parseFloat(e.target.value || 0) * 1000000)}
+                              onChange={(e) => setProfitBeforeTax(parseFloat(e.target.value || 0) * 1000000)}
                               className="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F08070] text-right"
                             />
                             <span className="text-xs text-gray-600 w-10">{currencySymbol} MM</span>
