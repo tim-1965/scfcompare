@@ -290,7 +290,7 @@ export default function SCFComparison() {
   const domesticSharePct = 100 - crossBorderSharePct;
   
   // Auto-calculated Tier 3 values
-  const tier3Suppliers = totalSuppliers - tier1Suppliers - (tier2Suppliers - tier1Suppliers);
+  const tier3Suppliers = totalSuppliers - tier1Suppliers - tier2Suppliers;
   const tier3SpendPct = 100 - tier1SpendPct - tier2SpendPct;
   
   // Spend by tier
@@ -384,7 +384,7 @@ export default function SCFComparison() {
   
   // Active suppliers (Traditional)
   const tradActiveTier1 = tier1Suppliers * (tier1TradPartPct / 100);
-  const tradActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2TradPartPct / 100);
+  const tradActiveTier2 = tier2Suppliers * (tier2TradPartPct / 100);
   const tradActiveTier3 = tier3Suppliers * (tier3TradPartPct / 100);
   const tradTotalActive = tradActiveTier1 + tradActiveTier2 + tradActiveTier3;
   
@@ -477,7 +477,7 @@ export default function SCFComparison() {
   
   // Active suppliers (PrimaTrade)
   const ptActiveTier1 = tier1Suppliers * (tier1PtPartPct / 100);
-  const ptActiveTier2 = (tier2Suppliers - tier1Suppliers) * (tier2PtPartPct / 100);
+  const ptActiveTier2 = tier2Suppliers * (tier2PtPartPct / 100);
   const ptActiveTier3 = tier3Suppliers * (tier3PtPartPct / 100) * (1 - (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100));
   const ptTotalActive = ptActiveTier1 + ptActiveTier2 + ptActiveTier3;
   
@@ -488,7 +488,7 @@ export default function SCFComparison() {
   const tradSuppliersOnCards = tier3Suppliers * (tier3CardUsagePct / 100);
   const ptSuppliersOnCards = tier3Suppliers * (tier3CardUsagePct / 100) * (tier3CardRemainPct / 100);
   
-  const tradEligibleSuppliers = tier1Suppliers + (tier2Suppliers - tier1Suppliers) + tier3Suppliers;
+  const tradEligibleSuppliers = tier1Suppliers + tier2Suppliers + tier3Suppliers;
 
   // DELTAS
   const deltaEligibleSpend = ptEligibleSpend - tradEligibleSpend;
@@ -1091,7 +1091,7 @@ export default function SCFComparison() {
 
                   {/* Tier 2: Next Level */}
                   <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50/30">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level ({tier1Suppliers}-{tier2Suppliers}) suppliers</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Tier 2: Next Level: a further ({tier2Suppliers}) suppliers</h3>
                     <div className="space-y-4">
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-green-200">
