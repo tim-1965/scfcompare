@@ -1029,7 +1029,7 @@ export default function SCFComparison() {
                       {/* Basic Info */}
                       <div className="grid md:grid-cols-2 gap-4 pb-4 border-b border-blue-200">
                           <div className="w-full">
-                          {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 500, 10, '', false, false, 'w-full', {
+                          {renderInput('Number of suppliers', tier1Suppliers, setTier1Suppliers, 0, 2000, 10, '', false, false, 'w-full', {
                             tooltip: 'Current number of suppliers in traditional SCF (or who might be included in a traditional SCF programme): - typically larger suppliers only, ignoring card programmes (handled separately lower down).'
                           })}
                         </div>
