@@ -1282,7 +1282,7 @@ export default function SCFComparison() {
                       tooltip: 'The typical number of days it takes for invoices to be approved once delivery has been confirmed.'
                     })}
                     {renderInput('Baseline payment term', baselinePaymentTerm, setBaselinePaymentTerm, 0, 90, 1, 'days', false, false, 'w-full', {
-                      tooltip: 'This payment term is used to determine the amount of benefit received by the buyer as a result of the SCF programme when payment terms by suppliers are generally extended'
+                      tooltip: 'Every supply chain will offer its customers a natural amount of trade credit (an average baseline level) - whether thats 7 / 14 / 30 / 45 or 60 days. That baseline is available for free to buyers. Supply chain finance enables buyers to move standard payment terms beyond that baseline level. Put here your baseline payment term so that we can measure benefits of using SCF to achieve longer payment terms.'
                     })}
                   </div>
                   <div className="space-y-4">
